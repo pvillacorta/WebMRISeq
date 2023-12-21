@@ -717,7 +717,7 @@ ApplicationWindow {
         anchors.topMargin: window.mobile ? 15 : 0
 
         width: window.mobile ? blockSeq.width : 500
-        height: 270
+        height: 280
 
         color: "gray"
         Text{

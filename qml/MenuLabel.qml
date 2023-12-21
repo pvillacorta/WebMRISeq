@@ -8,6 +8,7 @@ Item {
     height: window.fieldHeight
     width: label.contentWidth
     Label{
+        text: "prueba"
         id: label
         anchors.fill: parent
         font.pointSize: window.fontSize;

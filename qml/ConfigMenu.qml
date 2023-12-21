@@ -10,33 +10,45 @@ Item {
     property bool menuVisible: false
 
     property bool linesVisible
+    property bool samplesVisible
     property bool durationVisible
     property bool fovVisible
     property bool rfVisible
     property bool gradientsVisible
     property bool tVisible
-    property bool repetitionsVisible
+    property bool groupVisible
 
-    property alias b1Mod: b1ModInput.text
+    property alias lines:       linesInput.text
+    property alias samples:     samplesInput.text
+    property alias duration:    durationInput.text
+    property alias fov:         fovInput.text
+    property alias shape:       shapeInput.currentIndex
+    property alias b1Module:    b1ModuleInput.text
+    property alias flipAngle:   flipAngleInput.text
+    property alias deltaf:      deltafInput.text
 
-    property alias duration: durationInput.text
-    property alias delta_f: deltafInput.text
-    property alias alpha: alphaInput.text
-    property alias te: teInput.text
-    property alias tr: trInput.text
+    property alias gxDelay:     gxDelayInput.text
+    property alias gyDelay:     gyDelayInput.text
+    property alias gzDelay:     gzDelayInput.text
 
-    property alias gx: xAmplitudeInput.text
-    property alias gy: yAmplitudeInput.text
-    property alias gz: zAmplitudeInput.text
-    property alias gxStep: xStepInput.text
-    property alias gyStep: yStepInput.text
-    property alias gzStep: zStepInput.text
+    property alias gxRise:      gxRiseInput.text
+    property alias gyRise:      gyRiseInput.text
+    property alias gzRise:      gzRiseInput.text
 
-    property alias fov: fovInput.text
-    property alias n: nInput.text
-    property alias reps: repsInput.text
-    property alias shape: shapeInput.currentIndex
+    property alias gxFlatTop:   gxFlatTopInput.text
+    property alias gyFlatTop:   gyFlatTopInput.text
+    property alias gzFlatTop:   gzFlatTopInput.text
 
+    property alias gxAmplitude: gxAmplitudeInput.text
+    property alias gyAmplitude: gyAmplitudeInput.text
+    property alias gzAmplitude: gzAmplitudeInput.text
+
+    property alias gxStep:      gxStepInput.text
+    property alias gyStep:      gyStepInput.text
+    property alias gzStep:      gzStepInput.text
+
+    property alias te:          teInput.text
+    property alias tr:          trInput.text
 
 
     Rectangle{
@@ -57,10 +69,9 @@ Item {
         Component{
             id: configPanel
             Rectangle {
-                z: -100
                 implicitWidth: column.width
-                // border.color: "gray"
                 color: Qt.lighter(menuColor,1.3)
+                z:-10
             }
         }
 
@@ -72,12 +83,11 @@ Item {
             anchors.topMargin: 5
             spacing: 5
 
-            Loader { id: lines
-                visible:linesVisible
+            Loader { id: lines;         visible: linesVisible
                 sourceComponent: configPanel
-                width:246
+                width:155
                 height: 26
-                GridLayout{ id: nLayout
+                GridLayout{ id: linesLayout
                     anchors.fill: parent
                     anchors.margins:3
                     columns: 4
@@ -86,15 +96,26 @@ Item {
                     MenuLabel { text: "Lines:";                 bold: true}
                     TextInputItem{ id: linesInput;              Layout.alignment: Qt.AlignRight }
                     MenuLabel { text: "lines";                  Layout.columnSpan: 2            }
-
-                    MenuLabel { text: "Samples per line:";      bold: true}
-                    TextInputItem{ id: samplesPerLineInput;     Layout.alignment: Qt.AlignRight }
-                    MenuLabel { text: "lines";                  Layout.columnSpan: 2            }
                 }
             }
 
-            Loader { id: duration
-                visible:durationVisible
+            Loader { id: samples;       visible: samplesVisible
+                sourceComponent: configPanel
+                width:155
+                height: 26
+                GridLayout{ id: samplesLayout
+                    anchors.fill: parent
+                    anchors.margins:3
+                    columns: 4
+                    rowSpacing: 3
+
+                    MenuLabel { text: "Samples:";                bold: true}
+                    TextInputItem{ id: samplesInput;             Layout.alignment: Qt.AlignRight }
+                    MenuLabel { text: "samples";                 Layout.columnSpan: 2            }
+                }
+            }
+
+            Loader { id: duration;      visible: durationVisible
                 sourceComponent: configPanel
                 width:150
                 height: 26
@@ -105,13 +126,12 @@ Item {
                     rowSpacing: 3
 
                     MenuLabel { text: "Duration:";              bold: true}
-                    TextInputItem{ id:durationInput;                 Layout.alignment: Qt.AlignRight}
+                    TextInputItem{ id:durationInput;            Layout.alignment: Qt.AlignRight}
                     MenuLabel { text: "s"}
                 }
             }
 
-            Loader { id: fov
-                visible:fovVisible
+            Loader { id: fov;           visible: fovVisible
                 sourceComponent: configPanel
                 width:155
                 height: 26
@@ -127,8 +147,7 @@ Item {
                 }
             }
 
-            Loader { id: rf
-                visible:rfVisible
+            Loader { id: rf;            visible: rfVisible
                 sourceComponent: configPanel
                 height: 72
                 GridLayout{ id: rfLayout
@@ -218,7 +237,7 @@ Item {
                     }
 
                     MenuLabel { text: "Peak |B1|[T]:";          Layout.alignment: Qt.AlignRight}
-                    TextInputItem{ id:b1ModInput}
+                    TextInputItem{ id:b1ModuleInput}
 
                     MenuLabel { text: "Flip Angle [º]:";        Layout.alignment: Qt.AlignRight;        Layout.columnSpan: 2}
                     TextInputItem{ id:flipAngleInput;           Layout.columnSpan: 3}
@@ -228,8 +247,7 @@ Item {
                 }
             }
 
-            Loader { id: gradients
-                visible:gradientsVisible
+            Loader { id: gradients;     visible: gradientsVisible
                 sourceComponent: configPanel
                 height: 90
 
@@ -271,8 +289,7 @@ Item {
                 }
             }
 
-            Loader { id: t
-                visible:tVisible
+            Loader { id: t;             visible: tVisible
                 sourceComponent: configPanel
                 height: 50
                 width: 150
@@ -290,25 +307,7 @@ Item {
                 }
             }
 
-            Loader { id: flipAngle
-                visible:flipAngleVisible
-                sourceComponent: configPanel
-                width:150
-                height: 26
-                GridLayout{ id: flipAngleLayout
-                    anchors.fill: parent
-                    anchors.margins:3
-                    columns: 4
-                    rowSpacing: 3
-
-                    MenuLabel { text: "Flip Angle (α):";              bold: true}
-                    TextInputItem{ id:flipAngleInput;                 Layout.alignment: Qt.AlignRight}
-                    MenuLabel { text: "s"}
-                }
-            }
-
-            Loader { id: repetitions
-                visible:repetitionsVisible
+            Loader { id: repetitions;   visible: groupVisible
                 sourceComponent: configPanel
                 width: 200
                 height: 26
@@ -324,25 +323,6 @@ Item {
                 }
             }
         }
-
-
-
-
-            // GridLayout{
-            //     id: configLayout
-            //     visible:false
-            //     columns: 6
-            //     width:parent.width
-            //     anchors.horizontalCenter: parent.horizontalCenter
-            //     rowSpacing: 3
-
-            //     MenuLabel { text: "Duration [s]:";          visible: durationVisible}
-            //     TextInputItem{ id:durationInput;            visible: durationVisible;               Layout.columnSpan: rfVisible ? 2 : 5}
-
-            //     MenuLabel { text: "α (flip angle) [º]:";    visible: alphaVisible}
-            //     TextInputItem{ id:alphaInput;               visible: alphaVisible;                  Layout.columnSpan: 5}
-            // }
-
 
 
         // APPLY CHANGES
@@ -394,7 +374,7 @@ Item {
         // VIEW 3D MODEL OF SELECTED SLICE
         Button{
             id: plotButton
-            visible: plotVisible
+            visible: rfVisible
             anchors.right: applyButton.left
             anchors.bottom: parent.bottom
             anchors.margins: 10

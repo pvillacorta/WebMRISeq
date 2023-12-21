@@ -63,120 +63,90 @@ Item{
                 configMenu.menuColor = blockColor;
                 configMenu.menuTitle = blockText;
 
-                configMenu.duration = dur.toString();
-                configMenu.b1Mod = b1x.toString();
-                // configMenu.b1y = b1y.toString();
-                configMenu.gx = gx.toString();
-                configMenu.gy = gy.toString();
-                configMenu.gz = gz.toString();
-                configMenu.gxStep = gxStep.toString();
-                configMenu.gyStep = gyStep.toString();
-                configMenu.gzStep = gzStep.toString();
-                configMenu.delta_f = delta_f.toString();
-                configMenu.te = b1x.toString();
-                configMenu.tr = b1y.toString();
-                configMenu.fov = fov.toString();
-                configMenu.n = n.toString();
-                configMenu.reps = reps.toString();
-                configMenu.alpha = dur.toString();
-                configMenu.shape = n.toString();
+                configMenu.lines = dur.toString();
 
                 switch(cod){
                     // Group
                     case 0:
-                        configMenu.durationVisible = false;
-                        configMenu.rfVisible = false;
-                        configMenu.gradientVisible = false;
-                        configMenu.stepVisible = false;
-                        configMenu.nVisible = false;
-                        configMenu.fovVisible = false;
-                        configMenu.plotVisible = false;
-                        configMenu.groupVisible = true;
-                        configMenu.alphaVisible = false;
-                        configMenu.tVisible = false;
+                        configMenu.durationVisible =    false;
+                        configMenu.rfVisible =          false;
+                        configMenu.gradientsVisible =   false;
+                        configMenu.linesVisible =       false;
+                        configMenu.samplesVisible =     false;
+                        configMenu.fovVisible =         false;
+                        configMenu.groupVisible =       true;
+                        configMenu.tVisible =           false;
                         break;
                     // Excitation
                     case 1:
-                        configMenu.durationVisible = true;
-                        configMenu.rfVisible = true;
-                        configMenu.gradientVisible = true;
-                        configMenu.stepVisible = false;
-                        configMenu.nVisible = false;
-                        configMenu.fovVisible = false;
-                        configMenu.plotVisible = true;
-                        configMenu.groupVisible = false;
-                        configMenu.alphaVisible = false;
-                        configMenu.tVisible = false;
+                        configMenu.durationVisible =    true;
+                        configMenu.rfVisible =          true;
+                        configMenu.gradientsVisible =   true;
+                        configMenu.linesVisible =       false;
+                        configMenu.samplesVisible =     false;
+                        configMenu.fovVisible =         false;
+                        configMenu.groupVisible =       false;
+                        configMenu.tVisible =           false;
                         break;
 
                     // Delay
                     case 2:
-                        configMenu.durationVisible = true;
-                        configMenu.rfVisible = false;
-                        configMenu.gradientVisible = false;
-                        configMenu.stepVisible = false;
-                        configMenu.nVisible = false;
-                        configMenu.fovVisible = false;
-                        configMenu.plotVisible = false;
-                        configMenu.groupVisible = false;
-                        configMenu.alphaVisible = false;
-                        configMenu.tVisible = false;
+                        configMenu.durationVisible =    true;
+                        configMenu.rfVisible =          false;
+                        configMenu.gradientsVisible =   false;
+                        configMenu.linesVisible =       false;
+                        configMenu.samplesVisible =     false;
+                        configMenu.fovVisible =         false;
+                        configMenu.groupVisible =       false;
+                        configMenu.tVisible =           false;
                         break;
 
                     // Dephase
                     case 3:
-                        configMenu.durationVisible = false;
-                        configMenu.rfVisible = false;
-                        configMenu.gradientVisible = true;
-                        configMenu.stepVisible = true;
-                        configMenu.nVisible = false;
-                        configMenu.fovVisible = false;
-                        configMenu.plotVisible = false;
-                        configMenu.groupVisible = false;
-                        configMenu.alphaVisible = false;
-                        configMenu.tVisible = false;
+                        configMenu.durationVisible =    true;
+                        configMenu.rfVisible =          false;
+                        configMenu.gradientsVisible =   true;
+                        configMenu.linesVisible =       false;
+                        configMenu.samplesVisible =     false;
+                        configMenu.fovVisible =         false;
+                        configMenu.groupVisible =       false;
+                        configMenu.tVisible =           false;
                         break;
 
                     // Readout
                     case 4:
-                        configMenu.durationVisible = true;
-                        configMenu.rfVisible = false;
-                        configMenu.gradientVisible = true;
-                        configMenu.stepVisible = false;
-                        configMenu.nVisible = true;
-                        configMenu.fovVisible = false;
-                        configMenu.plotVisible = false;
-                        configMenu.groupVisible = false;
-                        configMenu.alphaVisible = false;
-                        configMenu.tVisible = false;
+                        configMenu.durationVisible =    true;
+                        configMenu.rfVisible =          false;
+                        configMenu.gradientsVisible =   true;
+                        configMenu.linesVisible =       false;
+                        configMenu.samplesVisible =     true;
+                        configMenu.fovVisible =         false;
+                        configMenu.groupVisible =       false;
+                        configMenu.tVisible =           false;
                         break;
 
                     // EPI Adquisition
                     case 5:
-                        configMenu.durationVisible = false;
-                        configMenu.rfVisible = false;
-                        configMenu.gradientVisible = false;
-                        configMenu.stepVisible = false;
-                        configMenu.nVisible = true;
-                        configMenu.fovVisible = true;
-                        configMenu.plotVisible = false;
-                        configMenu.groupVisible = false;
-                        configMenu.alphaVisible = false;
-                        configMenu.tVisible = false;
+                        configMenu.durationVisible =    false;
+                        configMenu.rfVisible =          false;
+                        configMenu.gradientsVisible =   false;
+                        configMenu.linesVisible =       true;
+                        configMenu.samplesVisible =     true;
+                        configMenu.fovVisible =         true;
+                        configMenu.groupVisible =       false;
+                        configMenu.tVisible =           false;
                         break;
 
                     // GRE (Gradient Echo)
                     case 6:
-                        configMenu.durationVisible = false;
-                        configMenu.rfVisible = false;
-                        configMenu.gradientVisible = true;
-                        configMenu.stepVisible = false;
-                        configMenu.nVisible = true;
-                        configMenu.fovVisible = true;
-                        configMenu.plotVisible = false;
-                        configMenu.groupVisible = false;
-                        configMenu.alphaVisible = true;
-                        configMenu.tVisible = true;
+                        configMenu.durationVisible =    false;
+                        configMenu.rfVisible =          true;
+                        configMenu.gradientsVisible =   false;
+                        configMenu.linesVisible =       true;
+                        configMenu.samplesVisible =     true;
+                        configMenu.fovVisible =         true;
+                        configMenu.groupVisible =       false;
+                        configMenu.tVisible =           true;
                         break;
                 }
 
@@ -392,7 +362,7 @@ Item{
             color: "transparent"
             Image{
                 visible:index==blockList.count-1?false:true
-                source: "../icons/arrow.png"
+                source: "/icons/arrow.png"
                 anchors.fill:parent
             }
         }

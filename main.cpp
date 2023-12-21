@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQuickStyle>
 
 // #include <emscripten.h>
 
@@ -15,11 +16,14 @@ int main(int argc, char *argv[])
 
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QGuiApplication app(argc, argv);
+
+    QQuickStyle::setStyle("Basic");
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("dragDrop", dragDrop);
 
-    const QUrl url(u"qrc:/FooWasm/Main.qml"_qs);
+    engine.addImportPath(":/");
+    const QUrl url(u"qrc:/WebMRISequenceEditor/qml/Main.qml"_qs);
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,

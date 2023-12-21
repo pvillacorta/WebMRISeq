@@ -1,5 +1,7 @@
+Qt
 CMakeLists.txt.user
 buildGCC
+buildMinGW
 node_modules
 package-lock.json
 

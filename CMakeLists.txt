@@ -1,20 +1,29 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(MRISequenceEditor VERSION 0.1 LANGUAGES CXX)
+project(appWebMRISequenceEditor VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.4 REQUIRED COMPONENTS Quick)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Quick QuickControls2)
 
 qt_standard_project_setup()
 
-qt_add_executable(MRISequenceEditor
+qt_add_executable(appWebMRISequenceEditor
     main.cpp
 )
 
-qt_add_qml_module(MRISequenceEditor
+qt_add_resources(appWebMRISequenceEditor "icons"
+    PREFIX "/"
+    FILES
+        icons/arrow.png
+        icons/delete_white.png
+        icons/delete_red.png
+        icons/delete_black.png
+)
+
+qt_add_qml_module(appWebMRISequenceEditor
     URI WebMRISequenceEditor
-    RESOURCE_PREFIX /qt/qml
+    RESOURCE_PREFIX /
     VERSION 1.0
     QML_FILES
         qml/Main.qml
@@ -25,20 +34,11 @@ qt_add_qml_module(MRISequenceEditor
         qml/MenuLabel.qml
 )
 
-qt_add_resources(MRISequenceEditor "icons"
-    PREFIX "/"
-    FILES
-        icons/arrow.png
-        icons/delete_white.png
-        icons/delete_red.png
-        icons/delete_black.png
-        icons/loading.gif
-)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
-set_target_properties(MRISequenceEditor PROPERTIES
+set_target_properties(appWebMRISequenceEditor PROPERTIES
 #    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appFooWasm
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -46,12 +46,13 @@ set_target_properties(MRISequenceEditor PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-target_link_libraries(MRISequenceEditor
+target_link_libraries(appWebMRISequenceEditor
     PRIVATE Qt6::Quick
+    PRIVATE Qt6::QuickControls2
 )
 
 include(GNUInstallDirs)
-install(TARGETS MRISequenceEditor
+install(TARGETS appWebMRISequenceEditor
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
