@@ -1,0 +1,40 @@
+{
+  "CellData": {},
+  "FieldData": {},
+  "vtkClass": "vtkPolyData",
+  "polys": {
+    "name": "_polys",
+    "numberOfComponents": 1,
+    "dataType": "Uint32Array",
+    "vtkClass": "vtkCellArray",
+    "ranges": [
+      {
+        "max": 2902.0,
+        "component": null,
+        "min": 0.0
+      }
+    ],
+    "ref": {
+      "encode": "LittleEndian",
+      "basepath": "data",
+      "id": "ee87874a384348c49955d2f13819469c"
+    },
+    "size": 15593
+  },
+  "PointData": {},
+  "points": {
+    "name": "Points",
+    "numberOfComponents": 3,
+    "dataType": "Float32Array",
+    "vtkClass": "vtkPoints",
+    "ref": {
+      "encode": "LittleEndian",
+      "basepath": "data",
+      "id": "5ab532bd952db1f3d2b7a5e2c1ffca47"
+    },
+    "size": 8709
+  },
+  "metadata": {
+    "name": "cow.vtp"
+  }
+}
