@@ -20,7 +20,7 @@ ApplicationWindow {
     property string light: "#d8e0e8"
 
     // CONFIGURATION PANEL (THIS IS THE PANEL WITH OPTIONS FOR EACH BLOCK)
-    property int fieldWidth: 50
+    property int fieldWidth: 60
     property int fieldHeight: 20
     property int fontSize: 8
 

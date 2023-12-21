@@ -85,47 +85,50 @@ Item {
 
             Loader { id: lines;         visible: linesVisible
                 sourceComponent: configPanel
-                width:155
+                width:200
                 height: 26
                 GridLayout{ id: linesLayout
+                    uniformCellWidths: true
                     anchors.fill: parent
                     anchors.margins:3
                     columns: 4
                     rowSpacing: 3
 
-                    MenuLabel { text: "Lines:";                 bold: true}
+                    MenuLabel { text: "Lines:";   bold: true;   Layout.columnSpan: 2}
                     TextInputItem{ id: linesInput;              Layout.alignment: Qt.AlignRight }
-                    MenuLabel { text: "lines";                  Layout.columnSpan: 2            }
+                    MenuLabel { text: "lines" }
                 }
             }
 
             Loader { id: samples;       visible: samplesVisible
                 sourceComponent: configPanel
-                width:155
+                width:200
                 height: 26
                 GridLayout{ id: samplesLayout
+                    uniformCellWidths: true
                     anchors.fill: parent
                     anchors.margins:3
                     columns: 4
                     rowSpacing: 3
 
-                    MenuLabel { text: "Samples:";                bold: true}
-                    TextInputItem{ id: samplesInput;             Layout.alignment: Qt.AlignRight }
-                    MenuLabel { text: "samples";                 Layout.columnSpan: 2            }
+                    MenuLabel { text: "Samples:";  bold: true;  Layout.columnSpan: 2}
+                    TextInputItem{ id: samplesInput;            Layout.alignment: Qt.AlignRight}
+                    MenuLabel { text: "samples" }
                 }
             }
 
             Loader { id: duration;      visible: durationVisible
                 sourceComponent: configPanel
-                width:150
+                width:200
                 height: 26
                 GridLayout{ id: durationLayout
+                    uniformCellWidths: true
                     anchors.fill: parent
                     anchors.margins:3
                     columns: 4
                     rowSpacing: 3
 
-                    MenuLabel { text: "Duration:";              bold: true}
+                    MenuLabel { text: "Duration:";  bold: true; Layout.columnSpan: 2}
                     TextInputItem{ id:durationInput;            Layout.alignment: Qt.AlignRight}
                     MenuLabel { text: "s"}
                 }
@@ -133,17 +136,18 @@ Item {
 
             Loader { id: fov;           visible: fovVisible
                 sourceComponent: configPanel
-                width:155
+                width:200
                 height: 26
                 GridLayout{ id: fovLayout
+                    uniformCellWidths: true
                     anchors.fill: parent
                     anchors.margins:3
                     columns: 4
                     rowSpacing: 3
 
-                    MenuLabel { text: "FOV:";                   bold: true}
+                    MenuLabel { text: "FOV:";  bold: true;      Layout.columnSpan: 2}
                     TextInputItem{ id:fovInput;                 Layout.alignment: Qt.AlignRight}
-                    MenuLabel { text: "m"}
+                    MenuLabel { text: "m" }
                 }
             }
 
@@ -292,16 +296,17 @@ Item {
             Loader { id: t;             visible: tVisible
                 sourceComponent: configPanel
                 height: 50
-                width: 150
+                width: 200
                 GridLayout{ id:tLayout
+                    uniformCellWidths: true
                     anchors.fill: parent
                     anchors.margins:3
-                    columns: 3
+                    columns: 4
                     rowSpacing: 1
-                    MenuLabel { text: "TE:";                    bold: true}
+                    MenuLabel { text: "TE:";  bold: true;       Layout.columnSpan: 2}
                     TextInputItem{ id:teInput;                  Layout.alignment: Qt.AlignRight}
-                    MenuLabel { text: "s"}
-                    MenuLabel { text: "TR:";                    bold: true}
+                    MenuLabel { text: "s" }
+                    MenuLabel { text: "TR:";  bold: true;       Layout.columnSpan: 2}
                     TextInputItem{ id:trInput;                  Layout.alignment: Qt.AlignRight}
                     MenuLabel { text: "s"}
                 }
