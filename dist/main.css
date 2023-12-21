@@ -1,6 +1,6 @@
 body {
     height: 100%;
-    overflow: auto;  
+    overflow: auto; 
 }
 
 
@@ -102,8 +102,9 @@ html, body { padding: 0; margin: 0; overflow: hidden; height: 100% }
     display: none;
 }
 
-#screenWasm { height:  470px;
-              z-index: 10; }
+#screenWasm { 
+    height:  470px;
+     z-index: 10; } 
 
 
 #screenVtk { height: 495px }

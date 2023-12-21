@@ -8,6 +8,7 @@ ApplicationWindow {
     id: window
 
     width: 1100;
+    height: 1000
     minimumHeight: desktop ? 470 : (!mobile ? 630 : 710)
 
     // WINDOW SIZE
@@ -685,8 +686,191 @@ ApplicationWindow {
     }
 
 
+    // ADD GROUPS
+    Item{
+        id: groupMenu
+        anchors.top: window.mobile? buttons.bottom : blockSeq.bottom
+        anchors.topMargin:15
+        anchors.left:  window.mobile? blockSeq.left : buttons.right
+        anchors.leftMargin: window.mobile ? 0 : 15
+        width: buttons.width
+        height: buttons.height
 
+        z:5
 
+        Rectangle{
+            id: addGroupsTitle
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width
+            height: window.mobile ? 25 : 35
+
+            color: seqTitle.color
+
+            z:50
+
+            Text {
+                text: qsTr("Groups:")
+                color:light
+                font.pointSize: 10
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: parent.left; anchors.leftMargin:10
+            }
+
+            Button {
+                id: groupButton
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+                anchors.rightMargin: 10
+                Text {
+                    anchors.centerIn: parent
+                    text: "+"
+                    color: light
+                    font.pointSize: 12
+                }
+                height:20
+                width:height
+
+                background: Rectangle{
+                    anchors.fill:parent
+                    color: groupButton.pressed? dark :"#595959"
+                }
+
+                scale: hovered? 0.9: 1
+            }
+
+        }
+
+        Rectangle{
+            id: groupButtons
+
+            anchors.top: addGroupsTitle.bottom
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            color: "gray"
+
+            // MouseArea{
+            //     anchors.fill: parent
+
+            //     WheelHandler{
+            //         onWheel: (event)=> event.angleDelta.y<0 ? horizontalScrollBar.increase(): horizontalScrollBar.decrease();
+            //     }
+
+            //     ListView {
+            //         // id: buttonView
+            //         anchors.fill: parent
+            //         anchors.topMargin: 5
+            //         anchors.leftMargin: 10
+            //         spacing: 15
+
+            //         orientation: window.mobile ?  ListView.Horizontal : ListView.Vertical
+
+            //         ScrollBar.horizontal: ScrollBar {
+            //             // id: horizontalScrollBar
+            //             active: window.mobile
+            //             orientation: Qt.Horizontal
+            //         }
+
+            //         delegate: Button{
+            //             // id: button
+            //             parent: buttonView
+            //             Text {
+            //                 anchors.horizontalCenter: parent.horizontalCenter
+            //                 anchors.verticalCenter: parent.verticalCenter
+            //                 text: buttonText
+            //                 color: light
+            //                 font.pointSize: 8
+            //             }
+            //             height:25
+            //             width:60
+
+            //             background: Rectangle{
+            //                 anchors.fill:parent
+            //                 color: button.pressed? dark :"#595959"
+            //             }
+
+            //             scale: hovered? 0.9: 1
+
+            //             onClicked: {
+            //                 blockSeq.displayedMenu = -1;
+
+            //                 if(code<=6){
+            //                     blockList.append({ "cod":code,
+            //                                        "dur":0,
+            //                                        "gx":0,
+            //                                        "gy":0,
+            //                                        "gz":0,
+            //                                        "gxStep":0,
+            //                                        "gyStep":0,
+            //                                        "gzStep":0,
+            //                                        "b1x":0,
+            //                                        "b1y":0,
+            //                                        "delta_f":0,
+            //                                        "fov":0,
+            //                                        "n":0,
+            //                                        "grouped":false,
+            //                                        "ngroups":0,
+            //                                        "name":"",
+            //                                        "children":[],
+            //                                        "collapsed": false,
+            //                                        "reps":1});
+            //                 } else if(code>6){
+            //                     var index;
+            //                     for(var i=0; i<groupList.count; i++){
+            //                         if(groupList.get(i).group_cod == code){
+            //                             index = i;
+            //                         }
+            //                     }
+            //                     var num;
+            //                     var counter = 0;
+
+            //                     do{
+            //                         blockList.append(  {"cod":groupList.get(index).cod,
+            //                                             "dur":groupList.get(index).dur,
+            //                                             "gx":groupList.get(index).gx,
+            //                                             "gy":groupList.get(index).gy,
+            //                                             "gz":groupList.get(index).gz,
+            //                                             "gxStep":groupList.get(index).gxStep,
+            //                                             "gyStep":groupList.get(index).gyStep,
+            //                                             "gzStep":groupList.get(index).gzStep,
+            //                                             "b1x":groupList.get(index).b1x,
+            //                                             "b1y":groupList.get(index).b1y,
+            //                                             "delta_f":groupList.get(index).delta_f,
+            //                                             "fov":groupList.get(index).fov,
+            //                                             "n":groupList.get(index).n,
+            //                                             "grouped":false,
+            //                                             "ngroups":groupList.get(index).ngroups,
+            //                                             "name":groupList.get(index).name,
+            //                                             "children":[],
+            //                                             "collapsed": counter==0?false:true,
+            //                                             "reps":groupList.get(index).reps});
+
+            //                         num = groupList.get(index).children.count;
+            //                         for(i=0;i<num;i++){
+            //                             blockList.get(blockList.count-1).children.append({"number":groupList.get(index).children.get(i).number+(-index+blockList.count-1)});
+            //                         }
+            //                         index ++;
+            //                         counter ++;
+            //                     } while((index<groupList.count)&&(groupList.get(index).group_cod === -1));
+            //                     index--;
+            //                 }
+            //             }
+            //         }
+
+            //         model: ListModel {
+            //             // id: buttonList
+            //             ListElement { buttonText: "Excitation"; code: 1 }
+            //             ListElement { buttonText: "Delay"; code: 2 }
+            //             ListElement { buttonText: "Dephase"; code: 3 }
+            //             ListElement { buttonText: "Readout"; code: 4 }
+            //             ListElement { buttonText: "EPI_ACQ"; code: 5 }
+            //             ListElement { buttonText: "GRE"; code: 6 }
+            //         } // ListModel
+            //     } // ListView
+            // }
+        } // Rectangle
+    }
 
 
 
@@ -710,13 +894,13 @@ ApplicationWindow {
 
     Rectangle{
         id: defaultMenu
-        visible: true
+        // visible: false
 
-        anchors.left: window.mobile ? blockSeq.left : buttons.right
-        anchors.leftMargin: window.mobile ? 0 : 10;
+        anchors.left: window.mobile ? blockSeq.left : groupMenu.right
+        anchors.leftMargin: window.mobile ? 0 : 15;
 
-        anchors.top: window.mobile ? buttons.bottom : buttons.top;
-        anchors.topMargin: window.mobile ? 15 : 0
+        anchors.top: window.mobile ? buttons.bottom : blockSeq.bottom;
+        anchors.topMargin: 15
 
         width: window.mobile ? blockSeq.width : 500
         height: 280
@@ -907,155 +1091,155 @@ ApplicationWindow {
 
 
     // CREATE GROUP
-    Rectangle{
-        id: createGroupButton
+    // Rectangle{
+    //     id: createGroupButton
+    //     // visible:false
 
-        property bool active: false
+    //     property bool active: false
 
-        width: 150
-        anchors.left: globalMenu.right
-        anchors.top: globalMenu.top
+    //     width: window.mobile ? blockSeq.width : buttons.width
+    //     anchors.left: blockSeq.left
+    //     anchors.bottom: window.mobile ? blockSeq.bottom : defaultMenu.bottom
 
-        anchors.leftMargin: 15
+    //     anchors.topMargin: 15
 
-        height: 31
+    //     height: 31
 
-        color: active? "gray": "#595959";
+    //     color: active? "gray": "#595959";
 
-        Text{
-            // id: buttonText
-            anchors.centerIn: parent
-            text: parent.active? "Done": "Create New Group"
-            color: light
-            font.pointSize: buttonTextSize
-        }
+    //     Text{
+    //         // id: buttonText
+    //         anchors.centerIn: parent
+    //         text: parent.active? "Done": "Create New Group"
+    //         color: light
+    //         font.pointSize: buttonTextSize
+    //     }
 
-        MouseArea{
-            id: groupArea
-            anchors.fill: parent
-            hoverEnabled: true
-            onClicked: {
-                createGroupButton.active = !createGroupButton.active;
+    //     MouseArea{
+    //         id: groupArea
+    //         anchors.fill: parent
+    //         hoverEnabled: true
+    //         onClicked: {
+    //             createGroupButton.active = !createGroupButton.active;
 
-                if(createGroupButton.active){
-                    groupDialog.open();
-                }
+    //             if(createGroupButton.active){
+    //                 groupDialog.open();
+    //             }
 
-                else{
-                    var groupedBlocks = [];
-                    for(var i = 0; i<blockList.count; i++){
-                        if(blockList.get(i).grouped){
-                            groupedBlocks.push(i);
-                            blockList.get(i).grouped = false;
-                        }
-                    }
+    //             else{
+    //                 var groupedBlocks = [];
+    //                 for(var i = 0; i<blockList.count; i++){
+    //                     if(blockList.get(i).grouped){
+    //                         groupedBlocks.push(i);
+    //                         blockList.get(i).grouped = false;
+    //                     }
+    //                 }
 
-                    if(groupedBlocks.length <= 1){
-                        console.log("Error: you must group at least 2 blocks");
-                        return;
+    //                 if(groupedBlocks.length <= 1){
+    //                     console.log("Error: you must group at least 2 blocks");
+    //                     return;
 
-                    }else if(groupedBlocks.length > 1){
-                        var numgroups = 0;
+    //                 }else if(groupedBlocks.length > 1){
+    //                     var numgroups = 0;
 
-                        for(i=0; i<groupedBlocks.length; i++){
-                            for(var j=0;j<blockList.count;j++){
-                                for(var k=0;k<blockList.get(j).children.count;k++){
-                                    // Check if the selected block already belongs to a group
-                                    if (blockList.get(j).children.get(k).number===groupedBlocks[i] && i>0){
-                                        numgroups = blockList.get(groupedBlocks[i]).ngroups;
-                                        blockList.get(j).children.remove(k);
-                                    }
-                                }
-                            }
-                        }
+    //                     for(i=0; i<groupedBlocks.length; i++){
+    //                         for(var j=0;j<blockList.count;j++){
+    //                             for(var k=0;k<blockList.get(j).children.count;k++){
+    //                                 // Check if the selected block already belongs to a group
+    //                                 if (blockList.get(j).children.get(k).number===groupedBlocks[i] && i>0){
+    //                                     numgroups = blockList.get(groupedBlocks[i]).ngroups;
+    //                                     blockList.get(j).children.remove(k);
+    //                                 }
+    //                             }
+    //                         }
+    //                     }
 
-                        for(j=0;j<blockList.count;j++){
-                            for(k=0;k<blockList.get(j).children.count;k++){
-                                // Check if there are more blocks that belong to an outter group but are not selected
-                                if(j<getMinOfArray(groupedBlocks) && blockList.get(j).children.get(k).number>getMaxOfArray(groupedBlocks)){
-                                    blockList.get(j).children.get(k).number++;
-                                }
-                            }
-                        }
+    //                     for(j=0;j<blockList.count;j++){
+    //                         for(k=0;k<blockList.get(j).children.count;k++){
+    //                             // Check if there are more blocks that belong to an outter group but are not selected
+    //                             if(j<getMinOfArray(groupedBlocks) && blockList.get(j).children.get(k).number>getMaxOfArray(groupedBlocks)){
+    //                                 blockList.get(j).children.get(k).number++;
+    //                             }
+    //                         }
+    //                     }
 
-                        blockList.append({  "cod": 0,
-                                            "dur":0,
-                                            "gx":0,
-                                            "gy":0,
-                                            "gz":0,
-                                            "gxStep":0,
-                                            "gyStep":0,
-                                            "gzStep":0,
-                                            "b1x":0,
-                                            "b1y":0,
-                                            "delta_f":0,
-                                            "fov":0,
-                                            "n":0,
-                                            "grouped":false,
-                                            "ngroups":numgroups,
-                                            "name":groupDialog.input,
-                                            "children":[],
-                                            "collapsed": false,
-                                            "reps":1});
+    //                     blockList.append({  "cod": 0,
+    //                                         "dur":0,
+    //                                         "gx":0,
+    //                                         "gy":0,
+    //                                         "gz":0,
+    //                                         "gxStep":0,
+    //                                         "gyStep":0,
+    //                                         "gzStep":0,
+    //                                         "b1x":0,
+    //                                         "b1y":0,
+    //                                         "delta_f":0,
+    //                                         "fov":0,
+    //                                         "n":0,
+    //                                         "grouped":false,
+    //                                         "ngroups":numgroups,
+    //                                         "name":groupDialog.input,
+    //                                         "children":[],
+    //                                         "collapsed": false,
+    //                                         "reps":1});
 
-                        for(j=blockList.count-1;j>=0;j--){
-                            // Check if there are groups more to the right (we must displace their children one step to the right)
-                            if(j > (getMaxOfArray(groupedBlocks) + countChildren(getMaxOfArray(groupedBlocks))) && isGroup(j)){
-                                moveGroup(j,1);
-                            }
-                        }
+    //                     for(j=blockList.count-1;j>=0;j--){
+    //                         // Check if there are groups more to the right (we must displace their children one step to the right)
+    //                         if(j > (getMaxOfArray(groupedBlocks) + countChildren(getMaxOfArray(groupedBlocks))) && isGroup(j)){
+    //                             moveGroup(j,1);
+    //                         }
+    //                     }
 
-                        blockList.move(blockList.count-1,groupedBlocks[0],1);
+    //                     blockList.move(blockList.count-1,groupedBlocks[0],1);
 
-                        for(i=0; i<groupedBlocks.length; i++){
-                            blockList.get(groupedBlocks[0]).children.append({"number":groupedBlocks[i]+1});
-                            addToGroup(groupedBlocks[i]+1);
-                            configMenu.menuVisible = false;
-                            blockSeq.displayedMenu = -1;
-                        }
-                    }
-                }
-            }
-            states:
-            [
-                State{
-                    when: groupArea.containsMouse
-                    PropertyChanges{
-                        target: createGroupButton
-                        scale: 0.9
-                    }
-                }
-            ]
-        } // MouseArea
-    } // Rectangle ---------------------------------------------------------------------------------
+    //                     for(i=0; i<groupedBlocks.length; i++){
+    //                         blockList.get(groupedBlocks[0]).children.append({"number":groupedBlocks[i]+1});
+    //                         addToGroup(groupedBlocks[i]+1);
+    //                         configMenu.menuVisible = false;
+    //                         blockSeq.displayedMenu = -1;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         states:
+    //         [
+    //             State{
+    //                 when: groupArea.containsMouse
+    //                 PropertyChanges{
+    //                     target: createGroupButton
+    //                     scale: 0.9
+    //                 }
+    //             }
+    //         ]
+    //     } // MouseArea
+    // } // Rectangle ---------------------------------------------------------------------------------
 
-    Dialog{
-        id: groupDialog
-        property string input
-        title: "Choose a name for the group"
-        x:600
-        y:150
-        height: 200
-        width: 400
-        standardButtons: Dialog.Ok | Dialog.Cancel
-        TextField{
-            id: nameInput
-            width: parent.width *0.75
-            anchors.horizontalCenter: parent.horizontalCenter
-        }
-        onAccepted: {
-            if (nameInput.text!=""){
-                input = nameInput.text;
-                nameInput.text = "";
-            } else{
-                createGroupButton.active = false;
-                console.log("You must choose a name")
-            }
-        }
-        onRejected: {
-            createGroupButton.active = false;
-        }
-    }
+    // Dialog{
+    //     id: groupDialog
+    //     property string input
+    //     title: "Choose a name for the group"
+    //     anchors.centerIn: window.center
+    //     height: 200
+    //     width: 400
+    //     standardButtons: Dialog.Ok | Dialog.Cancel
+    //     TextField{
+    //         id: nameInput
+    //         width: parent.width *0.75
+    //         anchors.horizontalCenter: parent.horizontalCenter
+    //     }
+    //     onAccepted: {
+    //         if (nameInput.text!=""){
+    //             input = nameInput.text;
+    //             nameInput.text = "";
+    //         } else{
+    //             createGroupButton.active = false;
+    //             console.log("You must choose a name")
+    //         }
+    //     }
+    //     onRejected: {
+    //         createGroupButton.active = false;
+    //     }
+    // }
 
 
     // SIMULATE
