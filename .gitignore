@@ -4,7 +4,6 @@ node_modules
 package-lock.json
 
 dist/*
-!dist/data
 !dist/index.html
 !dist/main.css
 !dist/style.js
