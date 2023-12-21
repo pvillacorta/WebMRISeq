@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
-import Qt.labs.platform as Platform
 
 ApplicationWindow {
     id: window
