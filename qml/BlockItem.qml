@@ -280,16 +280,17 @@ Item{
             id: item;
             color: blockColor
             anchors.fill: parent
-            anchors.margins: 5
+            anchors.margins: 10
 
+            radius: 3
 
-            // Block Border
-            Rectangle {
-                anchors.fill: parent
-                border.color: dark_secondary; border.width: 6
-                color: "transparent"
-                visible: item.state = "active"
-            }
+            // // Block Border
+            // Rectangle {
+            //     anchors.fill: parent
+            //     border.color: dark_secondary; border.width: 6
+            //     color: "transparent"
+            //     visible: item.state = "active"
+            // }
 
             // Block Text
             Text {
@@ -310,11 +311,14 @@ Item{
                 anchors.top: parent.top
                 anchors.right: parent.right
 
+                anchors.margins:2
+
                 height: 15 - 2*ngroups
                 width: 15 - 2*ngroups
 
-                color: dark_secondary
-                border.color: dark_secondary
+                color: Qt.darker(blockColor,1.3)
+
+                radius: 3
 
                 Image{
                     id: deleteIcon
@@ -344,8 +348,8 @@ Item{
                             when: deleteMouseArea.containsMouse
                             PropertyChanges{
                                 target: deleteRect
+                                color:"red"
                                 scale: 0.9
-                                color: "red"
                             }
                         }
                     ]
@@ -353,16 +357,16 @@ Item{
             } // Delete button
         } //Rectangle
 
-        Rectangle{
+        Item{
             visible:dragArea.held?false:true
             anchors.left:item.right
+            anchors.leftMargin:6
             anchors.verticalCenter: item.verticalCenter
-            height:18
-            width:10
-            color: "transparent"
+            height:12
+            width:8
             Image{
                 visible:index==blockList.count-1?false:true
-                source: "/icons/arrow.png"
+                source: "/icons/arrow_gray.png"
                 anchors.fill:parent
             }
         }

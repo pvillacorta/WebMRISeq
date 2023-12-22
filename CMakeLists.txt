@@ -16,9 +16,14 @@ qt_add_resources(appWebMRISequenceEditor "icons"
     PREFIX "/"
     FILES
         icons/arrow.png
+        icons/arrow_gray.png
         icons/delete_white.png
         icons/delete_red.png
         icons/delete_black.png
+        icons/rf.png
+        icons/clock.png
+        icons/angle.png
+        icons/clock.svg
 )
 
 qt_add_qml_module(appWebMRISequenceEditor
@@ -32,6 +37,7 @@ qt_add_qml_module(appWebMRISequenceEditor
         qml/GlobalMenu.qml
         qml/TextInputItem.qml
         qml/MenuLabel.qml
+        qml/MenuButtons.qml
 )
 
 

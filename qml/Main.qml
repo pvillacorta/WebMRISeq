@@ -7,17 +7,17 @@ import QtQuick.Dialogs
 ApplicationWindow {
     id: window
 
-    width: 1100;
-    height: 1000
-    minimumHeight: desktop ? 470 : (!mobile ? 630 : 710)
+    width: 1060;
+    minimumHeight: desktop ? 470 : (!mobile ? 630 : 860)
 
     // WINDOW SIZE
-    property bool desktop: width>=1100
-    property bool mobile: width<660
+    property bool desktop: width>=1060
+    property bool mobile: width<780
 
     // COLORS
-    property string dark: "#212529"
-    property string dark_secondary: "#343a40"
+    property string dark_1: "#212529"
+    property string dark_2: "#343a40"
+    property string dark_3: "#636363"
     property string light: "#d8e0e8"
 
     // CONFIGURATION PANEL (THIS IS THE PANEL WITH OPTIONS FOR EACH BLOCK)
@@ -28,8 +28,16 @@ ApplicationWindow {
     // RIGHT BUTTONS
     property int buttonTextSize: 10
 
-    color: dark
+    // WINDOW RADIUS
+    property int radius: 6
+
+    color: dark_1
     visible:true
+
+    Text{
+        color: "white"
+        text: window.width + " x " + window.height
+    }
 
     // -------------------------------------- FUNCTIONS ------------------------------------------
     // Function addToGroup() looks for all the children of a specified block.
@@ -395,37 +403,12 @@ ApplicationWindow {
     // -----------------------------------------------------------------------------------------
 
 
-    // SEQUENCE TITLE
-    Rectangle {
-        id: seqTitle
-
-        x: blockSeq.x
-        height:25
-        width:blockSeq.width
-
-        anchors.bottom: blockSeq.top
-
-        color: dark_secondary
-
-        Text {
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
-
-            text: "Block sequence"
-
-            font.pointSize: 14
-
-            color: light
-        }
-    }
-
-
     // SEQUENCE
     MouseArea{
         id: blockSeq
-        y: 50
+        y: 25
 
-        height: 105
+        height: 130
         width: parent.width - 50
         anchors.horizontalCenter: parent.horizontalCenter
 
@@ -457,8 +440,32 @@ ApplicationWindow {
         }
 
         Rectangle {
-            color:"gray"
+            color: dark_2
             anchors.fill: parent
+
+            radius: window.radius
+
+            // SEQUENCE TITLE
+            Item {
+                id: seqTitle
+
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top:parent.top
+                height:25
+
+                Text {
+                    anchors.top: parent.top;
+                    anchors.left: parent.left;
+
+                    anchors.margins:12
+
+                    text: "Block sequence"
+                    font.pointSize: 12
+
+                    color: light
+                }
+            }
 
             ListView {
                 id: blockView
@@ -467,6 +474,7 @@ ApplicationWindow {
                 property bool held: false // Tells us is we are dragging a block or not
 
                 anchors.fill: parent
+                anchors.topMargin: seqTitle.height
                 interactive: true
 
                 orientation: ListView.Horizontal
@@ -523,14 +531,35 @@ ApplicationWindow {
         anchors{right: blockSeq.left}
     }
 
+    property int lineThickness: 1
+
+    Component{
+        id: verticalLine
+        Rectangle{
+            width: window.lineThickness
+            color:dark_3
+        }
+    }
+
+    Component{
+        id: horizontalLine
+        Rectangle{
+            height: window.lineThickness
+            color:dark_3
+        }
+    }
 
     // ADD BLOCKS
-    Item{
+    Rectangle{
         id: buttons
         anchors.top: blockSeq.bottom; anchors.topMargin:15
         anchors.left: blockSeq.left
-        width: window.mobile ? blockSeq.width : 100
-        height: window.mobile ? 70 : defaultMenu.height
+        width: window.mobile ? blockSeq.width/2 : 130
+        height: window.mobile ? 200 : defaultMenu.height
+
+        color: dark_2
+
+        radius:window.radius
 
         z:-15
 
@@ -540,20 +569,31 @@ ApplicationWindow {
             width: parent.width
             height: window.mobile ? 25 : 35
 
-            color: seqTitle.color
+            color: dark_2
 
-            z:50
+            radius:window.radius
+
+            z: 10
 
             Text {
                 id: name
-                text: qsTr("Add block:")
+                text: qsTr("Add block")
                 color:light
                 font.pointSize: 10
-                anchors.centerIn: parent
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: parent.left; anchors.leftMargin:12
+            }
+
+            Loader{
+                sourceComponent: horizontalLine
+                width: parent.width - 20
+                anchors.bottom: parent.bottom
+                z:15
+                anchors.horizontalCenter: parent.horizontalCenter
             }
         }
 
-        Rectangle{
+        MouseArea{
             id: addBlocksButtons
 
             anchors.top: addBlocksTitle.bottom
@@ -561,50 +601,42 @@ ApplicationWindow {
             anchors.left: parent.left
             anchors.right: parent.right
 
-            color: "gray"
-
-            MouseArea{
+            ListView {
+                id: buttonView
                 anchors.fill: parent
+                orientation: ListView.Vertical
 
-                WheelHandler{
-                    onWheel: (event)=> event.angleDelta.y<0 ? horizontalScrollBar.increase(): horizontalScrollBar.decrease();
-                }
+                delegate: Rectangle{
+                    id: button
+                    parent: buttonView
+                    color:"transparent"
 
-                ListView {
-                    id: buttonView
-                    anchors.fill: parent
-                    anchors.topMargin: 5
-                    anchors.leftMargin: 10
-                    spacing: 15
+                    height:40
+                    width:parent.width
 
-                    orientation: window.mobile ?  ListView.Horizontal : ListView.Vertical
-
-                    ScrollBar.horizontal: ScrollBar {
-                        id: horizontalScrollBar
-                        active: window.mobile
-                        orientation: Qt.Horizontal
+                    Image{
+                        anchors.left: parent.left; anchors.leftMargin:10
+                        anchors.verticalCenter: parent.verticalCenter
+                        id: blockIcon
+                        source: icon
+                        height: 25
+                        width: height
                     }
 
-                    delegate: Button{
-                        id: button
-                        parent: buttonView
-                        Text {
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: buttonText
-                            color: light
-                            font.pointSize: 8
-                        }
-                        height:25
-                        width:60
 
-                        background: Rectangle{
-                            anchors.fill:parent
-                            color: button.pressed? dark :"#595959"
-                        }
 
-                        scale: hovered? 0.9: 1
+                    Text {
+                        anchors.left: blockIcon.right; anchors.leftMargin:10
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: buttonText
+                        color: light
+                        font.pointSize: 10
+                    }
 
+                    MouseArea {
+                        id: buttonArea
+                        hoverEnabled: true
+                        anchors.fill: parent
                         onClicked: {
                             blockSeq.displayedMenu = -1;
 
@@ -669,29 +701,44 @@ ApplicationWindow {
                                 index--;
                             }
                         }
+
+                        states: [
+                            State{
+                                when: buttonArea.pressed
+                                PropertyChanges{
+                                    target: button
+                                    color: dark_1
+                                }
+                            },
+                            State{
+                                when: buttonArea.containsMouse
+                                PropertyChanges{
+                                    target: button
+                                    color: dark_3
+                                }
+                            }
+                        ]
                     }
+                }
 
-                    model: ListModel {
-                        id: buttonList
-                        ListElement { buttonText: "Excitation"; code: 1 }
-                        ListElement { buttonText: "Delay"; code: 2 }
-                        ListElement { buttonText: "Dephase"; code: 3 }
-                        ListElement { buttonText: "Readout"; code: 4 }
-                        ListElement { buttonText: "EPI_ACQ"; code: 5 }
-                        ListElement { buttonText: "GRE"; code: 6 }
-                    } // ListModel
-                } // ListView
-            }
-        } // Rectangle
+                model: ListModel {
+                    id: buttonList
+                    ListElement { buttonText: "Excitation";     code: 1;    icon:"/icons/rf.png" }
+                    ListElement { buttonText: "Delay";          code: 2;    icon:"/icons/clock.svg"  }
+                    ListElement { buttonText: "Dephase";        code: 3;    icon:"/icons/angle.png"  }
+                    ListElement { buttonText: "Readout";        code: 4;    icon:"/icons/rf.png"  }
+                    ListElement { buttonText: "EPI_ACQ";        code: 5;    icon:"/icons/rf.png"  }
+                    ListElement { buttonText: "GRE";            code: 6;    icon:"/icons/rf.png"  }
+                } // ListModel
+            } // ListView
+        } // MouseArea
     }
-
 
     // ADD GROUPS
     Item{
         id: groupMenu
-        anchors.top: window.mobile? buttons.bottom : blockSeq.bottom
-        anchors.topMargin:15
-        anchors.left:  window.mobile? blockSeq.left : buttons.right
+        anchors.top: buttons.top
+        anchors.left: buttons.right
         anchors.leftMargin: window.mobile ? 0 : 15
         width: buttons.width
         height: buttons.height
@@ -704,12 +751,11 @@ ApplicationWindow {
             width: parent.width
             height: window.mobile ? 25 : 35
 
-            color: seqTitle.color
-
+            color: dark_2
             z:50
 
             Text {
-                text: qsTr("Groups:")
+                text: qsTr("Groups")
                 color:light
                 font.pointSize: 10
                 anchors.verticalCenter: parent.verticalCenter
@@ -929,7 +975,7 @@ ApplicationWindow {
         anchors.leftMargin: window.desktop ? 10 : 0
         anchors.topMargin: 15
 
-        width: 270
+        width: window.mobile ? blockSeq.width : 270
         height: 155
 
         // Default parameters
