@@ -18,12 +18,22 @@ qt_add_resources(appWebMRISequenceEditor "icons"
         icons/arrow.png
         icons/arrow_gray.png
         icons/delete_white.png
-        icons/delete_red.png
         icons/delete_black.png
-        icons/rf.png
-        icons/clock.png
-        icons/angle.png
-        icons/clock.svg
+        icons/dark/angle.png
+        icons/dark/clock.png
+        icons/dark/misc.png
+        icons/dark/readout.png
+        icons/dark/rf.png
+        icons/dark/plus.png
+        icons/dark/epi.png
+        icons/light/angle.png
+        icons/light/clock.png
+        icons/light/misc.png
+        icons/light/readout.png
+        icons/light/rf.png
+        icons/light/plus.png
+        icons/light/epi.png
+        icons/balloon.png
 )
 
 qt_add_qml_module(appWebMRISequenceEditor
@@ -37,7 +47,9 @@ qt_add_qml_module(appWebMRISequenceEditor
         qml/GlobalMenu.qml
         qml/TextInputItem.qml
         qml/MenuLabel.qml
-        qml/MenuButtons.qml
+        qml/ButtonsMenu.qml
+        qml/PopUp.qml
+        qml/DeleteButton.qml
 )
 
 
