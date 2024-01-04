@@ -58,6 +58,8 @@ Item {
 
         color: menuColor
 
+        radius: window.radius
+
         Text{
             id: configText
             text: menuTitle + " (" + blockID + ")"

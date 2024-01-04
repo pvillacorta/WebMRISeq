@@ -47,7 +47,7 @@ Item{
         drag.axis: Drag.XAndYAxis
 
         onClicked:{ //Configuration panel will be displayed:
-            if(!createGroupButton.active){
+            if(!popup.active){
 
                 // console.log("Hijos: ", blockList.get(dropIndex).children.count);
                 // for(var i=0;i<blockList.get(dropIndex).children.count;i++){
@@ -230,7 +230,7 @@ Item{
         onPressed:{
             dragged = true;
             if(dragDrop){
-                if(!createGroupButton.active){
+                if(!popup.active){
                     held = true
                     blockView.held = true;
                     blockView.dragIndex = dropIndex
@@ -305,8 +305,12 @@ Item{
              }
 
             //Delete button
-            Rectangle{
-                id: deleteRect
+            DeleteButton {
+                function clicked(){
+                    removeBlock(index);
+                    configMenu.menuVisible = false;
+                    blockSeq.displayedMenu = -1;
+                }
 
                 anchors.top: parent.top
                 anchors.right: parent.right
@@ -317,44 +321,8 @@ Item{
                 width: 15 - 2*ngroups
 
                 color: Qt.darker(blockColor,1.3)
+            }
 
-                radius: 3
-
-                Image{
-                    id: deleteIcon
-                    source: "/icons/delete_white.png"
-                    anchors.fill: parent
-                    anchors.margins:3
-                }
-
-                MouseArea{
-                    id: deleteMouseArea
-                    anchors.fill: parent
-                    onClicked: {
-                        removeBlock(index);
-                        configMenu.menuVisible = false;
-                        blockSeq.displayedMenu = -1;
-                    }
-                    hoverEnabled: true
-                    states: [
-                        State{
-                            when: deleteMouseArea.pressed
-                            PropertyChanges{
-                                target: deleteRect
-                                scale: 0.9
-                            }
-                        },
-                        State{
-                            when: deleteMouseArea.containsMouse
-                            PropertyChanges{
-                                target: deleteRect
-                                color:"red"
-                                scale: 0.9
-                            }
-                        }
-                    ]
-                }
-            } // Delete button
         } //Rectangle
 
         Item{

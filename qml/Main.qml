@@ -1,5 +1,3 @@
-// Comentario de prueba
-
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
@@ -7,17 +5,18 @@ import QtQuick.Dialogs
 ApplicationWindow {
     id: window
 
-    width: 1060;
+    width: 1120;
     minimumHeight: desktop ? 470 : (!mobile ? 630 : 860)
 
     // WINDOW SIZE
-    property bool desktop: width>=1060
+    property bool desktop: width>=1120
     property bool mobile: width<780
+    property bool tablet: width >= 780 & width < 1120
 
     // COLORS
     property string dark_1: "#212529"
     property string dark_2: "#343a40"
-    property string dark_3: "#636363"
+    property string dark_3: "#525252"
     property string light: "#d8e0e8"
 
     // CONFIGURATION PANEL (THIS IS THE PANEL WITH OPTIONS FOR EACH BLOCK)
@@ -29,7 +28,7 @@ ApplicationWindow {
     property int buttonTextSize: 10
 
     // WINDOW RADIUS
-    property int radius: 6
+    property int radius: mobile ? 0 : 6
 
     color: dark_1
     visible:true
@@ -409,7 +408,7 @@ ApplicationWindow {
         y: 25
 
         height: 130
-        width: parent.width - 50
+        width: window.mobile ? parent.width : parent.width - 50
         anchors.horizontalCenter: parent.horizontalCenter
 
         property int hoveredBlock: -1
@@ -457,8 +456,8 @@ ApplicationWindow {
                 Text {
                     anchors.top: parent.top;
                     anchors.left: parent.left;
-
-                    anchors.margins:12
+                    anchors.topMargin:10
+                    anchors.leftMargin:12
 
                     text: "Block sequence"
                     font.pointSize: 12
@@ -507,6 +506,16 @@ ApplicationWindow {
         }//Rectangle
     } //MouseArea
 
+    Rectangle {
+        visible: popup.visible
+        color: dark_1
+        opacity: 0.7
+        anchors.top:blockSeq.bottom
+        z: 18
+        height: window.height - (blockSeq.height + blockSeq.y)
+        width: window.width
+    }
+
     // We define a component so we can use it by multiple Loader objets
     Component{
         id: borderSquare
@@ -549,13 +558,69 @@ ApplicationWindow {
         }
     }
 
+
+    // This list stores information about the available "basic" blocks
+    ListModel {
+        id: blockButtonList
+        ListElement { buttonText: "Excitation";     code: 1;    iconSource:"/icons/light/rf.png" }
+        ListElement { buttonText: "Delay";          code: 2;    iconSource:"/icons/light/clock.png"  }
+        ListElement { buttonText: "Dephase";        code: 3;    iconSource:"/icons/light/angle.png"  }
+        ListElement { buttonText: "Readout";        code: 4;    iconSource:"/icons/light/readout.png"  }
+        ListElement { buttonText: "EPI_ACQ";        code: 5;    iconSource:"/icons/light/epi.png"  }
+        ListElement { buttonText: "GRE";            code: 6;    iconSource:"/icons/light/misc.png"  }
+    }
+
+    // This list stores information about the groups stored as duplicatable blocks
+    ListModel {
+        id: groupButtonList
+    }
+
+
+
     // ADD BLOCKS
-    Rectangle{
-        id: buttons
+    ButtonsMenu {
+        id: blockMenu
         anchors.top: blockSeq.bottom; anchors.topMargin:15
         anchors.left: blockSeq.left
         width: window.mobile ? blockSeq.width/2 : 130
-        height: window.mobile ? 200 : defaultMenu.height
+        height: window.mobile ? 200 : 280
+
+        title: "Add blocks"
+        model: blockButtonList
+    }
+
+    // ADD GROUPS
+    ButtonsMenu {
+        id: groupMenu
+        anchors.top: blockMenu.top
+        anchors.left: blockMenu.right
+        anchors.leftMargin: window.mobile ? 0 : 15
+        width: blockMenu.width
+        height: blockMenu.height
+
+        title: "Groups"
+        model: groupButtonList
+    }
+
+    PopUp {
+        id: popup
+        text: "Click on the blocks you want to group and give a name to the group:"
+
+        // x: window.mobile ? blockSeq.width/2 - width/2 : groupMenu.buttonX
+        // y: window.mobile ? blockSeq.y + blockSeq.height : groupMenu.buttonY
+
+        x: blockSeq.width/2 - width/2
+        y: blockSeq.y + blockSeq.height
+    }
+
+    /*
+    Rectangle{
+        id: groupMenu
+        anchors.top: buttons.top
+        anchors.left: buttons.right
+        anchors.leftMargin: window.mobile ? 0 : 15
+        width: buttons.width
+        height: buttons.height
 
         color: dark_2
 
@@ -564,7 +629,7 @@ ApplicationWindow {
         z:-15
 
         Rectangle{
-            id: addBlocksTitle
+            id: addGroupsTitle
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width
             height: window.mobile ? 25 : 35
@@ -574,15 +639,14 @@ ApplicationWindow {
             radius:window.radius
 
             z: 10
-
             Text {
-                id: name
-                text: qsTr("Add block")
+                text: qsTr("Groups")
                 color:light
                 font.pointSize: 10
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left; anchors.leftMargin:12
             }
+
 
             Loader{
                 sourceComponent: horizontalLine
@@ -591,46 +655,52 @@ ApplicationWindow {
                 z:15
                 anchors.horizontalCenter: parent.horizontalCenter
             }
+
         }
 
         MouseArea{
-            id: addBlocksButtons
+            id: addGroupsButtons
 
-            anchors.top: addBlocksTitle.bottom
+            anchors.top: addGroupsTitle.bottom
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.right: parent.right
 
             ListView {
-                id: buttonView
+                id: groupView
                 anchors.fill: parent
                 orientation: ListView.Vertical
 
-                delegate: Rectangle{
+                delegate: Button{
                     id: button
                     parent: buttonView
-                    color:"transparent"
 
                     height:40
                     width:parent.width
 
-                    Image{
-                        anchors.left: parent.left; anchors.leftMargin:10
-                        anchors.verticalCenter: parent.verticalCenter
-                        id: blockIcon
-                        source: icon
-                        height: 25
-                        width: height
+                    display: AbstractButton.TextBesideIcon
+
+                    background : Rectangle{
+                        id: bgButton
+                        color: "transparent"
                     }
 
-
-
-                    Text {
-                        anchors.left: blockIcon.right; anchors.leftMargin:10
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: buttonText
-                        color: light
-                        font.pointSize: 10
+                    contentItem: Item {
+                        anchors.fill: parent
+                        anchors.margins: 10
+                        Image{
+                            id: icon
+                            anchors.verticalCenter: parent.verticalCenter
+                            source:iconSource
+                            width: 20
+                            height: width
+                        }
+                        Text{
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: icon.right; anchors.leftMargin: 10
+                            color: light
+                            text: buttonText
+                        }
                     }
 
                     MouseArea {
@@ -700,20 +770,24 @@ ApplicationWindow {
                                 } while((index<groupList.count)&&(groupList.get(index).group_cod === -1));
                                 index--;
                             }
+
+                            for (var j=1; j<100; j++){
+                               scrollBar.increase();
+                            }
                         }
 
                         states: [
                             State{
                                 when: buttonArea.pressed
                                 PropertyChanges{
-                                    target: button
+                                    target: bgButton
                                     color: dark_1
                                 }
                             },
                             State{
                                 when: buttonArea.containsMouse
                                 PropertyChanges{
-                                    target: button
+                                    target: bgButton
                                     color: dark_3
                                 }
                             }
@@ -723,78 +797,16 @@ ApplicationWindow {
 
                 model: ListModel {
                     id: buttonList
-                    ListElement { buttonText: "Excitation";     code: 1;    icon:"/icons/rf.png" }
-                    ListElement { buttonText: "Delay";          code: 2;    icon:"/icons/clock.svg"  }
-                    ListElement { buttonText: "Dephase";        code: 3;    icon:"/icons/angle.png"  }
-                    ListElement { buttonText: "Readout";        code: 4;    icon:"/icons/rf.png"  }
-                    ListElement { buttonText: "EPI_ACQ";        code: 5;    icon:"/icons/rf.png"  }
-                    ListElement { buttonText: "GRE";            code: 6;    icon:"/icons/rf.png"  }
+                    ListElement { buttonText: "Excitation";     code: 1;    iconSource:"/icons/light/rf.png" }
+                    ListElement { buttonText: "Delay";          code: 2;    iconSource:"/icons/light/clock.png"  }
+                    ListElement { buttonText: "Dephase";        code: 3;    iconSource:"/icons/light/angle.png"  }
+                    ListElement { buttonText: "Readout";        code: 4;    iconSource:"/icons/light/readout.png"  }
+                    ListElement { buttonText: "EPI_ACQ";        code: 5;    iconSource:"/icons/light/misc.png"  }
+                    ListElement { buttonText: "GRE";            code: 6;    iconSource:"/icons/light/misc.png"  }
                 } // ListModel
             } // ListView
         } // MouseArea
-    }
 
-    // ADD GROUPS
-    Item{
-        id: groupMenu
-        anchors.top: buttons.top
-        anchors.left: buttons.right
-        anchors.leftMargin: window.mobile ? 0 : 15
-        width: buttons.width
-        height: buttons.height
-
-        z:5
-
-        Rectangle{
-            id: addGroupsTitle
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: parent.width
-            height: window.mobile ? 25 : 35
-
-            color: dark_2
-            z:50
-
-            Text {
-                text: qsTr("Groups")
-                color:light
-                font.pointSize: 10
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left; anchors.leftMargin:10
-            }
-
-            Button {
-                id: groupButton
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.right: parent.right
-                anchors.rightMargin: 10
-                Text {
-                    anchors.centerIn: parent
-                    text: "+"
-                    color: light
-                    font.pointSize: 12
-                }
-                height:20
-                width:height
-
-                background: Rectangle{
-                    anchors.fill:parent
-                    color: groupButton.pressed? dark :"#595959"
-                }
-
-                scale: hovered? 0.9: 1
-            }
-
-        }
-
-        Rectangle{
-            id: groupButtons
-
-            anchors.top: addGroupsTitle.bottom
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-
-            color: "gray"
 
             // MouseArea{
             //     anchors.fill: parent
@@ -915,47 +927,44 @@ ApplicationWindow {
             //         } // ListModel
             //     } // ListView
             // }
-        } // Rectangle
     }
-
-
-
-    // This list stores information about the groups stored as duplicatable blocks
-    ListModel {id: groupList}
+    */
 
     Rectangle{
         color: window.color
 
         height: 30
-        width: buttons.width
+        anchors.left: blockMenu.left
+        anchors.right: groupMenu.right
 
-        z: -5
+        z: 10
 
-        anchors{
-            horizontalCenter: buttons.horizontalCenter
-            top: buttons.bottom
-        }
+        anchors.top: blockMenu.bottom
     }
+
 
 
     Rectangle{
         id: defaultMenu
-        // visible: false
 
         anchors.left: window.mobile ? blockSeq.left : groupMenu.right
         anchors.leftMargin: window.mobile ? 0 : 15;
 
-        anchors.top: window.mobile ? buttons.bottom : blockSeq.bottom;
+        anchors.top: window.mobile ? blockMenu.bottom : blockSeq.bottom;
         anchors.topMargin: 15
 
         width: window.mobile ? blockSeq.width : 500
         height: 280
+        z: 15
 
-        color: "gray"
+        color: dark_2
+        radius: window.radius
+
         Text{
             anchors.centerIn: parent
             text: "Click on a block to display its menu"
             font.pointSize: 10
+            color: light
         }
 
         ConfigMenu{
@@ -963,6 +972,7 @@ ApplicationWindow {
             anchors.fill: parent
         }
     }
+
 
 
     // GLOBAL PARAMETERS PANEL
@@ -977,6 +987,9 @@ ApplicationWindow {
 
         width: window.mobile ? blockSeq.width : 270
         height: 155
+        z: 15
+
+        radius: window.radius
 
         // Default parameters
         b0: "1.5"
@@ -1137,128 +1150,58 @@ ApplicationWindow {
 
 
     // CREATE GROUP
-    // Rectangle{
-    //     id: createGroupButton
-    //     // visible:false
+    /*
+    Rectangle{
+        id: createGroupButton
+        // visible:false
 
-    //     property bool active: false
+        property bool active: false
 
-    //     width: window.mobile ? blockSeq.width : buttons.width
-    //     anchors.left: blockSeq.left
-    //     anchors.bottom: window.mobile ? blockSeq.bottom : defaultMenu.bottom
+        width: window.mobile ? blockSeq.width : buttons.width
+        anchors.left: blockSeq.left
+        anchors.bottom: window.mobile ? blockSeq.bottom : defaultMenu.bottom
 
-    //     anchors.topMargin: 15
+        anchors.topMargin: 15
 
-    //     height: 31
+        height: 31
 
-    //     color: active? "gray": "#595959";
+        color: active? "gray": "#595959";
 
-    //     Text{
-    //         // id: buttonText
-    //         anchors.centerIn: parent
-    //         text: parent.active? "Done": "Create New Group"
-    //         color: light
-    //         font.pointSize: buttonTextSize
-    //     }
+        Text{
+            // id: buttonText
+            anchors.centerIn: parent
+            text: parent.active? "Done": "Create New Group"
+            color: light
+            font.pointSize: buttonTextSize
+        }
 
-    //     MouseArea{
-    //         id: groupArea
-    //         anchors.fill: parent
-    //         hoverEnabled: true
-    //         onClicked: {
-    //             createGroupButton.active = !createGroupButton.active;
+        MouseArea{
+            id: groupArea
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: {
+                createGroupButton.active = !createGroupButton.active;
 
-    //             if(createGroupButton.active){
-    //                 groupDialog.open();
-    //             }
+                if(createGroupButton.active){
+                    groupDialog.open();
+                }
 
-    //             else{
-    //                 var groupedBlocks = [];
-    //                 for(var i = 0; i<blockList.count; i++){
-    //                     if(blockList.get(i).grouped){
-    //                         groupedBlocks.push(i);
-    //                         blockList.get(i).grouped = false;
-    //                     }
-    //                 }
-
-    //                 if(groupedBlocks.length <= 1){
-    //                     console.log("Error: you must group at least 2 blocks");
-    //                     return;
-
-    //                 }else if(groupedBlocks.length > 1){
-    //                     var numgroups = 0;
-
-    //                     for(i=0; i<groupedBlocks.length; i++){
-    //                         for(var j=0;j<blockList.count;j++){
-    //                             for(var k=0;k<blockList.get(j).children.count;k++){
-    //                                 // Check if the selected block already belongs to a group
-    //                                 if (blockList.get(j).children.get(k).number===groupedBlocks[i] && i>0){
-    //                                     numgroups = blockList.get(groupedBlocks[i]).ngroups;
-    //                                     blockList.get(j).children.remove(k);
-    //                                 }
-    //                             }
-    //                         }
-    //                     }
-
-    //                     for(j=0;j<blockList.count;j++){
-    //                         for(k=0;k<blockList.get(j).children.count;k++){
-    //                             // Check if there are more blocks that belong to an outter group but are not selected
-    //                             if(j<getMinOfArray(groupedBlocks) && blockList.get(j).children.get(k).number>getMaxOfArray(groupedBlocks)){
-    //                                 blockList.get(j).children.get(k).number++;
-    //                             }
-    //                         }
-    //                     }
-
-    //                     blockList.append({  "cod": 0,
-    //                                         "dur":0,
-    //                                         "gx":0,
-    //                                         "gy":0,
-    //                                         "gz":0,
-    //                                         "gxStep":0,
-    //                                         "gyStep":0,
-    //                                         "gzStep":0,
-    //                                         "b1x":0,
-    //                                         "b1y":0,
-    //                                         "delta_f":0,
-    //                                         "fov":0,
-    //                                         "n":0,
-    //                                         "grouped":false,
-    //                                         "ngroups":numgroups,
-    //                                         "name":groupDialog.input,
-    //                                         "children":[],
-    //                                         "collapsed": false,
-    //                                         "reps":1});
-
-    //                     for(j=blockList.count-1;j>=0;j--){
-    //                         // Check if there are groups more to the right (we must displace their children one step to the right)
-    //                         if(j > (getMaxOfArray(groupedBlocks) + countChildren(getMaxOfArray(groupedBlocks))) && isGroup(j)){
-    //                             moveGroup(j,1);
-    //                         }
-    //                     }
-
-    //                     blockList.move(blockList.count-1,groupedBlocks[0],1);
-
-    //                     for(i=0; i<groupedBlocks.length; i++){
-    //                         blockList.get(groupedBlocks[0]).children.append({"number":groupedBlocks[i]+1});
-    //                         addToGroup(groupedBlocks[i]+1);
-    //                         configMenu.menuVisible = false;
-    //                         blockSeq.displayedMenu = -1;
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //         states:
-    //         [
-    //             State{
-    //                 when: groupArea.containsMouse
-    //                 PropertyChanges{
-    //                     target: createGroupButton
-    //                     scale: 0.9
-    //                 }
-    //             }
-    //         ]
-    //     } // MouseArea
-    // } // Rectangle ---------------------------------------------------------------------------------
+                else{
+                }
+            }
+            states:
+            [
+                State{
+                    when: groupArea.containsMouse
+                    PropertyChanges{
+                        target: createGroupButton
+                        scale: 0.9
+                    }
+                }
+            ]
+        } // MouseArea
+    } // Rectangle ---------------------------------------------------------------------------------
+    */
 
     // Dialog{
     //     id: groupDialog
@@ -1537,3 +1480,4 @@ ApplicationWindow {
     }
     */
 }
+
