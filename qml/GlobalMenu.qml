@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 
 Rectangle{
     id: menu
@@ -13,6 +14,17 @@ Rectangle{
     property alias smax : smaxInput.text
 
     property string fontColor: "white"
+
+    RectangularGlow {
+        id: globalGlow
+        anchors.fill: parent
+        visible: parent.visible & !popup.visible
+        glowRadius: 6
+        spread: 0.2
+        color: parent.color
+        opacity: 0.6
+        cornerRadius: parent.radius + glowRadius
+    }
 
     Text{
         text: "Scanner Parameters"

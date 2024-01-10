@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 
 Item {
     property int blockID
@@ -51,6 +52,7 @@ Item {
     property alias tr:          trInput.text
 
 
+
     Rectangle{
         id: rectConfig
         visible: menuVisible
@@ -59,6 +61,17 @@ Item {
         color: menuColor
 
         radius: window.radius
+
+        RectangularGlow {
+            id: configGlow
+            anchors.fill: parent
+            visible: parent.visible & !popup.visible
+            glowRadius: 6
+            spread: 0.2
+            color: menuColor
+            opacity: 0.6
+            cornerRadius: parent.radius + glowRadius
+        }
 
         Text{
             id: configText
@@ -156,142 +169,151 @@ Item {
             Loader { id: rf;            visible: rfVisible
                 sourceComponent: configPanel
                 height: 72
-                GridLayout{ id: rfLayout
-                    anchors.fill: parent
-                    anchors.margins:3
-                    columns: 5
-                    rowSpacing: 3
+                ScrollView {
+                    anchors.fill:parent
+                    anchors.leftMargin: 5; anchors.rightMargin: 5
+                    clip:true
+                    GridLayout{ id: rfLayout
+                        anchors.fill: parent
+                        anchors.margins:3
+                        columns: 5
+                        rowSpacing: 3
 
-                    MenuLabel { text: "RF:";                    bold: true}
-                    MenuLabel { text: "RF Shape:";              Layout.alignment: Qt.AlignRight}
-                    ComboBox {  id:shapeInput
-                        model: ["Rectangle (hard)", "Sinc"]
-                        font.pointSize: window.fontSize;
-                        delegate: ItemDelegate {
-                            width: shapeInput.width
-                            height: shapeInput.height
-                            Item{
-                                anchors.fill:parent
-                                anchors.leftMargin: 5
-                                Text {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    anchors.leftMargin: 50
-                                    text: modelData
-                                    color: "#292929"
-                                    font: shapeInput.font
-                                    elide: Text.ElideRight
+                        MenuLabel { text: "RF:";                    bold: true}
+                        MenuLabel { text: "RF Shape:";              Layout.alignment: Qt.AlignRight}
+                        ComboBox {  id:shapeInput
+                            model: ["Rectangle (hard)", "Sinc"]
+                            font.pointSize: window.fontSize;
+                            delegate: ItemDelegate {
+                                width: shapeInput.width
+                                height: shapeInput.height
+                                Item{
+                                    anchors.fill:parent
+                                    anchors.leftMargin: 5
+                                    Text {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        anchors.leftMargin: 50
+                                        text: modelData
+                                        color: "#292929"
+                                        font: shapeInput.font
+                                        elide: Text.ElideRight
+                                    }
+                                }
+                                highlighted: shapeInput.highlightedIndex === index
+                            }
+                            indicator: Canvas {
+                                id: canvas
+                                x: shapeInput.width - width - shapeInput.rightPadding
+                                y: shapeInput.topPadding + (shapeInput.availableHeight - height) / 2
+                                width: 12
+                                height: 8
+                                contextType: "2d"
+
+                                Connections {
+                                    target: shapeInput
+                                    function onPressedChanged() { canvas.requestPaint(); }
+                                }
+                                onPaint: {
+                                    context.reset();
+                                    context.moveTo(0, 0);
+                                    context.lineTo(width, 0);
+                                    context.lineTo(width / 2, height);
+                                    context.closePath();
+                                    context.fillStyle = shapeInput.pressed ? "black" : "#292929";
+                                    context.fill();
                                 }
                             }
-                            highlighted: shapeInput.highlightedIndex === index
-                        }
-                        indicator: Canvas {
-                            id: canvas
-                            x: shapeInput.width - width - shapeInput.rightPadding
-                            y: shapeInput.topPadding + (shapeInput.availableHeight - height) / 2
-                            width: 12
-                            height: 8
-                            contextType: "2d"
+                            contentItem: Text {
+                                leftPadding: 5
+                                rightPadding: shapeInput.indicator.width + shapeInput.spacing
 
-                            Connections {
-                                target: shapeInput
-                                function onPressedChanged() { canvas.requestPaint(); }
-                            }
-                            onPaint: {
-                                context.reset();
-                                context.moveTo(0, 0);
-                                context.lineTo(width, 0);
-                                context.lineTo(width / 2, height);
-                                context.closePath();
-                                context.fillStyle = shapeInput.pressed ? "black" : "#292929";
-                                context.fill();
-                            }
-                        }
-                        contentItem: Text {
-                            leftPadding: 5
-                            rightPadding: shapeInput.indicator.width + shapeInput.spacing
-
-                            text: shapeInput.displayText
-                            font: shapeInput.font
-                            color: shapeInput.pressed ? "black" : "#292929"
-                            verticalAlignment: Text.AlignVCenter
-                            elide: Text.ElideRight
-                        }
-                        background: Rectangle {
-                            implicitWidth: 120
-                            implicitHeight: window.fieldHeight
-                            border.color: shapeInput.pressed ? "black" : "#595959"
-                            border.width: shapeInput.visualFocus ? 2 : 1
-                            radius: 2
-                        }
-                        popup: Popup {
-                            y: shapeInput.height - 1
-                            width: shapeInput.width
-                            implicitHeight: contentItem.implicitHeight
-                            padding: 1
-
-                            contentItem: ListView {
-                                clip: true
-                                implicitHeight: contentHeight
-                                model: shapeInput.popup.visible ? shapeInput.delegateModel : null
-                                currentIndex: shapeInput.highlightedIndex
+                                text: shapeInput.displayText
+                                font: shapeInput.font
+                                color: shapeInput.pressed ? "black" : "#292929"
+                                verticalAlignment: Text.AlignVCenter
+                                elide: Text.ElideRight
                             }
                             background: Rectangle {
-                                border.color: "#292929"
+                                implicitWidth: 120
+                                implicitHeight: window.fieldHeight
+                                border.color: shapeInput.pressed ? "black" : "#595959"
+                                border.width: shapeInput.visualFocus ? 2 : 1
                                 radius: 2
                             }
+                            popup: Popup {
+                                y: shapeInput.height - 1
+                                width: shapeInput.width
+                                implicitHeight: contentItem.implicitHeight
+                                padding: 1
+
+                                contentItem: ListView {
+                                    clip: true
+                                    implicitHeight: contentHeight
+                                    model: shapeInput.popup.visible ? shapeInput.delegateModel : null
+                                    currentIndex: shapeInput.highlightedIndex
+                                }
+                                background: Rectangle {
+                                    border.color: "#292929"
+                                    radius: 2
+                                }
+                            }
                         }
+
+                        MenuLabel { text: "Peak |B1|[T]:";          Layout.alignment: Qt.AlignRight}
+                        TextInputItem{ id:b1ModuleInput}
+
+                        MenuLabel { text: "Flip Angle [º]:";        Layout.alignment: Qt.AlignRight;        Layout.columnSpan: 2}
+                        TextInputItem{ id:flipAngleInput;           Layout.columnSpan: 3}
+
+                        MenuLabel { text: "Δf [Hz]:";               Layout.alignment: Qt.AlignRight;        Layout.columnSpan: 2}
+                        TextInputItem{ id:deltafInput}
                     }
-
-                    MenuLabel { text: "Peak |B1|[T]:";          Layout.alignment: Qt.AlignRight}
-                    TextInputItem{ id:b1ModuleInput}
-
-                    MenuLabel { text: "Flip Angle [º]:";        Layout.alignment: Qt.AlignRight;        Layout.columnSpan: 2}
-                    TextInputItem{ id:flipAngleInput;           Layout.columnSpan: 3}
-
-                    MenuLabel { text: "Δf [Hz]:";               Layout.alignment: Qt.AlignRight;        Layout.columnSpan: 2}
-                    TextInputItem{ id:deltafInput}
                 }
             }
 
             Loader { id: gradients;     visible: gradientsVisible
                 sourceComponent: configPanel
                 height: 90
+                ScrollView {
+                    anchors.fill:parent
+                    anchors.leftMargin: 5; anchors.rightMargin: 5
+                    clip:true
+                    GridLayout{ id: gradientsLayout
+                        columns: 6
+                        anchors.fill: parent
+                        anchors.margins:3
+                        anchors.rightMargin: 10
+                        rowSpacing: 1
 
-                GridLayout{ id: gradientsLayout
-                    columns: 6
-                    anchors.fill: parent
-                    anchors.margins:3
-                    anchors.rightMargin:10
-                    rowSpacing: 1
+                        MenuLabel { text: "Gradients:";             bold: true}
+                        MenuLabel { text: "InitialDelay [s]";       Layout.alignment: Qt.AlignCenter}
+                        MenuLabel { text: "Rise/Fall [s]";          Layout.alignment: Qt.AlignCenter}
+                        MenuLabel { text: "FlatTopTime [s]";        Layout.alignment: Qt.AlignCenter}
+                        MenuLabel { text: "Amplitude [T/m]";        Layout.alignment: Qt.AlignCenter}
+                        MenuLabel { text: "Step [T/m]";             Layout.alignment: Qt.AlignCenter}
 
-                    MenuLabel { text: "Gradients:";             bold: true}
-                    MenuLabel { text: "InitialDelay [s]";       Layout.alignment: Qt.AlignCenter}
-                    MenuLabel { text: "Rise/Fall [s]";          Layout.alignment: Qt.AlignCenter}
-                    MenuLabel { text: "FlatTopTime [s]";        Layout.alignment: Qt.AlignCenter}
-                    MenuLabel { text: "Amplitude [T/m]";        Layout.alignment: Qt.AlignCenter}
-                    MenuLabel { text: "Step [T/m]";             Layout.alignment: Qt.AlignCenter}
+                        MenuLabel { text: "Gx:";                    Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ id:gxDelayInput;             Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ id:gxRiseInput;              Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ id:gxFlatTopInput;           Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ id:gxAmplitudeInput;         Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ id:gxStepInput;              Layout.alignment: Qt.AlignCenter}
 
-                    MenuLabel { text: "Gx:";                    Layout.alignment: Qt.AlignCenter}
-                    TextInputItem{ id:gxDelayInput;             Layout.alignment: Qt.AlignCenter}
-                    TextInputItem{ id:gxRiseInput;              Layout.alignment: Qt.AlignCenter}
-                    TextInputItem{ id:gxFlatTopInput;           Layout.alignment: Qt.AlignCenter}
-                    TextInputItem{ id:gxAmplitudeInput;         Layout.alignment: Qt.AlignCenter}
-                    TextInputItem{ id:gxStepInput;              Layout.alignment: Qt.AlignCenter}
+                        MenuLabel { text: "Gy:";                    Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ id:gyDelayInput;             Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ id:gyRiseInput;              Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ id:gyFlatTopInput;           Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ id:gyAmplitudeInput;         Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ id:gyStepInput;              Layout.alignment: Qt.AlignCenter}
 
-                    MenuLabel { text: "Gy:";                    Layout.alignment: Qt.AlignCenter}
-                    TextInputItem{ id:gyDelayInput;             Layout.alignment: Qt.AlignCenter}
-                    TextInputItem{ id:gyRiseInput;              Layout.alignment: Qt.AlignCenter}
-                    TextInputItem{ id:gyFlatTopInput;           Layout.alignment: Qt.AlignCenter}
-                    TextInputItem{ id:gyAmplitudeInput;         Layout.alignment: Qt.AlignCenter}
-                    TextInputItem{ id:gyStepInput;              Layout.alignment: Qt.AlignCenter}
+                        MenuLabel { text: "Gz:";                    Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ id:gzDelayInput;             Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ id:gzRiseInput;              Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ id:gzFlatTopInput;           Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ id:gzAmplitudeInput;         Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ id:gzStepInput;              Layout.alignment: Qt.AlignCenter}
 
-                    MenuLabel { text: "Gz:";                    Layout.alignment: Qt.AlignCenter}
-                    TextInputItem{ id:gzDelayInput;             Layout.alignment: Qt.AlignCenter}
-                    TextInputItem{ id:gzRiseInput;              Layout.alignment: Qt.AlignCenter}
-                    TextInputItem{ id:gzFlatTopInput;           Layout.alignment: Qt.AlignCenter}
-                    TextInputItem{ id:gzAmplitudeInput;         Layout.alignment: Qt.AlignCenter}
-                    TextInputItem{ id:gzStepInput;              Layout.alignment: Qt.AlignCenter}
-
+                    }
                 }
             }
 

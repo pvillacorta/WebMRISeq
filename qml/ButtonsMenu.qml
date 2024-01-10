@@ -17,15 +17,11 @@ Item{
         radius:window.radius
 
 
-        Rectangle{
+        Item{
             id: menuTitle
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width
             height: window.mobile ? 25 : 35
-
-            color: dark_2
-
-            radius:window.radius
 
             z: 10
 
@@ -88,6 +84,7 @@ Item{
                 id: buttonView
                 anchors.fill: parent
                 orientation: ListView.Vertical
+                clip:true
 
                 delegate: Button{
                     id: button
@@ -110,7 +107,7 @@ Item{
                             id: icon
                             anchors.verticalCenter: parent.verticalCenter
                             source:iconSource
-                            width: 20
+                            width: 15
                             height: width
                         }
                         Text{
@@ -118,6 +115,7 @@ Item{
                             anchors.left: icon.right; anchors.leftMargin: 10
                             color: light
                             text: buttonText
+                            font.bold: true
                         }
                     }
 

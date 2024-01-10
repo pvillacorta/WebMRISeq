@@ -1,21 +1,26 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
+import Qt5Compat.GraphicalEffects
 
 ApplicationWindow {
     id: window
 
-    width: 1120;
-    minimumHeight: desktop ? 470 : (!mobile ? 630 : 860)
-
     // WINDOW SIZE
-    property bool desktop: width>=1120
-    property bool mobile: width<780
-    property bool tablet: width >= 780 & width < 1120
+    property int desktopWidth: 1120
+    property int mobileWidth: 840
+
+    property int desktopHeight: 470
+    property int tabletHeight: 630
+    property int mobileHeight: 850
+
+    property bool desktop: width>=desktopWidth
+    property bool tablet: width >= mobileWidth & width < desktopWidth
+    property bool mobile: width<mobileWidth
 
     // COLORS
     property string dark_1: "#212529"
-    property string dark_2: "#343a40"
+    property string dark_2: "#303336"
     property string dark_3: "#525252"
     property string light: "#d8e0e8"
 
@@ -28,15 +33,16 @@ ApplicationWindow {
     property int buttonTextSize: 10
 
     // WINDOW RADIUS
-    property int radius: mobile ? 0 : 6
+    property int radius: mobile ? 2 : 6
+
+    width:  desktopWidth;
+    height: desktop ? desktopHeight :
+            tablet ? tabletHeight :
+            mobile ? mobileHeight :
+            500
 
     color: dark_1
     visible:true
-
-    Text{
-        color: "white"
-        text: window.width + " x " + window.height
-    }
 
     // -------------------------------------- FUNCTIONS ------------------------------------------
     // Function addToGroup() looks for all the children of a specified block.
@@ -392,8 +398,6 @@ ApplicationWindow {
     }
 
 
-
-
     // ------------------------- BLOCK LIST ---------------------------------------------------
     ListModel{id:blockList}
 
@@ -402,1082 +406,1068 @@ ApplicationWindow {
     // -----------------------------------------------------------------------------------------
 
 
-    // SEQUENCE
-    MouseArea{
-        id: blockSeq
-        y: 25
+    Flickable{
+        anchors.fill:parent
+        contentHeight: mobile ? mobileHeight :
+                       tablet ? tabletHeight :
+                       desktop ? desktopHeight :
+                       500
+        contentWidth: window.width
+        boundsBehavior: Flickable.StopAtBounds
 
-        height: 130
-        width: window.mobile ? parent.width : parent.width - 50
-        anchors.horizontalCenter: parent.horizontalCenter
+        // Text{
+        //     color: "white"
+        //     text: window.width + " x " + window.height
+        // }
 
-        property int hoveredBlock: -1
-        property int displayedGroup: -1
-        property int displayedMenu: -1
-
-        // BLOCK MOVEMENT VIA KEYBOARD ------------------------------------------------------------
-        Keys.onLeftPressed: {
-            for(var i=displayedMenu-1; i>=0; i--){
-                if(getParent(displayedMenu) === getParent(i)){
-                    moveBlock(displayedMenu,i);
-                    break;
-                }
-            }
-        }
-        Keys.onRightPressed: {
-            for(var i=displayedMenu+1; i<blockList.count; i++){
-                if(getParent(displayedMenu) === getParent(i)){
-                    moveBlock(displayedMenu,i);
-                    break;
-                }
-            }
-        }
-        // -------------------------------------------------------------------------------------
-
-        WheelHandler{
-            onWheel: (event)=> event.angleDelta.y<0 ? scrollBar.increase(): scrollBar.decrease();
+        // SEQUENCE
+        RectangularGlow {
+            id: seqGlow
+            visible: popup.visible
+            anchors.fill: blockSeq
+            glowRadius: 10
+            spread: 0.2
+            color: light
+            cornerRadius: window.radius + glowRadius
         }
 
-        Rectangle {
-            color: dark_2
-            anchors.fill: parent
+        MouseArea{
+            id: blockSeq
+            x:  window.mobile ? 4 : 25
+            y: window.mobile ? 15 : 25
 
-            radius: window.radius
+            height: 132
+            width: window.mobile ? window.width - 8 : window.width - 50
 
-            // SEQUENCE TITLE
-            Item {
-                id: seqTitle
+            property int hoveredBlock: -1
+            property int displayedGroup: -1
+            property int displayedMenu: -1
 
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top:parent.top
-                height:25
-
-                Text {
-                    anchors.top: parent.top;
-                    anchors.left: parent.left;
-                    anchors.topMargin:10
-                    anchors.leftMargin:12
-
-                    text: "Block sequence"
-                    font.pointSize: 12
-
-                    color: light
+            // BLOCK MOVEMENT VIA KEYBOARD ------------------------------------------------------------
+            Keys.onLeftPressed: {
+                for(var i=displayedMenu-1; i>=0; i--){
+                    if(getParent(displayedMenu) === getParent(i)){
+                        moveBlock(displayedMenu,i);
+                        break;
+                    }
                 }
             }
+            Keys.onRightPressed: {
+                for(var i=displayedMenu+1; i<blockList.count; i++){
+                    if(getParent(displayedMenu) === getParent(i)){
+                        moveBlock(displayedMenu,i);
+                        break;
+                    }
+                }
+            }
+            // -------------------------------------------------------------------------------------
 
-            ListView {
-                id: blockView
+            WheelHandler{
+                onWheel: (event)=> event.angleDelta.y<0 ? scrollBar.increase(): scrollBar.decrease();
+            }
 
-                property int dragIndex // Index of the block that we are dragging
-                property bool held: false // Tells us is we are dragging a block or not
-
+            Rectangle {
+                id: seqRect
+                color: dark_2
                 anchors.fill: parent
-                anchors.topMargin: seqTitle.height
-                interactive: true
 
-                orientation: ListView.Horizontal
+                radius: window.radius
 
-                // This blockList is the model used for visualizing the data.
-                model: blockList
+                // SEQUENCE TITLE
+                Item {
+                    id: seqTitle
 
-                delegate: BlockItem{}
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top:parent.top
+                    height:25
 
-                ScrollBar.horizontal: ScrollBar {
-                    id: scrollBar
-                    active: true
-                    orientation: Qt.Horizontal
+                    Text {
+                        anchors.top: parent.top;
+                        anchors.left: parent.left;
+                        anchors.topMargin:10
+                        anchors.leftMargin:12
+
+                        text: "Block sequence"
+                        font.pointSize: 11
+
+                        color: light
+                    }
                 }
 
-                // ANIMATIONS when elements are added or moved
-                add: Transition{
-                    NumberAnimation {property: "scale"; from: 0; to: 1; duration: 100}
-                }
-                move: Transition{
-                    NumberAnimation {properties: "x,y"; easing.type: Easing.OutBack; duration: 200}
-                }
-                displaced: Transition{
-                    NumberAnimation {properties: "x,y"; easing.type: Easing.OutBack; duration: 200}
-                }
-                remove: Transition{
-                    NumberAnimation {property: "scale"; from: 1; to: 0; duration: 100}
-                }
-            }//ListView
-        }//Rectangle
-    } //MouseArea
+                ListView {
+                    id: blockView
 
-    Rectangle {
-        visible: popup.visible
-        color: dark_1
-        opacity: 0.7
-        anchors.top:blockSeq.bottom
-        z: 18
-        height: window.height - (blockSeq.height + blockSeq.y)
-        width: window.width
-    }
+                    property int dragIndex // Index of the block that we are dragging
+                    property bool held: false // Tells us is we are dragging a block or not
 
-    // We define a component so we can use it by multiple Loader objets
-    Component{
-        id: borderSquare
+                    anchors.fill: parent
+                    anchors.topMargin: seqTitle.height + 3
+                    interactive: true
+
+                    orientation: ListView.Horizontal
+
+                    clip: true
+
+                    // This blockList is the model used for visualizing the data.
+                    model: blockList
+
+                    delegate: BlockItem{}
+
+                    ScrollBar.horizontal: ScrollBar {
+                        id: scrollBar
+                        active: true
+                        orientation: Qt.Horizontal
+                    }
+
+                    // ANIMATIONS when elements are added or moved
+                    add: Transition{
+                        NumberAnimation {property: "scale"; from: 0; to: 1; duration: 100}
+                    }
+                    move: Transition{
+                        NumberAnimation {properties: "x,y"; easing.type: Easing.OutBack; duration: 200}
+                    }
+                    displaced: Transition{
+                        NumberAnimation {properties: "x,y"; easing.type: Easing.OutBack; duration: 200}
+                    }
+                    remove: Transition{
+                        NumberAnimation {property: "scale"; from: 1; to: 0; duration: 100}
+                    }
+                }//ListView
+            }//Rectangle
+        } //MouseArea
+
         Rectangle {
-            color: window.color
-            height: 500
-
-            width: 25
-
-            y: blockSeq.y
+            visible: popup.visible
+            color: dark_1
+            opacity: 0.7
+            anchors.top:blockMenu.top
+            z: 18
+            height: window.height - (blockSeq.height + blockSeq.y)
+            width: window.width
         }
-    }//Component
 
-    // Right and left border for the sequence panel:
-    Loader{
-        sourceComponent: borderSquare
-        anchors{left: blockSeq.right}
-    }
+        property int lineThickness: 1
 
-    Loader{
-        sourceComponent: borderSquare
-        anchors{right: blockSeq.left}
-    }
-
-    property int lineThickness: 1
-
-    Component{
-        id: verticalLine
-        Rectangle{
-            width: window.lineThickness
-            color:dark_3
+        Component{
+            id: verticalLine
+            Rectangle{
+                width: window.lineThickness
+                color:dark_3
+            }
         }
-    }
 
-    Component{
-        id: horizontalLine
-        Rectangle{
-            height: window.lineThickness
-            color:dark_3
+        Component{
+            id: horizontalLine
+            Rectangle{
+                height: window.lineThickness
+                color:dark_3
+            }
         }
-    }
 
 
-    // This list stores information about the available "basic" blocks
-    ListModel {
-        id: blockButtonList
-        ListElement { buttonText: "Excitation";     code: 1;    iconSource:"/icons/light/rf.png" }
-        ListElement { buttonText: "Delay";          code: 2;    iconSource:"/icons/light/clock.png"  }
-        ListElement { buttonText: "Dephase";        code: 3;    iconSource:"/icons/light/angle.png"  }
-        ListElement { buttonText: "Readout";        code: 4;    iconSource:"/icons/light/readout.png"  }
-        ListElement { buttonText: "EPI_ACQ";        code: 5;    iconSource:"/icons/light/epi.png"  }
-        ListElement { buttonText: "GRE";            code: 6;    iconSource:"/icons/light/misc.png"  }
-    }
+        // This list stores information about the available "basic" blocks
+        ListModel {
+            id: blockButtonList
+            ListElement { buttonText: "Excitation";     code: 1;    iconSource:"/icons/light/rf.png" }
+            ListElement { buttonText: "Delay";          code: 2;    iconSource:"/icons/light/clock.png"  }
+            ListElement { buttonText: "Dephase";        code: 3;    iconSource:"/icons/light/angle.png"  }
+            ListElement { buttonText: "Readout";        code: 4;    iconSource:"/icons/light/readout.png"  }
+            ListElement { buttonText: "EPI_ACQ";        code: 5;    iconSource:"/icons/light/epi.png"  }
+            ListElement { buttonText: "GRE";            code: 6;    iconSource:"/icons/light/misc.png"  }
+        }
 
-    // This list stores information about the groups stored as duplicatable blocks
-    ListModel {
-        id: groupButtonList
-    }
+        // This list stores information about the groups stored as duplicatable blocks
+        ListModel {
+            id: groupButtonList
+        }
 
+        // ADD BLOCKS
+        ButtonsMenu {
+            id: blockMenu
+            anchors.top: blockSeq.bottom; anchors.topMargin:15
+            anchors.left: blockSeq.left
+            width: window.mobile ? blockSeq.width/2 - 2 : 130
+            height: window.mobile ? 200 : 280
 
+            title: "Add blocks"
+            model: blockButtonList
+        }
 
-    // ADD BLOCKS
-    ButtonsMenu {
-        id: blockMenu
-        anchors.top: blockSeq.bottom; anchors.topMargin:15
-        anchors.left: blockSeq.left
-        width: window.mobile ? blockSeq.width/2 : 130
-        height: window.mobile ? 200 : 280
+        // ADD GROUPS
+        ButtonsMenu {
+            id: groupMenu
+            anchors.top: blockMenu.top
+            anchors.left: blockMenu.right
+            anchors.leftMargin: window.mobile ? 4 : 15
+            width: blockMenu.width
+            height: blockMenu.height
 
-        title: "Add blocks"
-        model: blockButtonList
-    }
+            title: "Groups"
+            model: groupButtonList
+        }
 
-    // ADD GROUPS
-    ButtonsMenu {
-        id: groupMenu
-        anchors.top: blockMenu.top
-        anchors.left: blockMenu.right
-        anchors.leftMargin: window.mobile ? 0 : 15
-        width: blockMenu.width
-        height: blockMenu.height
+        PopUp {
+            id: popup
+            text: "Click on the blocks you want to group and give a name to the group:"
 
-        title: "Groups"
-        model: groupButtonList
-    }
+            x: blockSeq.width/2 - width/2
+            y: blockSeq.y + blockSeq.height + seqGlow.glowRadius
+        }
 
-    PopUp {
-        id: popup
-        text: "Click on the blocks you want to group and give a name to the group:"
-
-        // x: window.mobile ? blockSeq.width/2 - width/2 : groupMenu.buttonX
-        // y: window.mobile ? blockSeq.y + blockSeq.height : groupMenu.buttonY
-
-        x: blockSeq.width/2 - width/2
-        y: blockSeq.y + blockSeq.height
-    }
-
-    /*
-    Rectangle{
-        id: groupMenu
-        anchors.top: buttons.top
-        anchors.left: buttons.right
-        anchors.leftMargin: window.mobile ? 0 : 15
-        width: buttons.width
-        height: buttons.height
-
-        color: dark_2
-
-        radius:window.radius
-
-        z:-15
-
+        /*
         Rectangle{
-            id: addGroupsTitle
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: parent.width
-            height: window.mobile ? 25 : 35
+            id: groupMenu
+            anchors.top: buttons.top
+            anchors.left: buttons.right
+            anchors.leftMargin: window.mobile ? 0 : 15
+            width: buttons.width
+            height: buttons.height
 
             color: dark_2
 
             radius:window.radius
 
-            z: 10
-            Text {
-                text: qsTr("Groups")
-                color:light
-                font.pointSize: 10
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left; anchors.leftMargin:12
-            }
+            z:-15
 
-
-            Loader{
-                sourceComponent: horizontalLine
-                width: parent.width - 20
-                anchors.bottom: parent.bottom
-                z:15
+            Rectangle{
+                id: addGroupsTitle
                 anchors.horizontalCenter: parent.horizontalCenter
+                width: parent.width
+                height: window.mobile ? 25 : 35
+
+                color: dark_2
+
+                radius:window.radius
+
+                z: 10
+                Text {
+                    text: qsTr("Groups")
+                    color:light
+                    font.pointSize: 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left; anchors.leftMargin:12
+                }
+
+
+                Loader{
+                    sourceComponent: horizontalLine
+                    width: parent.width - 20
+                    anchors.bottom: parent.bottom
+                    z:15
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+
             }
 
+            MouseArea{
+                id: addGroupsButtons
+
+                anchors.top: addGroupsTitle.bottom
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                ListView {
+                    id: groupView
+                    anchors.fill: parent
+                    orientation: ListView.Vertical
+
+                    delegate: Button{
+                        id: button
+                        parent: buttonView
+
+                        height:40
+                        width:parent.width
+
+                        display: AbstractButton.TextBesideIcon
+
+                        background : Rectangle{
+                            id: bgButton
+                            color: "transparent"
+                        }
+
+                        contentItem: Item {
+                            anchors.fill: parent
+                            anchors.margins: 10
+                            Image{
+                                id: icon
+                                anchors.verticalCenter: parent.verticalCenter
+                                source:iconSource
+                                width: 20
+                                height: width
+                            }
+                            Text{
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.left: icon.right; anchors.leftMargin: 10
+                                color: light
+                                text: buttonText
+                            }
+                        }
+
+                        MouseArea {
+                            id: buttonArea
+                            hoverEnabled: true
+                            anchors.fill: parent
+                            onClicked: {
+                                blockSeq.displayedMenu = -1;
+
+                                if(code<=6){
+                                    blockList.append({ "cod":code,
+                                                       "dur":0,
+                                                       "gx":0,
+                                                       "gy":0,
+                                                       "gz":0,
+                                                       "gxStep":0,
+                                                       "gyStep":0,
+                                                       "gzStep":0,
+                                                       "b1x":0,
+                                                       "b1y":0,
+                                                       "delta_f":0,
+                                                       "fov":0,
+                                                       "n":0,
+                                                       "grouped":false,
+                                                       "ngroups":0,
+                                                       "name":"",
+                                                       "children":[],
+                                                       "collapsed": false,
+                                                       "reps":1});
+                                } else if(code>6){
+                                    var index;
+                                    for(var i=0; i<groupList.count; i++){
+                                        if(groupList.get(i).group_cod == code){
+                                            index = i;
+                                        }
+                                    }
+                                    var num;
+                                    var counter = 0;
+
+                                    do{
+                                        blockList.append(  {"cod":groupList.get(index).cod,
+                                                            "dur":groupList.get(index).dur,
+                                                            "gx":groupList.get(index).gx,
+                                                            "gy":groupList.get(index).gy,
+                                                            "gz":groupList.get(index).gz,
+                                                            "gxStep":groupList.get(index).gxStep,
+                                                            "gyStep":groupList.get(index).gyStep,
+                                                            "gzStep":groupList.get(index).gzStep,
+                                                            "b1x":groupList.get(index).b1x,
+                                                            "b1y":groupList.get(index).b1y,
+                                                            "delta_f":groupList.get(index).delta_f,
+                                                            "fov":groupList.get(index).fov,
+                                                            "n":groupList.get(index).n,
+                                                            "grouped":false,
+                                                            "ngroups":groupList.get(index).ngroups,
+                                                            "name":groupList.get(index).name,
+                                                            "children":[],
+                                                            "collapsed": counter==0?false:true,
+                                                            "reps":groupList.get(index).reps});
+
+                                        num = groupList.get(index).children.count;
+                                        for(i=0;i<num;i++){
+                                            blockList.get(blockList.count-1).children.append({"number":groupList.get(index).children.get(i).number+(-index+blockList.count-1)});
+                                        }
+                                        index ++;
+                                        counter ++;
+                                    } while((index<groupList.count)&&(groupList.get(index).group_cod === -1));
+                                    index--;
+                                }
+
+                                for (var j=1; j<100; j++){
+                                   scrollBar.increase();
+                                }
+                            }
+
+                            states: [
+                                State{
+                                    when: buttonArea.pressed
+                                    PropertyChanges{
+                                        target: bgButton
+                                        color: dark_1
+                                    }
+                                },
+                                State{
+                                    when: buttonArea.containsMouse
+                                    PropertyChanges{
+                                        target: bgButton
+                                        color: dark_3
+                                    }
+                                }
+                            ]
+                        }
+                    }
+
+                    model: ListModel {
+                        id: buttonList
+                        ListElement { buttonText: "Excitation";     code: 1;    iconSource:"/icons/light/rf.png" }
+                        ListElement { buttonText: "Delay";          code: 2;    iconSource:"/icons/light/clock.png"  }
+                        ListElement { buttonText: "Dephase";        code: 3;    iconSource:"/icons/light/angle.png"  }
+                        ListElement { buttonText: "Readout";        code: 4;    iconSource:"/icons/light/readout.png"  }
+                        ListElement { buttonText: "EPI_ACQ";        code: 5;    iconSource:"/icons/light/misc.png"  }
+                        ListElement { buttonText: "GRE";            code: 6;    iconSource:"/icons/light/misc.png"  }
+                    } // ListModel
+                } // ListView
+            } // MouseArea
+
+
+                // MouseArea{
+                //     anchors.fill: parent
+
+                //     WheelHandler{
+                //         onWheel: (event)=> event.angleDelta.y<0 ? horizontalScrollBar.increase(): horizontalScrollBar.decrease();
+                //     }
+
+                //     ListView {
+                //         // id: buttonView
+                //         anchors.fill: parent
+                //         anchors.topMargin: 5
+                //         anchors.leftMargin: 10
+                //         spacing: 15
+
+                //         orientation: window.mobile ?  ListView.Horizontal : ListView.Vertical
+
+                //         ScrollBar.horizontal: ScrollBar {
+                //             // id: horizontalScrollBar
+                //             active: window.mobile
+                //             orientation: Qt.Horizontal
+                //         }
+
+                //         delegate: Button{
+                //             // id: button
+                //             parent: buttonView
+                //             Text {
+                //                 anchors.horizontalCenter: parent.horizontalCenter
+                //                 anchors.verticalCenter: parent.verticalCenter
+                //                 text: buttonText
+                //                 color: light
+                //                 font.pointSize: 8
+                //             }
+                //             height:25
+                //             width:60
+
+                //             background: Rectangle{
+                //                 anchors.fill:parent
+                //                 color: button.pressed? dark :"#595959"
+                //             }
+
+                //             scale: hovered? 0.9: 1
+
+                //             onClicked: {
+                //                 blockSeq.displayedMenu = -1;
+
+                //                 if(code<=6){
+                //                     blockList.append({ "cod":code,
+                //                                        "dur":0,
+                //                                        "gx":0,
+                //                                        "gy":0,
+                //                                        "gz":0,
+                //                                        "gxStep":0,
+                //                                        "gyStep":0,
+                //                                        "gzStep":0,
+                //                                        "b1x":0,
+                //                                        "b1y":0,
+                //                                        "delta_f":0,
+                //                                        "fov":0,
+                //                                        "n":0,
+                //                                        "grouped":false,
+                //                                        "ngroups":0,
+                //                                        "name":"",
+                //                                        "children":[],
+                //                                        "collapsed": false,
+                //                                        "reps":1});
+                //                 } else if(code>6){
+                //                     var index;
+                //                     for(var i=0; i<groupList.count; i++){
+                //                         if(groupList.get(i).group_cod == code){
+                //                             index = i;
+                //                         }
+                //                     }
+                //                     var num;
+                //                     var counter = 0;
+
+                //                     do{
+                //                         blockList.append(  {"cod":groupList.get(index).cod,
+                //                                             "dur":groupList.get(index).dur,
+                //                                             "gx":groupList.get(index).gx,
+                //                                             "gy":groupList.get(index).gy,
+                //                                             "gz":groupList.get(index).gz,
+                //                                             "gxStep":groupList.get(index).gxStep,
+                //                                             "gyStep":groupList.get(index).gyStep,
+                //                                             "gzStep":groupList.get(index).gzStep,
+                //                                             "b1x":groupList.get(index).b1x,
+                //                                             "b1y":groupList.get(index).b1y,
+                //                                             "delta_f":groupList.get(index).delta_f,
+                //                                             "fov":groupList.get(index).fov,
+                //                                             "n":groupList.get(index).n,
+                //                                             "grouped":false,
+                //                                             "ngroups":groupList.get(index).ngroups,
+                //                                             "name":groupList.get(index).name,
+                //                                             "children":[],
+                //                                             "collapsed": counter==0?false:true,
+                //                                             "reps":groupList.get(index).reps});
+
+                //                         num = groupList.get(index).children.count;
+                //                         for(i=0;i<num;i++){
+                //                             blockList.get(blockList.count-1).children.append({"number":groupList.get(index).children.get(i).number+(-index+blockList.count-1)});
+                //                         }
+                //                         index ++;
+                //                         counter ++;
+                //                     } while((index<groupList.count)&&(groupList.get(index).group_cod === -1));
+                //                     index--;
+                //                 }
+                //             }
+                //         }
+
+                //         model: ListModel {
+                //             // id: buttonList
+                //             ListElement { buttonText: "Excitation"; code: 1 }
+                //             ListElement { buttonText: "Delay"; code: 2 }
+                //             ListElement { buttonText: "Dephase"; code: 3 }
+                //             ListElement { buttonText: "Readout"; code: 4 }
+                //             ListElement { buttonText: "EPI_ACQ"; code: 5 }
+                //             ListElement { buttonText: "GRE"; code: 6 }
+                //         } // ListModel
+                //     } // ListView
+                // }
+        }
+        */
+
+
+        Rectangle{
+            id: defaultMenu
+
+            anchors.left: window.mobile ? blockSeq.left : groupMenu.right
+            anchors.leftMargin: window.mobile ? 0 : 15;
+
+            anchors.top: window.mobile ? blockMenu.bottom : blockSeq.bottom;
+            anchors.topMargin: 15
+
+            width: window.mobile ? blockSeq.width : 500
+            height: 280
+            z: 15
+
+            color: dark_2
+            radius: window.radius
+
+            Text{
+                anchors.centerIn: parent
+                text: "Click on a block to display its menu"
+                font.pointSize: 10
+                color: light
+            }
+
+            ConfigMenu{
+                id: configMenu
+                anchors.fill: parent
+            }
         }
 
-        MouseArea{
-            id: addGroupsButtons
 
-            anchors.top: addGroupsTitle.bottom
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
 
-            ListView {
-                id: groupView
-                anchors.fill: parent
-                orientation: ListView.Vertical
+        // GLOBAL PARAMETERS PANEL
+        GlobalMenu{
+            id: globalMenu
+            visible: true
 
-                delegate: Button{
-                    id: button
-                    parent: buttonView
+            anchors.left: window.desktop ? defaultMenu.right : blockSeq.left
+            anchors.top: window.desktop ? blockSeq.bottom : defaultMenu.bottom
+            anchors.leftMargin: window.desktop ? 10 : 0
+            anchors.topMargin: 15
 
-                    height:40
-                    width:parent.width
+            width: window.mobile ? blockSeq.width : (window.tablet ? 2*blockMenu.width + 15 : 270)
+            height: 155
+            z: 15
 
-                    display: AbstractButton.TextBesideIcon
+            radius: window.radius
 
-                    background : Rectangle{
-                        id: bgButton
-                        color: "transparent"
-                    }
+            // Default parameters
+            b0: "1.5"
+            b1: "10e-6"
+            delta_t: "2e-6"
+            gmax: "60e-3"
+            smax: "500"
+        }
 
-                    contentItem: Item {
-                        anchors.fill: parent
-                        anchors.margins: 10
-                        Image{
-                            id: icon
-                            anchors.verticalCenter: parent.verticalCenter
-                            source:iconSource
-                            width: 20
-                            height: width
-                        }
-                        Text{
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: icon.right; anchors.leftMargin: 10
-                            color: light
-                            text: buttonText
-                        }
-                    }
 
-                    MouseArea {
-                        id: buttonArea
-                        hoverEnabled: true
-                        anchors.fill: parent
-                        onClicked: {
-                            blockSeq.displayedMenu = -1;
+        // PHANTOM
+        /*
+        Rectangle{
+            id: phantomMenu
+            visible: true
 
-                            if(code<=6){
-                                blockList.append({ "cod":code,
-                                                   "dur":0,
-                                                   "gx":0,
-                                                   "gy":0,
-                                                   "gz":0,
-                                                   "gxStep":0,
-                                                   "gyStep":0,
-                                                   "gzStep":0,
-                                                   "b1x":0,
-                                                   "b1y":0,
-                                                   "delta_f":0,
-                                                   "fov":0,
-                                                   "n":0,
-                                                   "grouped":false,
-                                                   "ngroups":0,
-                                                   "name":"",
-                                                   "children":[],
-                                                   "collapsed": false,
-                                                   "reps":1});
-                            } else if(code>6){
-                                var index;
-                                for(var i=0; i<groupList.count; i++){
-                                    if(groupList.get(i).group_cod == code){
-                                        index = i;
-                                    }
-                                }
-                                var num;
-                                var counter = 0;
+            // anchors.left: globalMenu.right
+            anchors.right: createGroupButton.left
+            anchors.left: globalMenu.right
+            anchors.leftMargin: 10; anchors.rightMargin: 10;
 
-                                do{
-                                    blockList.append(  {"cod":groupList.get(index).cod,
-                                                        "dur":groupList.get(index).dur,
-                                                        "gx":groupList.get(index).gx,
-                                                        "gy":groupList.get(index).gy,
-                                                        "gz":groupList.get(index).gz,
-                                                        "gxStep":groupList.get(index).gxStep,
-                                                        "gyStep":groupList.get(index).gyStep,
-                                                        "gzStep":groupList.get(index).gzStep,
-                                                        "b1x":groupList.get(index).b1x,
-                                                        "b1y":groupList.get(index).b1y,
-                                                        "delta_f":groupList.get(index).delta_f,
-                                                        "fov":groupList.get(index).fov,
-                                                        "n":groupList.get(index).n,
-                                                        "grouped":false,
-                                                        "ngroups":groupList.get(index).ngroups,
-                                                        "name":groupList.get(index).name,
-                                                        "children":[],
-                                                        "collapsed": counter==0?false:true,
-                                                        "reps":groupList.get(index).reps});
+            y: 170
+            z: -10
 
-                                    num = groupList.get(index).children.count;
-                                    for(i=0;i<num;i++){
-                                        blockList.get(blockList.count-1).children.append({"number":groupList.get(index).children.get(i).number+(-index+blockList.count-1)});
-                                    }
-                                    index ++;
-                                    counter ++;
-                                } while((index<groupList.count)&&(groupList.get(index).group_cod === -1));
-                                index--;
-                            }
+            height: globalMenu.height
 
-                            for (var j=1; j<100; j++){
-                               scrollBar.increase();
-                            }
-                        }
+            color: "#bdffd3"
 
-                        states: [
-                            State{
-                                when: buttonArea.pressed
-                                PropertyChanges{
-                                    target: bgButton
-                                    color: dark_1
-                                }
-                            },
-                            State{
-                                when: buttonArea.containsMouse
-                                PropertyChanges{
-                                    target: bgButton
-                                    color: dark_3
-                                }
-                            }
-                        ]
-                    }
+            Text{
+                text: "Phantom"
+                anchors.horizontalCenter: parent.horizontalCenter
+                y:5
+                font.pointSize: 12
+            }
+
+            Rectangle{
+                id: phantomInputRect
+
+                border.color: "gray"
+                color: "white"
+
+                anchors.horizontalCenter: parent.horizontalCenter
+                y: 30
+                height: 20
+                width: parent.width - 20
+
+                TextInput{
+                    id: phantomInput
+                    anchors.fill: parent
+                    color: "black"
+                    clip: true
                 }
+            }
+
+            Button{
+                id: phantomButton
+                y: 75
+
+                height: 20
+                width: 75
+                anchors.top: phantomInputRect.bottom
+                anchors.left: phantomInputRect.left
+                anchors.topMargin: 2
+
+                background: Rectangle{
+                    anchors.fill:parent
+                    color: phantomButton.pressed? dark :"#595959"
+                }
+
+                Text {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "Select Folder"
+                    color: light
+                    font.pointSize: 8
+                }
+
+                onClicked: {
+                    phantomDialog.open()
+                }
+            }
+
+            Text{
+                id: phantomName
+                text: ""
+                anchors.top: phantomButton.bottom
+                anchors.left: phantomInputRect.left
+                anchors.topMargin: 15
+                y:5
+                color: "green"
+                font.pointSize: 10
+            }
+
+            ListView{
+                id: viewPhantomList
+                visible: false
+
+                anchors.left: phantomInputRect.left
+                anchors.top: phantomName.bottom
+                height: phantomButton.height
+                width: 100
+
+                orientation: ListView.Horizontal
+                spacing: 2
 
                 model: ListModel {
-                    id: buttonList
-                    ListElement { buttonText: "Excitation";     code: 1;    iconSource:"/icons/light/rf.png" }
-                    ListElement { buttonText: "Delay";          code: 2;    iconSource:"/icons/light/clock.png"  }
-                    ListElement { buttonText: "Dephase";        code: 3;    iconSource:"/icons/light/angle.png"  }
-                    ListElement { buttonText: "Readout";        code: 4;    iconSource:"/icons/light/readout.png"  }
-                    ListElement { buttonText: "EPI_ACQ";        code: 5;    iconSource:"/icons/light/misc.png"  }
-                    ListElement { buttonText: "GRE";            code: 6;    iconSource:"/icons/light/misc.png"  }
-                } // ListModel
-            } // ListView
-        } // MouseArea
+                    ListElement{
+                        name: "T1"
+                    }
+                    ListElement{
+                        name: "T2"
+                    }
+                    ListElement{
+                        name: "PD"
+                    }
+                }
 
+                delegate:    Button{
+                                id:viewPhantomButton
+                                height:25
+                                width:25
 
-            // MouseArea{
-            //     anchors.fill: parent
+                                background: Rectangle{
+                                    id: viewPhantomRect
+                                    anchors.fill:parent
+                                    color: viewPhantomButton.pressed? dark :"#595959"
+                                }
 
-            //     WheelHandler{
-            //         onWheel: (event)=> event.angleDelta.y<0 ? horizontalScrollBar.increase(): horizontalScrollBar.decrease();
-            //     }
+                                Text {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: name
+                                    color: light
+                                    font.pointSize: 8
+                                }
 
-            //     ListView {
-            //         // id: buttonView
-            //         anchors.fill: parent
-            //         anchors.topMargin: 5
-            //         anchors.leftMargin: 10
-            //         spacing: 15
+                                onClicked: {
+                                     backend.plotPhantom(name);
+                                }
+                            }
+            }
 
-            //         orientation: window.mobile ?  ListView.Horizontal : ListView.Vertical
+            FolderDialog{
+                id: phantomDialog
+                title: "Select Phantom Folder"
 
-            //         ScrollBar.horizontal: ScrollBar {
-            //             // id: horizontalScrollBar
-            //             active: window.mobile
-            //             orientation: Qt.Horizontal
-            //         }
+                currentFolder: "file:///home/pablov/Desktop/SeqSimulator/nifti_maps/"
 
-            //         delegate: Button{
-            //             // id: button
-            //             parent: buttonView
-            //             Text {
-            //                 anchors.horizontalCenter: parent.horizontalCenter
-            //                 anchors.verticalCenter: parent.verticalCenter
-            //                 text: buttonText
-            //                 color: light
-            //                 font.pointSize: 8
-            //             }
-            //             height:25
-            //             width:60
-
-            //             background: Rectangle{
-            //                 anchors.fill:parent
-            //                 color: button.pressed? dark :"#595959"
-            //             }
-
-            //             scale: hovered? 0.9: 1
-
-            //             onClicked: {
-            //                 blockSeq.displayedMenu = -1;
-
-            //                 if(code<=6){
-            //                     blockList.append({ "cod":code,
-            //                                        "dur":0,
-            //                                        "gx":0,
-            //                                        "gy":0,
-            //                                        "gz":0,
-            //                                        "gxStep":0,
-            //                                        "gyStep":0,
-            //                                        "gzStep":0,
-            //                                        "b1x":0,
-            //                                        "b1y":0,
-            //                                        "delta_f":0,
-            //                                        "fov":0,
-            //                                        "n":0,
-            //                                        "grouped":false,
-            //                                        "ngroups":0,
-            //                                        "name":"",
-            //                                        "children":[],
-            //                                        "collapsed": false,
-            //                                        "reps":1});
-            //                 } else if(code>6){
-            //                     var index;
-            //                     for(var i=0; i<groupList.count; i++){
-            //                         if(groupList.get(i).group_cod == code){
-            //                             index = i;
-            //                         }
-            //                     }
-            //                     var num;
-            //                     var counter = 0;
-
-            //                     do{
-            //                         blockList.append(  {"cod":groupList.get(index).cod,
-            //                                             "dur":groupList.get(index).dur,
-            //                                             "gx":groupList.get(index).gx,
-            //                                             "gy":groupList.get(index).gy,
-            //                                             "gz":groupList.get(index).gz,
-            //                                             "gxStep":groupList.get(index).gxStep,
-            //                                             "gyStep":groupList.get(index).gyStep,
-            //                                             "gzStep":groupList.get(index).gzStep,
-            //                                             "b1x":groupList.get(index).b1x,
-            //                                             "b1y":groupList.get(index).b1y,
-            //                                             "delta_f":groupList.get(index).delta_f,
-            //                                             "fov":groupList.get(index).fov,
-            //                                             "n":groupList.get(index).n,
-            //                                             "grouped":false,
-            //                                             "ngroups":groupList.get(index).ngroups,
-            //                                             "name":groupList.get(index).name,
-            //                                             "children":[],
-            //                                             "collapsed": counter==0?false:true,
-            //                                             "reps":groupList.get(index).reps});
-
-            //                         num = groupList.get(index).children.count;
-            //                         for(i=0;i<num;i++){
-            //                             blockList.get(blockList.count-1).children.append({"number":groupList.get(index).children.get(i).number+(-index+blockList.count-1)});
-            //                         }
-            //                         index ++;
-            //                         counter ++;
-            //                     } while((index<groupList.count)&&(groupList.get(index).group_cod === -1));
-            //                     index--;
-            //                 }
-            //             }
-            //         }
-
-            //         model: ListModel {
-            //             // id: buttonList
-            //             ListElement { buttonText: "Excitation"; code: 1 }
-            //             ListElement { buttonText: "Delay"; code: 2 }
-            //             ListElement { buttonText: "Dephase"; code: 3 }
-            //             ListElement { buttonText: "Readout"; code: 4 }
-            //             ListElement { buttonText: "EPI_ACQ"; code: 5 }
-            //             ListElement { buttonText: "GRE"; code: 6 }
-            //         } // ListModel
-            //     } // ListView
-            // }
-    }
-    */
-
-    Rectangle{
-        color: window.color
-
-        height: 30
-        anchors.left: blockMenu.left
-        anchors.right: groupMenu.right
-
-        z: 10
-
-        anchors.top: blockMenu.bottom
-    }
-
-
-
-    Rectangle{
-        id: defaultMenu
-
-        anchors.left: window.mobile ? blockSeq.left : groupMenu.right
-        anchors.leftMargin: window.mobile ? 0 : 15;
-
-        anchors.top: window.mobile ? blockMenu.bottom : blockSeq.bottom;
-        anchors.topMargin: 15
-
-        width: window.mobile ? blockSeq.width : 500
-        height: 280
-        z: 15
-
-        color: dark_2
-        radius: window.radius
-
-        Text{
-            anchors.centerIn: parent
-            text: "Click on a block to display its menu"
-            font.pointSize: 10
-            color: light
+                onAccepted:{
+                    phantomInput.text = this.selectedFolder;
+                    var phant = phantomInput.text.substring(7,phantomInput.text.length);
+                    phantomName.text = backend.loadPhantom(phant);
+                    viewPhantomList.visible = true;
+                }
+            }
         }
-
-        ConfigMenu{
-            id: configMenu
-            anchors.fill: parent
-        }
-    }
+        */
 
 
-
-    // GLOBAL PARAMETERS PANEL
-    GlobalMenu{
-        id: globalMenu
-        visible: true
-
-        anchors.left: window.desktop ? defaultMenu.right : blockSeq.left
-        anchors.top: window.desktop ? blockSeq.bottom : defaultMenu.bottom
-        anchors.leftMargin: window.desktop ? 10 : 0
-        anchors.topMargin: 15
-
-        width: window.mobile ? blockSeq.width : 270
-        height: 155
-        z: 15
-
-        radius: window.radius
-
-        // Default parameters
-        b0: "1.5"
-        b1: "10e-6"
-        delta_t: "2e-6"
-        gmax: "60e-3"
-        smax: "500"
-    }
-
-
-    // PHANTOM
-    /*
-    Rectangle{
-        id: phantomMenu
-        visible: true
-
-        // anchors.left: globalMenu.right
-        anchors.right: createGroupButton.left
-        anchors.left: globalMenu.right
-        anchors.leftMargin: 10; anchors.rightMargin: 10;
-
-        y: 170
-        z: -10
-
-        height: globalMenu.height
-
-        color: "#bdffd3"
-
-        Text{
-            text: "Phantom"
-            anchors.horizontalCenter: parent.horizontalCenter
-            y:5
-            font.pointSize: 12
-        }
-
+        // CREATE GROUP
+        /*
         Rectangle{
-            id: phantomInputRect
+            id: createGroupButton
+            // visible:false
 
-            border.color: "gray"
-            color: "white"
+            property bool active: false
 
-            anchors.horizontalCenter: parent.horizontalCenter
-            y: 30
-            height: 20
-            width: parent.width - 20
+            width: window.mobile ? blockSeq.width : buttons.width
+            anchors.left: blockSeq.left
+            anchors.bottom: window.mobile ? blockSeq.bottom : defaultMenu.bottom
 
-            TextInput{
-                id: phantomInput
-                anchors.fill: parent
-                color: "black"
-                clip: true
-            }
-        }
-
-        Button{
-            id: phantomButton
-            y: 75
-
-            height: 20
-            width: 75
-            anchors.top: phantomInputRect.bottom
-            anchors.left: phantomInputRect.left
-            anchors.topMargin: 2
-
-            background: Rectangle{
-                anchors.fill:parent
-                color: phantomButton.pressed? dark :"#595959"
-            }
-
-            Text {
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
-                text: "Select Folder"
-                color: light
-                font.pointSize: 8
-            }
-
-            onClicked: {
-                phantomDialog.open()
-            }
-        }
-
-        Text{
-            id: phantomName
-            text: ""
-            anchors.top: phantomButton.bottom
-            anchors.left: phantomInputRect.left
             anchors.topMargin: 15
-            y:5
-            color: "green"
-            font.pointSize: 10
-        }
 
-        ListView{
-            id: viewPhantomList
-            visible: false
+            height: 31
 
-            anchors.left: phantomInputRect.left
-            anchors.top: phantomName.bottom
-            height: phantomButton.height
-            width: 100
+            color: active? "gray": "#595959";
 
-            orientation: ListView.Horizontal
-            spacing: 2
-
-            model: ListModel {
-                ListElement{
-                    name: "T1"
-                }
-                ListElement{
-                    name: "T2"
-                }
-                ListElement{
-                    name: "PD"
-                }
+            Text{
+                // id: buttonText
+                anchors.centerIn: parent
+                text: parent.active? "Done": "Create New Group"
+                color: light
+                font.pointSize: buttonTextSize
             }
 
-            delegate:    Button{
-                            id:viewPhantomButton
-                            height:25
-                            width:25
+            MouseArea{
+                id: groupArea
+                anchors.fill: parent
+                hoverEnabled: true
+                onClicked: {
+                    createGroupButton.active = !createGroupButton.active;
 
-                            background: Rectangle{
-                                id: viewPhantomRect
-                                anchors.fill:parent
-                                color: viewPhantomButton.pressed? dark :"#595959"
-                            }
+                    if(createGroupButton.active){
+                        groupDialog.open();
+                    }
 
-                            Text {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: name
-                                color: light
-                                font.pointSize: 8
-                            }
-
-                            onClicked: {
-                                 backend.plotPhantom(name);
-                            }
+                    else{
+                    }
+                }
+                states:
+                [
+                    State{
+                        when: groupArea.containsMouse
+                        PropertyChanges{
+                            target: createGroupButton
+                            scale: 0.9
                         }
-        }
+                    }
+                ]
+            } // MouseArea
+        } // Rectangle ---------------------------------------------------------------------------------
+        */
 
-        FolderDialog{
-            id: phantomDialog
-            title: "Select Phantom Folder"
+        // Dialog{
+        //     id: groupDialog
+        //     property string input
+        //     title: "Choose a name for the group"
+        //     anchors.centerIn: window.center
+        //     height: 200
+        //     width: 400
+        //     standardButtons: Dialog.Ok | Dialog.Cancel
+        //     TextField{
+        //         id: nameInput
+        //         width: parent.width *0.75
+        //         anchors.horizontalCenter: parent.horizontalCenter
+        //     }
+        //     onAccepted: {
+        //         if (nameInput.text!=""){
+        //             input = nameInput.text;
+        //             nameInput.text = "";
+        //         } else{
+        //             createGroupButton.active = false;
+        //             console.log("You must choose a name")
+        //         }
+        //     }
+        //     onRejected: {
+        //         createGroupButton.active = false;
+        //     }
+        // }
 
-            currentFolder: "file:///home/pablov/Desktop/SeqSimulator/nifti_maps/"
 
-            onAccepted:{
-                phantomInput.text = this.selectedFolder;
-                var phant = phantomInput.text.substring(7,phantomInput.text.length);
-                phantomName.text = backend.loadPhantom(phant);
-                viewPhantomList.visible = true;
+        // SIMULATE
+        /*
+        Timer {
+            id: simTimer
+            interval: 100 // Ajusta el tiempo de espera según tus necesidades
+            onTriggered: {
+                // sim();
+                // plotSeq();
             }
         }
-    }
-    */
 
+        function sim(){
+            var sys = createScanner();
+            var seq = createSeq();
+            // var phant = phantomInput.text.substring(7,phantomInput.text.length);
 
-    // CREATE GROUP
-    /*
-    Rectangle{
-        id: createGroupButton
-        // visible:false
-
-        property bool active: false
-
-        width: window.mobile ? blockSeq.width : buttons.width
-        anchors.left: blockSeq.left
-        anchors.bottom: window.mobile ? blockSeq.bottom : defaultMenu.bottom
-
-        anchors.topMargin: 15
-
-        height: 31
-
-        color: active? "gray": "#595959";
-
-        Text{
-            // id: buttonText
-            anchors.centerIn: parent
-            text: parent.active? "Done": "Create New Group"
-            color: light
-            font.pointSize: buttonTextSize
+            // backend.simulate(sys,seq);
         }
 
-        MouseArea{
-            id: groupArea
-            anchors.fill: parent
-            hoverEnabled: true
-            onClicked: {
-                createGroupButton.active = !createGroupButton.active;
-
-                if(createGroupButton.active){
-                    groupDialog.open();
-                }
-
-                else{
-                }
+        Rectangle{
+            id: simButton
+            color: "#595959"
+            height: createGroupButton.height
+            anchors.top: createGroupButton.bottom
+            anchors.left: createGroupButton.left
+            anchors.right: createGroupButton.right
+            anchors.topMargin: 10
+            Text{
+                anchors.centerIn: parent
+                text: "Simulate"
+                font.pointSize: buttonTextSize
+                color: light
             }
-            states:
-            [
-                State{
-                    when: groupArea.containsMouse
+
+            MouseArea{
+                id: simArea
+                anchors.fill: parent
+                hoverEnabled: true
+
+                onClicked: {
+                    //To simulate we need 3 inputs: a Scanner (with global parameters), a Sequence and a Phantom
+                    if(blockList.count>0){
+                        if (phantomName.text !== ""){
+                            loadingRect.visible = true;
+                            simTimer.start();
+                        } else {
+                            console.log("ERROR: Please, select a valid phantom to simulate")
+                        }
+                    }else{
+                        console.log("ERROR: The sequence is empty");
+                    }
+                }
+                states:
+                [
+                    State{
+                        when: simArea.containsMouse
+                        PropertyChanges{
+                            target: simButton
+                            scale: 0.9
+                        }
+                    }
+                ]
+            }
+        }
+        */
+
+
+        // SAVE SEQUENCE
+        /*
+        Rectangle{
+            id: saveSeqButton
+            color: simButton.color
+            height: createGroupButton.height
+            anchors.top: simButton.bottom
+            anchors.left: createGroupButton.left
+            anchors.right: createGroupButton.right
+            anchors.topMargin: 10
+            Text{
+                anchors.centerIn: parent
+                text: "Save Sequence"
+                font.pointSize: buttonTextSize
+                color: light
+            }
+            MouseArea{
+                id: saveSeqArea
+                anchors.fill: parent
+                hoverEnabled: true
+                onClicked: {
+                    saveDialog.visible = true;
+                }
+                states:
+                [State{
+                    when: saveSeqArea.containsMouse
                     PropertyChanges{
-                        target: createGroupButton
+                        target: saveSeqButton
                         scale: 0.9
                     }
+                }]
+            }
+
+            FileDialog {
+                id:saveDialog
+                nameFilters: ["QML File (*.qml)","All Files (*)"]
+
+                fileMode: FileDialog.SaveFile
+                currentFolder: "file:///home/pablov/Desktop/Editor/Sequences"
+
+                onAccepted: {
+                    var array = saveSeq();
+                    backend.saveSeq(array,seqDescription.text,saveDialog.selectedFile);
+                    console.log(saveDialog.selectedFile);
                 }
-            ]
-        } // MouseArea
-    } // Rectangle ---------------------------------------------------------------------------------
-    */
-
-    // Dialog{
-    //     id: groupDialog
-    //     property string input
-    //     title: "Choose a name for the group"
-    //     anchors.centerIn: window.center
-    //     height: 200
-    //     width: 400
-    //     standardButtons: Dialog.Ok | Dialog.Cancel
-    //     TextField{
-    //         id: nameInput
-    //         width: parent.width *0.75
-    //         anchors.horizontalCenter: parent.horizontalCenter
-    //     }
-    //     onAccepted: {
-    //         if (nameInput.text!=""){
-    //             input = nameInput.text;
-    //             nameInput.text = "";
-    //         } else{
-    //             createGroupButton.active = false;
-    //             console.log("You must choose a name")
-    //         }
-    //     }
-    //     onRejected: {
-    //         createGroupButton.active = false;
-    //     }
-    // }
-
-
-    // SIMULATE
-    /*
-    Timer {
-        id: simTimer
-        interval: 100 // Ajusta el tiempo de espera según tus necesidades
-        onTriggered: {
-            // sim();
-            // plotSeq();
-        }
-    }
-
-    function sim(){
-        var sys = createScanner();
-        var seq = createSeq();
-        // var phant = phantomInput.text.substring(7,phantomInput.text.length);
-
-        // backend.simulate(sys,seq);
-    }
-
-    Rectangle{
-        id: simButton
-        color: "#595959"
-        height: createGroupButton.height
-        anchors.top: createGroupButton.bottom
-        anchors.left: createGroupButton.left
-        anchors.right: createGroupButton.right
-        anchors.topMargin: 10
-        Text{
-            anchors.centerIn: parent
-            text: "Simulate"
-            font.pointSize: buttonTextSize
-            color: light
-        }
-
-        MouseArea{
-            id: simArea
-            anchors.fill: parent
-            hoverEnabled: true
-
-            onClicked: {
-                //To simulate we need 3 inputs: a Scanner (with global parameters), a Sequence and a Phantom
-                if(blockList.count>0){
-                    if (phantomName.text !== ""){
-                        loadingRect.visible = true;
-                        simTimer.start();
-                    } else {
-                        console.log("ERROR: Please, select a valid phantom to simulate")
-                    }
-                }else{
-                    console.log("ERROR: The sequence is empty");
+                onRejected: {
+                    console.log("Canceled")
                 }
             }
-            states:
-            [
-                State{
-                    when: simArea.containsMouse
+        }
+        */
+
+
+        // LOAD SEQUENCE
+        /*
+        Rectangle{
+            id: loadSeqButton
+            color: simButton.color
+            height: createGroupButton.height
+            anchors.top: saveSeqButton.bottom
+            anchors.left: createGroupButton.left
+            anchors.right: createGroupButton.right
+            anchors.topMargin: 10
+            Text{
+                anchors.centerIn: parent
+                text: "Load Sequence"
+                font.pointSize: buttonTextSize
+                color: light
+            }
+            MouseArea{
+                id: loadSeqArea
+                anchors.fill: parent
+                hoverEnabled: true
+                onClicked: {
+                    loadDialog.visible = true;
+                }
+                states:
+                [State{
+                    when: loadSeqArea.containsMouse
                     PropertyChanges{
-                        target: simButton
+                        target: loadSeqButton
                         scale: 0.9
                     }
-                }
-            ]
-        }
-    }
-    */
-
-
-    // SAVE SEQUENCE
-    /*
-    Rectangle{
-        id: saveSeqButton
-        color: simButton.color
-        height: createGroupButton.height
-        anchors.top: simButton.bottom
-        anchors.left: createGroupButton.left
-        anchors.right: createGroupButton.right
-        anchors.topMargin: 10
-        Text{
-            anchors.centerIn: parent
-            text: "Save Sequence"
-            font.pointSize: buttonTextSize
-            color: light
-        }
-        MouseArea{
-            id: saveSeqArea
-            anchors.fill: parent
-            hoverEnabled: true
-            onClicked: {
-                saveDialog.visible = true;
+                }]
             }
-            states:
-            [State{
-                when: saveSeqArea.containsMouse
-                PropertyChanges{
-                    target: saveSeqButton
-                    scale: 0.9
+
+            FileDialog {
+                id:loadDialog
+                nameFilters: ["QML File (*.qml)"]
+                // currentFolder: "file:///home/pablov/Desktop/SeqSimulator/Sequences"
+
+                onAccepted: {
+                    modelLoader.source = loadDialog.selectedFile;
+                    blockList.clear();
+                    configMenu.menuVisible = false;
+                    for(var i=0; i<modelLoader.item.count; i++){
+                        blockList.append(modelLoader.item.get(i));
+                    }
+                    if(typeof modelLoader.item.seqDescription !== 'undefined'){
+                        seqDescription.text = modelLoader.item.seqDescription;
+                    }
                 }
-            }]
-        }
-
-        FileDialog {
-            id:saveDialog
-            nameFilters: ["QML File (*.qml)","All Files (*)"]
-
-            fileMode: FileDialog.SaveFile
-            currentFolder: "file:///home/pablov/Desktop/Editor/Sequences"
-
-            onAccepted: {
-                var array = saveSeq();
-                backend.saveSeq(array,seqDescription.text,saveDialog.selectedFile);
-                console.log(saveDialog.selectedFile);
-            }
-            onRejected: {
-                console.log("Canceled")
-            }
-        }
-    }
-    */
-
-
-    // LOAD SEQUENCE
-    /*
-    Rectangle{
-        id: loadSeqButton
-        color: simButton.color
-        height: createGroupButton.height
-        anchors.top: saveSeqButton.bottom
-        anchors.left: createGroupButton.left
-        anchors.right: createGroupButton.right
-        anchors.topMargin: 10
-        Text{
-            anchors.centerIn: parent
-            text: "Load Sequence"
-            font.pointSize: buttonTextSize
-            color: light
-        }
-        MouseArea{
-            id: loadSeqArea
-            anchors.fill: parent
-            hoverEnabled: true
-            onClicked: {
-                loadDialog.visible = true;
-            }
-            states:
-            [State{
-                when: loadSeqArea.containsMouse
-                PropertyChanges{
-                    target: loadSeqButton
-                    scale: 0.9
-                }
-            }]
-        }
-
-        FileDialog {
-            id:loadDialog
-            nameFilters: ["QML File (*.qml)"]
-            // currentFolder: "file:///home/pablov/Desktop/SeqSimulator/Sequences"
-
-            onAccepted: {
-                modelLoader.source = loadDialog.selectedFile;
-                blockList.clear();
-                configMenu.menuVisible = false;
-                for(var i=0; i<modelLoader.item.count; i++){
-                    blockList.append(modelLoader.item.get(i));
-                }
-                if(typeof modelLoader.item.seqDescription !== 'undefined'){
-                    seqDescription.text = modelLoader.item.seqDescription;
+                onRejected: {
+                    console.log("Canceled")
                 }
             }
-            onRejected: {
-                console.log("Canceled")
-            }
         }
-    }
-    */
+        */
 
 
 
-    // DISPLAY OUTPUT IMAGES
-    /*
-    Rectangle{
-        id: resultRect
-        anchors.top: loadSeqButton.bottom
-        anchors.left: defaultMenu.right
-        anchors.right: loadSeqButton.right
-        anchors.bottom: parent.bottom
-
-        anchors.bottomMargin: 15
-        anchors.topMargin: 15
-        anchors.leftMargin: 15
-
-        color: "transparent"
-
-        //DISPLAY RECON IMAGE
+        // DISPLAY OUTPUT IMAGES
+        /*
         Rectangle{
-            id: reconRect
-            anchors.top: parent.top
+            id: resultRect
+            anchors.top: loadSeqButton.bottom
+            anchors.left: defaultMenu.right
+            anchors.right: loadSeqButton.right
             anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            color: "gray"
 
-            width: (parent.width/2) - 5
+            anchors.bottomMargin: 15
+            anchors.topMargin: 15
+            anchors.leftMargin: 15
 
-            Text {
-                y:5
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: "Reconstruction"
-                font.pointSize: 12
+            color: "transparent"
+
+            //DISPLAY RECON IMAGE
+            Rectangle{
+                id: reconRect
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                color: "gray"
+
+                width: (parent.width/2) - 5
+
+                Text {
+                    y:5
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: "Reconstruction"
+                    font.pointSize: 12
+                }
+
+                Image{
+                    id: recon
+                    anchors.fill: parent
+                    anchors.margins: 5
+                    anchors.topMargin: 30
+                    smooth: false
+                    cache: false
+                }
             }
 
-            Image{
-                id: recon
-                anchors.fill: parent
-                anchors.margins: 5
-                anchors.topMargin: 30
-                smooth: false
-                cache: false
+            //DISPLAY K-SPACE
+            Rectangle{
+                id: kspaceRect
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.right: parent.right
+                color: "gray"
+
+                width: (parent.width/2) - 5
+
+                Text {
+                    y:5
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: "K-Space"
+                    font.pointSize: 12
+                }
+
+                Image{
+                    id: kspace
+                    anchors.fill: parent
+                    anchors.margins: 5
+                    anchors.topMargin: 30
+                    smooth: false
+                    cache: false
+                }
             }
         }
-
-        //DISPLAY K-SPACE
-        Rectangle{
-            id: kspaceRect
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            color: "gray"
-
-            width: (parent.width/2) - 5
-
-            Text {
-                y:5
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: "K-Space"
-                font.pointSize: 12
-            }
-
-            Image{
-                id: kspace
-                anchors.fill: parent
-                anchors.margins: 5
-                anchors.topMargin: 30
-                smooth: false
-                cache: false
-            }
-        }
-    }
-    */
-}
+        */
+    } // Flickable
+} // ApplicationWindow
 

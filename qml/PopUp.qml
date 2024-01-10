@@ -8,6 +8,8 @@ Item {
     property alias text: label.text
     property bool active: false
 
+    property int textSize: 8
+
     function closePopUp(){
         popup.visible = false
         popup.active = false
@@ -39,6 +41,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
 
             wrapMode: Text.WordWrap
+            font.pointSize: popup.textSize
         }
 
         Item{
@@ -66,6 +69,7 @@ Item {
             anchors.right: parent.right
             color: "red"
             wrapMode: Text.WordWrap
+            font.pointSize: popup.textSize
         }
     }
 
@@ -96,6 +100,7 @@ Item {
     Button {
         id: doneButton
         text: "Done"
+        font.pointSize: popup.textSize
 
         height:20
         width:50
@@ -114,7 +119,7 @@ Item {
             for(var i = 0; i<blockList.count; i++){
                 if(blockList.get(i).grouped){
                     if (counter != 0){
-                        if ((i - lastGrouped) > 1){
+                        if ((i - lastGrouped) > 1 & !isGroup(lastGrouped)){
                             log.text = "All selected blocks must be adjacent"
                             return;
                         }
