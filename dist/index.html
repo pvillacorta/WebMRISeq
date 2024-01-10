@@ -9,18 +9,18 @@
         and Qt device independent pixels. -->
     <meta name="viewport" content="width=device-width, height=device-height, user-scalable=0"/>
 
-    <title>appFooWasm</title>
+    <title>WebMRISequenceEditor</title>
     <link rel="stylesheet" href="main.css">
   </head>
   <body onload="init()">
-    <div class="tab">
-        <button class="tablinks" onclick="openScreen(event, 'screenEditor')">Sequence Editor</button>
-        <button class="tablinks" onclick="openScreen(event, 'screenSeq')">Sequence Diagram</button>
-        <button class="tablinks" onclick="openScreen(event, 'screenVtk')">VTK 3D Viewer</button>
+    <div class="tabs-mobile">
+        <button class="tablinks" onclick="openScreen('screenEditor')">Editor</button>
+        <button class="tablinks" onclick="openScreen('screenSeq')">Diagram</button>
+        <button class="tablinks" onclick="openScreen('screenVtk')">3D Viewer</button>
     </div>
     <div class="container">
-        <div class="box col-8 col-s-12" id="screenEditor">
-            <div id="menuBar">
+        <div class="box col-8" id="screenEditor">
+            <!-- <div id="menuBar">
                 <div class="dropdown" id="fileMenu">
                     <button onclick="openDropDownMenu('fileContent')" onmouseover="menuHovered('fileContent')" class="dropbtn">File</button>
                     <div class="dropdown-content" id="fileContent">
@@ -37,7 +37,7 @@
                         <button>Other</button>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <div id="screenWasm">
                 <figure style="overflow:visible;" id="qtspinner">
                     <center style="margin-top:1.5em; line-height:150%">
@@ -49,8 +49,8 @@
                 </figure>
             </div>
         </div> 
-        <div class="box col-3 col-s-12" id="screenVtk"></div>
-        <div class="box col-11 col-s-12" id="screenSeq">Sequence diagram</div>
+        <div class="box col-3" id="screenVtk"></div>
+        <div class="box col-11" id="screenSeq">Sequence diagram</div>
     </div>
     
 
@@ -68,7 +68,6 @@
                 if (screenWasm === ui)
                     screenWasm.style.position = 'default';
                 ui.style.display = 'block';
-                wasmInitSize();
             }
 
             try {

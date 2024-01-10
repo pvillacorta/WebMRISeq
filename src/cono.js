@@ -59,6 +59,7 @@ openGLRenderWindow.setContainer(container);
 
 const { width, height } = container.getBoundingClientRect();
 openGLRenderWindow.setSize(width, height);
+const initHeight = height;
 
 // ----------------------------------------------------------------------------
 // Setup an interactor to handle mouse events
@@ -78,7 +79,7 @@ interactor.setInteractorStyle(vtkInteractorStyleTrackballCamera.newInstance());
 // Responsive vtk window size
 window.addEventListener('resize', function() {
     var { width, height } = container.getBoundingClientRect();
-    openGLRenderWindow.setSize(width, height);
+    openGLRenderWindow.setSize(width, initHeight);
     interactor.setView(openGLRenderWindow);
     interactor.initialize();
     interactor.bindEvents(container);

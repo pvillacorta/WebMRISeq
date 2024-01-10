@@ -36,38 +36,49 @@ window.onclick = function(event) {
         closeAllDropDownMenu();
     }
 }
-
 // -----------------------------------------------------------------------
 
 
 
-// Responsive Wasm window size
-function wasmInitSize() {
-    var div = document.getElementById('screenWasm');
-    manageWasmHeight(div);
+// ---------------------- Mobile tabs handling ----------------------------
+function openScreen(screenId) {
+    // Oculta todos los divs
+    var tabs = document.getElementsByClassName("box");
+    for (var i = 0; i < tabs.length; i++) {
+      tabs[i].style.display = "none";
+    }
+  
+    // Muestra el div seleccionado
+    document.getElementById(screenId).style.display = "table";
 }
 
-window.addEventListener('resize', function() {
-    var divWasm = document.getElementById('screenWasm');
-    manageWasmHeight(divWasm);
-  });
-
-
-function manageWasmHeight(div){
-var divWidth = div.offsetWidth; // Ancho actual del div
-    if (divWidth >= 1100) {  
-            div.style.height = '470px'; 
-    } else if (divWidth >= 660){
-        div.style.height = '630px';    
+// Función para manejar el cambio de tamaño de pantalla
+function handleResize() {
+    if (window.innerWidth > 1275) {
+      // Si es escritorio, mostrar los divs
+      var tabs = document.getElementsByClassName("box");
+      for (var i = 0; i < tabs.length; i++) {
+        tabs[i].style.display = "table";
+      }
+      document.querySelector(".tabs-mobile").style.display = "none";
     } else {
-        div.style.height = '710px';
+      // Si es móvil, ocultar los divs y mostrar las pestañas
+      var tabs = document.getElementsByClassName("box");
+      for (var i = 0; i < tabs.length; i++) {
+        tabs[i].style.display = "none";
+      }
+      document.getElementById("screenEditor").style.display = "table";
+      document.querySelector(".tabs-mobile").style.display = "block";
     }
 }
 
+// Manejar el cambio de tamaño de pantalla
+window.addEventListener("resize", handleResize);
+
+// Llamar a la función al cargar la página para establecer el estado inicial
+handleResize();
 
 function loadSequence(){
     document.getElementById('my_file').click();
 }
-
-
 
