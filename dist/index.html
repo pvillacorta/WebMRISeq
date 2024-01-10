@@ -14,9 +14,9 @@
   </head>
   <body onload="init()">
     <div class="tabs-mobile">
-        <button class="tablinks" onclick="openScreen('screenEditor')">Editor</button>
-        <button class="tablinks" onclick="openScreen('screenSeq')">Diagram</button>
-        <button class="tablinks" onclick="openScreen('screenVtk')">3D Viewer</button>
+        <button id="btn-screenEditor" class="tablinks" onclick="openScreen('screenEditor')">Editor</button>
+        <button id="btn-screenSeq" class="tablinks" onclick="openScreen('screenSeq')">Diagram</button>
+        <button id="btn-screenVtk" class="tablinks" onclick="openScreen('screenVtk')">3D Viewer</button>
     </div>
     <div class="container">
         <div class="box col-8" id="screenEditor">
@@ -39,18 +39,21 @@
                 </div>
             </div> -->
             <div id="screenWasm">
-                <figure style="overflow:visible;" id="qtspinner">
-                    <center style="margin-top:1.5em; line-height:150%">
+                <div id="qtspinner" style="height:100%">
+                    <center>
+                        <div style="height:20px"></div>
                         <img src="qtlogo.svg" width="320" height="200" style="display:block"></img>
                         <strong>Qt for WebAssembly: appFooWasm</strong>
                         <div id="qtstatus"></div>
                         <noscript>JavaScript is disabled. Please enable JavaScript to use this application.</noscript>
                     </center>
-                </figure>
+                </div>
             </div>
         </div> 
         <div class="box col-3" id="screenVtk"></div>
-        <div class="box col-11" id="screenSeq">Sequence diagram</div>
+        <div class="box col-11" id="screenSeq">
+            <h1 style="margin: 15px;">Sequence diagram</h1>
+        </div>
     </div>
     
 

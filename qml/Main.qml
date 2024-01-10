@@ -12,7 +12,7 @@ ApplicationWindow {
 
     property int desktopHeight: 470
     property int tabletHeight: 630
-    property int mobileHeight: 850
+    property int mobileHeight: 950
 
     property bool desktop: width>=desktopWidth
     property bool tablet: width >= mobileWidth & width < desktopWidth

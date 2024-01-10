@@ -77,10 +77,10 @@ interactor.bindEvents(container);
 interactor.setInteractorStyle(vtkInteractorStyleTrackballCamera.newInstance());
 
 // Responsive vtk window size
-window.addEventListener('resize', function() {
-    var { width, height } = container.getBoundingClientRect();
-    openGLRenderWindow.setSize(width, initHeight);
-    interactor.setView(openGLRenderWindow);
-    interactor.initialize();
-    interactor.bindEvents(container);
-  });
+// window.addEventListener('resize', function() {
+//     var { width, height } = container.getBoundingClientRect();
+//     openGLRenderWindow.setSize(width, initHeight);
+//     interactor.setView(openGLRenderWindow);
+//     interactor.initialize();
+//     interactor.bindEvents(container);
+//   });
