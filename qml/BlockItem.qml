@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 
 Item{
     id: block
@@ -276,21 +277,24 @@ Item{
             }
         } // DropArea
 
+        RectangularGlow {
+            id: itemGlow
+            anchors.fill: item
+            visible: !dragArea.held
+            glowRadius: 4
+            spread: 0.2
+            color: item.color
+            opacity: 0.5
+            cornerRadius: item.radius + glowRadius
+        }
+
         Rectangle {
             id: item;
             color: blockColor
             anchors.fill: parent
             anchors.margins: 10
 
-            radius: 3
-
-            // // Block Border
-            // Rectangle {
-            //     anchors.fill: parent
-            //     border.color: dark_secondary; border.width: 6
-            //     color: "transparent"
-            //     visible: item.state = "active"
-            // }
+            radius: 4
 
             // Block Text
             Text {
@@ -326,7 +330,7 @@ Item{
         } //Rectangle
 
         Item{
-            visible:dragArea.held?false:true
+            visible:!dragArea.held
             anchors.left:item.right
             anchors.leftMargin:6
             anchors.verticalCenter: item.verticalCenter
