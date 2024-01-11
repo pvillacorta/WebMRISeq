@@ -453,6 +453,7 @@ ApplicationWindow {
         // Example blocks
         ListElement{
             cod: 2
+            name: ""
             collapsed: false
             ngroups: 0
             children:[]
@@ -672,7 +673,6 @@ ApplicationWindow {
         PopUp {
             id: popup
             text: "Click on the blocks you want to group and give a name to the group:"
-
             x: blockSeq.width/2 - width/2
             y: blockSeq.y + blockSeq.height + seqGlow.glowRadius
         }
