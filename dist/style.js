@@ -99,5 +99,15 @@ function loadSequence(){
     document.getElementById('my_file').click();
 }
 
+// Disable long-press text selection inside wasm View
+function absorbEvent(event) {
+    event.returnValue = false;
+}
+  
+let div1 = document.querySelector("#screenEditor");
+div1.addEventListener("touchstart", absorbEvent);
+div1.addEventListener("touchend", absorbEvent);
+div1.addEventListener("touchmove", absorbEvent);
+div1.addEventListener("touchcancel", absorbEvent);
 
 initTabs();
