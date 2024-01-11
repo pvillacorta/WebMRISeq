@@ -448,7 +448,18 @@ ApplicationWindow {
 
 
     // ------------------------- BLOCK LIST ---------------------------------------------------
-    ListModel{id:blockList}
+    ListModel{
+        id:blockList
+        // Example blocks
+        ListElement{
+            cod: 2
+            collapsed: false
+            ngroups: 0
+            children:[]
+            grouped: false
+            duration: 1
+        }
+    }
 
     ListModel{id:groupList}
 

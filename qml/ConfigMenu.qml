@@ -7,27 +7,33 @@ Item {
     property int blockID
     property color menuColor
     property string menuTitle   
-
     property bool menuVisible: false
 
+    // ------- Lines
     property bool linesVisible
-    property bool samplesVisible
-    property bool durationVisible
-    property bool fovVisible
-    property bool rfVisible
-    property bool gradientsVisible
-    property bool tVisible
-    property bool groupVisible
-
     property alias lines:       linesInput.text
+
+    // ------- Samples
+    property bool samplesVisible
     property alias samples:     samplesInput.text
+
+    // ------- Duration
+    property bool durationVisible
     property alias duration:    durationInput.text
+
+    // ------- FOV
+    property bool fovVisible
     property alias fov:         fovInput.text
+
+    // ------- RF
+    property bool rfVisible
     property alias shape:       shapeInput.currentIndex
     property alias b1Module:    b1ModuleInput.text
     property alias flipAngle:   flipAngleInput.text
     property alias deltaf:      deltafInput.text
 
+    // ------- Gradients
+    property bool gradientsVisible
     property alias gxDelay:     gxDelayInput.text
     property alias gyDelay:     gyDelayInput.text
     property alias gzDelay:     gzDelayInput.text
@@ -48,9 +54,14 @@ Item {
     property alias gyStep:      gyStepInput.text
     property alias gzStep:      gzStepInput.text
 
+    // ------- Times
+    property bool tVisible
     property alias te:          teInput.text
     property alias tr:          trInput.text
 
+    // ------- Group
+    property bool groupVisible
+    property alias reps:        repsInput.text
 
     Rectangle{
         id: rectConfig
@@ -351,7 +362,6 @@ Item {
                 }
             }
         }
-
 
         // APPLY CHANGES
         Button{

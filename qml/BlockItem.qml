@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
 
+
 Item{
     id: block
 
@@ -29,7 +30,92 @@ Item{
                                 cod==6? "#ffa361":
                                 undefined
 
+    function displayFields(cod){
+        switch(cod){
+            // Group
+            case 0:
+                configMenu.durationVisible =    false;
+                configMenu.rfVisible =          false;
+                configMenu.gradientsVisible =   false;
+                configMenu.linesVisible =       false;
+                configMenu.samplesVisible =     false;
+                configMenu.fovVisible =         false;
+                configMenu.groupVisible =       true;
+                configMenu.tVisible =           false;
+                break;
+            // Excitation
+            case 1:
+                configMenu.durationVisible =    true;
+                configMenu.rfVisible =          true;
+                configMenu.gradientsVisible =   true;
+                configMenu.linesVisible =       false;
+                configMenu.samplesVisible =     false;
+                configMenu.fovVisible =         false;
+                configMenu.groupVisible =       false;
+                configMenu.tVisible =           false;
+                break;
 
+            // Delay
+            case 2:
+                configMenu.durationVisible =    true;
+                configMenu.rfVisible =          false;
+                configMenu.gradientsVisible =   false;
+                configMenu.linesVisible =       false;
+                configMenu.samplesVisible =     false;
+                configMenu.fovVisible =         false;
+                configMenu.groupVisible =       false;
+                configMenu.tVisible =           false;
+                break;
+
+            // Dephase
+            case 3:
+                configMenu.durationVisible =    true;
+                configMenu.rfVisible =          false;
+                configMenu.gradientsVisible =   true;
+                configMenu.linesVisible =       false;
+                configMenu.samplesVisible =     false;
+                configMenu.fovVisible =         false;
+                configMenu.groupVisible =       false;
+                configMenu.tVisible =           false;
+                break;
+
+            // Readout
+            case 4:
+                configMenu.durationVisible =    true;
+                configMenu.rfVisible =          false;
+                configMenu.gradientsVisible =   true;
+                configMenu.linesVisible =       false;
+                configMenu.samplesVisible =     true;
+                configMenu.fovVisible =         false;
+                configMenu.groupVisible =       false;
+                configMenu.tVisible =           false;
+                break;
+
+            // EPI Adquisition
+            case 5:
+                configMenu.durationVisible =    false;
+                configMenu.rfVisible =          false;
+                configMenu.gradientsVisible =   false;
+                configMenu.linesVisible =       true;
+                configMenu.samplesVisible =     true;
+                configMenu.fovVisible =         true;
+                configMenu.groupVisible =       false;
+                configMenu.tVisible =           false;
+                break;
+
+            // GRE (Gradient Echo)
+            case 6:
+                configMenu.durationVisible =    false;
+                configMenu.rfVisible =          true;
+                configMenu.gradientsVisible =   false;
+                configMenu.linesVisible =       true;
+                configMenu.samplesVisible =     true;
+                configMenu.fovVisible =         true;
+                configMenu.groupVisible =       false;
+                configMenu.tVisible =           true;
+                break;
+        }
+    }
 
     MouseArea {
         id: dragArea
@@ -50,11 +136,6 @@ Item{
         onClicked:{ //Configuration panel will be displayed:
             if(!popup.active){
 
-                // console.log("Hijos: ", blockList.get(dropIndex).children.count);
-                // for(var i=0;i<blockList.get(dropIndex).children.count;i++){
-                //     console.log(blockList.get(dropIndex).children.get(i).number);
-                // }
-
                 blockSeq.focus = true;
                 blockSeq.displayedMenu = dropIndex;
 
@@ -64,92 +145,7 @@ Item{
                 configMenu.menuColor = blockColor;
                 configMenu.menuTitle = blockText;
 
-                configMenu.lines = dur.toString();
-
-                switch(cod){
-                    // Group
-                    case 0:
-                        configMenu.durationVisible =    false;
-                        configMenu.rfVisible =          false;
-                        configMenu.gradientsVisible =   false;
-                        configMenu.linesVisible =       false;
-                        configMenu.samplesVisible =     false;
-                        configMenu.fovVisible =         false;
-                        configMenu.groupVisible =       true;
-                        configMenu.tVisible =           false;
-                        break;
-                    // Excitation
-                    case 1:
-                        configMenu.durationVisible =    true;
-                        configMenu.rfVisible =          true;
-                        configMenu.gradientsVisible =   true;
-                        configMenu.linesVisible =       false;
-                        configMenu.samplesVisible =     false;
-                        configMenu.fovVisible =         false;
-                        configMenu.groupVisible =       false;
-                        configMenu.tVisible =           false;
-                        break;
-
-                    // Delay
-                    case 2:
-                        configMenu.durationVisible =    true;
-                        configMenu.rfVisible =          false;
-                        configMenu.gradientsVisible =   false;
-                        configMenu.linesVisible =       false;
-                        configMenu.samplesVisible =     false;
-                        configMenu.fovVisible =         false;
-                        configMenu.groupVisible =       false;
-                        configMenu.tVisible =           false;
-                        break;
-
-                    // Dephase
-                    case 3:
-                        configMenu.durationVisible =    true;
-                        configMenu.rfVisible =          false;
-                        configMenu.gradientsVisible =   true;
-                        configMenu.linesVisible =       false;
-                        configMenu.samplesVisible =     false;
-                        configMenu.fovVisible =         false;
-                        configMenu.groupVisible =       false;
-                        configMenu.tVisible =           false;
-                        break;
-
-                    // Readout
-                    case 4:
-                        configMenu.durationVisible =    true;
-                        configMenu.rfVisible =          false;
-                        configMenu.gradientsVisible =   true;
-                        configMenu.linesVisible =       false;
-                        configMenu.samplesVisible =     true;
-                        configMenu.fovVisible =         false;
-                        configMenu.groupVisible =       false;
-                        configMenu.tVisible =           false;
-                        break;
-
-                    // EPI Adquisition
-                    case 5:
-                        configMenu.durationVisible =    false;
-                        configMenu.rfVisible =          false;
-                        configMenu.gradientsVisible =   false;
-                        configMenu.linesVisible =       true;
-                        configMenu.samplesVisible =     true;
-                        configMenu.fovVisible =         true;
-                        configMenu.groupVisible =       false;
-                        configMenu.tVisible =           false;
-                        break;
-
-                    // GRE (Gradient Echo)
-                    case 6:
-                        configMenu.durationVisible =    false;
-                        configMenu.rfVisible =          true;
-                        configMenu.gradientsVisible =   false;
-                        configMenu.linesVisible =       true;
-                        configMenu.samplesVisible =     true;
-                        configMenu.fovVisible =         true;
-                        configMenu.groupVisible =       false;
-                        configMenu.tVisible =           true;
-                        break;
-                }
+                displayFields(cod);
 
                 for(var i=0; i<blockList.count; i++){
                      collapse(i);
@@ -229,21 +225,41 @@ Item{
         // ---------------------------------- DRAG AND DROP MECHANICS ---------------------------------------
 
         onPressed:{
-            dragged = true;
-            if(dragDrop){
-                if(!popup.active){
-                    held = true
-                    blockView.held = true;
-                    blockView.dragIndex = dropIndex
+            if (!window.mobile){
+                dragged = true;
+                if(dragDrop){
+                    if(!popup.active){
+                        held = true
+                        blockView.held = true;
+                        blockView.dragIndex = dropIndex
 
-                    if(isGroup(dropIndex)){
-                        for(var i=0; i<blockList.get(dropIndex).children.count; i++){
-                            collapse(blockList.get(dropIndex).children.get(i).number);
+                        if(isGroup(dropIndex)){
+                            for(var i=0; i<blockList.get(dropIndex).children.count; i++){
+                                collapse(blockList.get(dropIndex).children.get(i).number);
+                            }
                         }
                     }
                 }
             }
+        }
 
+        onPressAndHold:{
+            if (window.mobile){
+                dragged = true;
+                if(dragDrop){
+                    if(!popup.active){
+                        held = true
+                        blockView.held = true;
+                        blockView.dragIndex = dropIndex
+
+                        if(isGroup(dropIndex)){
+                            for(var i=0; i<blockList.get(dropIndex).children.count; i++){
+                                collapse(blockList.get(dropIndex).children.get(i).number);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         onReleased: {
