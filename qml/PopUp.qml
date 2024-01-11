@@ -7,8 +7,9 @@ Item {
 
     property alias text: label.text
     property bool active: false
-
     property int textSize: 8
+
+    property alias nameInput: nameInput
 
     function closePopUp(){
         popup.visible = false
