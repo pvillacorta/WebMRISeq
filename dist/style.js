@@ -63,30 +63,41 @@ function openScreen(screenId) {
 // Función para manejar el cambio de tamaño de pantalla
 function handleResize() {
     if (window.innerWidth > 1275) {
-      // Si es escritorio, mostrar los divs
-      var tabs = document.getElementsByClassName("box");
-      for (var i = 0; i < tabs.length; i++) {
-        tabs[i].style.display = "block";
-      }
-      document.querySelector(".tabs-mobile").style.display = "none";
+        // Si es escritorio, mostrar los divs
+        var tabs = document.getElementsByClassName("box");
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].style.display = "block";
+        }
+        document.querySelector(".tabs-mobile").style.display = "none";
     } else {
-    //   // Si es móvil, ocultar los divs y mostrar las pestañas
-    //   var tabs = document.getElementsByClassName("box");
-    //   for (var i = 0; i < tabs.length; i++) {
-    //     tabs[i].style.display = "none";
-    //   }
-
         document.querySelector(".tabs-mobile").style.display = "block";
+        // Agrega la clase 'tab-active' al botón/tab activo
+        document.getElementById("btn-" + "screenEditor").classList.add("tab-active");
+    }
+}
+
+function initTabs(){
+    if (window.innerWidth > 1275) {
+        // Si es escritorio, mostrar los divs
+        var tabs = document.getElementsByClassName("box");
+        for (var i = 0; i < tabs.length; i++) {
+          tabs[i].style.display = "block";
+        }
+        document.querySelector(".tabs-mobile").style.display = "none";
+    } else {
+        // Si es móvil, ocultar los divs y mostrar las pestañas
+        document.querySelector(".tabs-mobile").style.display = "block";
+        // Agrega la clase 'tab-active' al botón/tab activo
+        document.getElementById("btn-" + "screenEditor").classList.add("tab-active");
     }
 }
 
 // Manejar el cambio de tamaño de pantalla
 window.addEventListener("resize", handleResize);
 
-// Llamar a la función al cargar la página para establecer el estado inicial
-// handleResize();
-
 function loadSequence(){
     document.getElementById('my_file').click();
 }
 
+
+initTabs();

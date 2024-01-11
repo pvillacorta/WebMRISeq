@@ -50,7 +50,7 @@ renderWindow.addView(openGLRenderWindow);
 // Create a div section to put this into
 // ----------------------------------------------------------------------------
 
-const container = document.getElementById("screenVtk");
+const container = document.getElementById("vtkView");
 openGLRenderWindow.setContainer(container);
 
 // ----------------------------------------------------------------------------
@@ -77,10 +77,10 @@ interactor.bindEvents(container);
 interactor.setInteractorStyle(vtkInteractorStyleTrackballCamera.newInstance());
 
 // Responsive vtk window size
-// window.addEventListener('resize', function() {
-//     var { width, height } = container.getBoundingClientRect();
-//     openGLRenderWindow.setSize(width, initHeight);
-//     interactor.setView(openGLRenderWindow);
-//     interactor.initialize();
-//     interactor.bindEvents(container);
-//   });
+window.addEventListener('resize', function() {
+    var { width, height } = container.getBoundingClientRect();
+    openGLRenderWindow.setSize(width, height);
+    interactor.setView(openGLRenderWindow);
+    interactor.initialize();
+    interactor.bindEvents(container);
+  });

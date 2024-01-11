@@ -38,7 +38,7 @@
                     </div>
                 </div>
             </div> -->
-            <div id="screenWasm">
+            <div id="wasmView">
                 <div id="qtspinner" style="height:100%">
                     <center>
                         <div style="height:20px"></div>
@@ -50,7 +50,9 @@
                 </div>
             </div>
         </div> 
-        <div class="box col-3" id="screenVtk"></div>
+        <div class="box col-3" id="screenVtk">
+            <div id="vtkView"></div>
+        </div>
         <div class="box col-11" id="screenSeq">
             <h1 style="margin: 15px;">Sequence diagram</h1>
         </div>
@@ -63,13 +65,13 @@
             closeAllDropDownMenu();
 
             const spinner = document.querySelector('#qtspinner');
-            const screenWasm = document.querySelector('#screenWasm');
+            const wasmView = document.querySelector('#wasmView');
             const status = document.querySelector('#qtstatus');
 
             const showUi = (ui) => {
                 [spinner].forEach(element => element.style.display = 'none');
-                if (screenWasm === ui)
-                    screenWasm.style.position = 'default';
+                if (wasmView === ui)
+                    wasmView.style.position = 'default';
                 ui.style.display = 'block';
             }
 
@@ -79,7 +81,7 @@
 
                 const instance = await qtLoad({
                     qt: {
-                        onLoaded: () => showUi(screenWasm),
+                        onLoaded: () => showUi(wasmView),
                         onExit: exitData =>
                         {
                             status.innerHTML = 'Application exit';
@@ -90,7 +92,7 @@
                             showUi(spinner);
                         },
                         entryFunction: window.createQtAppInstance,
-                        containerElements: [screenWasm],
+                        containerElements: [wasmView],
                         
                     }
                 });
