@@ -2,13 +2,13 @@ import QtQuick
 import QtQuick.Controls
 
 Item{
-    property string title
-
-    property alias model: buttonView.model
     property alias menuTitle: menuTitle
+    property string title
 
     property int buttonX: groupMenu.x + groupButton.x + 6
     property int buttonY: groupMenu.y + groupButton.y + groupButton.height
+
+    property bool group
 
     Rectangle{
         id: buttons
@@ -37,7 +37,7 @@ Item{
             Button {
                 id: groupButton
 
-                visible: model == groupButtonList
+                visible: group
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
                 anchors.rightMargin: 10
@@ -85,7 +85,7 @@ Item{
                 anchors.fill: parent
                 orientation: ListView.Vertical
                 clip:true
-
+                model: group ? groupButtonList : blockButtonList
                 delegate: Button{
                     id: button
                     parent: buttonView

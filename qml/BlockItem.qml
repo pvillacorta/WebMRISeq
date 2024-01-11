@@ -299,14 +299,26 @@ Item{
             // Block Text
             Text {
                 id: textBlock
-            color: "black"
+                color: "black"
                 font.pointSize: 10 - 2*ngroups
                 anchors{
                     horizontalCenter: parent.horizontalCenter
                     verticalCenter: parent.verticalCenter
                 }
-                text: blockText + " (" + dropIndex + ")"
+                text: blockText
              }
+
+            Text {
+                id: blockNumber
+                color: "black"
+                font.pointSize: 8 - ngroups
+                anchors{
+                    left: parent.left
+                    bottom: parent.bottom
+                    margins: 4
+                }
+                text: dropIndex
+            }
 
             //Delete button
             DeleteButton {

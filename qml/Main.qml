@@ -10,8 +10,8 @@ ApplicationWindow {
     property int desktopWidth: 1120
     property int mobileWidth: 840
 
-    property int desktopHeight: 470
-    property int tabletHeight: 630
+    property int desktopHeight: 500
+    property int tabletHeight: 670
     property int mobileHeight: 950
 
     property bool desktop: width>=desktopWidth
@@ -179,6 +179,55 @@ ApplicationWindow {
         }
     }
 
+    // function addGroup() adds a group (created by the user) to the groupList
+    function addGroup(menuTitle,blockID){
+        groupButtonList.append({"buttonText": menuTitle, "code": (blockButtonList.count + groupButtonList.count)+1, "iconSource":"/icons/light/misc.png"});
+
+        var group_cod;
+        var num_groups = blockList.get(blockID).ngroups;
+        var count = groupList.count;
+        var childrenList;
+
+        for(var j=0; j<=countChildren(blockID); j++){
+            childrenList = [];
+
+            if(j==0){
+                group_cod = blockButtonList.count + groupButtonList.count;
+            } else {
+                group_cod = -1;
+            }
+
+            if(isGroup(blockID+j)){
+                var num = blockList.get(blockID+j).children.count;
+                for(var i=0;i<num;i++){
+                    childrenList.push( blockList.get(blockID+j).children.get(i).number + (count-blockID) );
+                }
+            }
+
+            groupList.append(  {"group_cod":group_cod,
+                                "cod":blockList.get(blockID+j).cod,
+                                "dur":blockList.get(blockID+j).dur,
+                                "gx":blockList.get(blockID+j).gx,
+                                "gy":blockList.get(blockID+j).gy,
+                                "gz":blockList.get(blockID+j).gz,
+                                "gxStep":blockList.get(blockID+j).gxStep,
+                                "gyStep":blockList.get(blockID+j).gyStep,
+                                "gzStep":blockList.get(blockID+j).gzStep,
+                                "b1x":blockList.get(blockID+j).b1x,
+                                "b1y":blockList.get(blockID+j).b1y,
+                                "delta_f":blockList.get(blockID+j).delta_f,
+                                "fov":blockList.get(blockID+j).fov,
+                                "n":blockList.get(blockID+j).n,
+                                "ngroups":blockList.get(blockID+j).ngroups - num_groups,
+                                "name":blockList.get(blockID+j).name,
+                                "children":[],
+                                "reps":blockList.get(blockID+j).reps});
+
+            for(i=0;i<childrenList.length;i++){
+                groupList.get(groupList.count-1).children.append({"number":childrenList[i]})
+            }
+        }
+    }
 
     // Function removeBlock() removes a block from the list. If the block is a group,
     // it removes recursively that group and all of its children
@@ -401,6 +450,8 @@ ApplicationWindow {
     // ------------------------- BLOCK LIST ---------------------------------------------------
     ListModel{id:blockList}
 
+    ListModel{id:groupList}
+
     // In this loader we will store the loaded sequence from a previously saved file
     Loader{id: modelLoader}
     // -----------------------------------------------------------------------------------------
@@ -591,7 +642,7 @@ ApplicationWindow {
             height: window.mobile ? 200 : 280
 
             title: "Add blocks"
-            model: blockButtonList
+            group: false
         }
 
         // ADD GROUPS
@@ -604,7 +655,7 @@ ApplicationWindow {
             height: blockMenu.height
 
             title: "Groups"
-            model: groupButtonList
+            group: true
         }
 
         PopUp {
@@ -615,324 +666,7 @@ ApplicationWindow {
             y: blockSeq.y + blockSeq.height + seqGlow.glowRadius
         }
 
-        /*
-        Rectangle{
-            id: groupMenu
-            anchors.top: buttons.top
-            anchors.left: buttons.right
-            anchors.leftMargin: window.mobile ? 0 : 15
-            width: buttons.width
-            height: buttons.height
-
-            color: dark_2
-
-            radius:window.radius
-
-            z:-15
-
-            Rectangle{
-                id: addGroupsTitle
-                anchors.horizontalCenter: parent.horizontalCenter
-                width: parent.width
-                height: window.mobile ? 25 : 35
-
-                color: dark_2
-
-                radius:window.radius
-
-                z: 10
-                Text {
-                    text: qsTr("Groups")
-                    color:light
-                    font.pointSize: 10
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left: parent.left; anchors.leftMargin:12
-                }
-
-
-                Loader{
-                    sourceComponent: horizontalLine
-                    width: parent.width - 20
-                    anchors.bottom: parent.bottom
-                    z:15
-                    anchors.horizontalCenter: parent.horizontalCenter
-                }
-
-            }
-
-            MouseArea{
-                id: addGroupsButtons
-
-                anchors.top: addGroupsTitle.bottom
-                anchors.bottom: parent.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-
-                ListView {
-                    id: groupView
-                    anchors.fill: parent
-                    orientation: ListView.Vertical
-
-                    delegate: Button{
-                        id: button
-                        parent: buttonView
-
-                        height:40
-                        width:parent.width
-
-                        display: AbstractButton.TextBesideIcon
-
-                        background : Rectangle{
-                            id: bgButton
-                            color: "transparent"
-                        }
-
-                        contentItem: Item {
-                            anchors.fill: parent
-                            anchors.margins: 10
-                            Image{
-                                id: icon
-                                anchors.verticalCenter: parent.verticalCenter
-                                source:iconSource
-                                width: 20
-                                height: width
-                            }
-                            Text{
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.left: icon.right; anchors.leftMargin: 10
-                                color: light
-                                text: buttonText
-                            }
-                        }
-
-                        MouseArea {
-                            id: buttonArea
-                            hoverEnabled: true
-                            anchors.fill: parent
-                            onClicked: {
-                                blockSeq.displayedMenu = -1;
-
-                                if(code<=6){
-                                    blockList.append({ "cod":code,
-                                                       "dur":0,
-                                                       "gx":0,
-                                                       "gy":0,
-                                                       "gz":0,
-                                                       "gxStep":0,
-                                                       "gyStep":0,
-                                                       "gzStep":0,
-                                                       "b1x":0,
-                                                       "b1y":0,
-                                                       "delta_f":0,
-                                                       "fov":0,
-                                                       "n":0,
-                                                       "grouped":false,
-                                                       "ngroups":0,
-                                                       "name":"",
-                                                       "children":[],
-                                                       "collapsed": false,
-                                                       "reps":1});
-                                } else if(code>6){
-                                    var index;
-                                    for(var i=0; i<groupList.count; i++){
-                                        if(groupList.get(i).group_cod == code){
-                                            index = i;
-                                        }
-                                    }
-                                    var num;
-                                    var counter = 0;
-
-                                    do{
-                                        blockList.append(  {"cod":groupList.get(index).cod,
-                                                            "dur":groupList.get(index).dur,
-                                                            "gx":groupList.get(index).gx,
-                                                            "gy":groupList.get(index).gy,
-                                                            "gz":groupList.get(index).gz,
-                                                            "gxStep":groupList.get(index).gxStep,
-                                                            "gyStep":groupList.get(index).gyStep,
-                                                            "gzStep":groupList.get(index).gzStep,
-                                                            "b1x":groupList.get(index).b1x,
-                                                            "b1y":groupList.get(index).b1y,
-                                                            "delta_f":groupList.get(index).delta_f,
-                                                            "fov":groupList.get(index).fov,
-                                                            "n":groupList.get(index).n,
-                                                            "grouped":false,
-                                                            "ngroups":groupList.get(index).ngroups,
-                                                            "name":groupList.get(index).name,
-                                                            "children":[],
-                                                            "collapsed": counter==0?false:true,
-                                                            "reps":groupList.get(index).reps});
-
-                                        num = groupList.get(index).children.count;
-                                        for(i=0;i<num;i++){
-                                            blockList.get(blockList.count-1).children.append({"number":groupList.get(index).children.get(i).number+(-index+blockList.count-1)});
-                                        }
-                                        index ++;
-                                        counter ++;
-                                    } while((index<groupList.count)&&(groupList.get(index).group_cod === -1));
-                                    index--;
-                                }
-
-                                for (var j=1; j<100; j++){
-                                   scrollBar.increase();
-                                }
-                            }
-
-                            states: [
-                                State{
-                                    when: buttonArea.pressed
-                                    PropertyChanges{
-                                        target: bgButton
-                                        color: dark_1
-                                    }
-                                },
-                                State{
-                                    when: buttonArea.containsMouse
-                                    PropertyChanges{
-                                        target: bgButton
-                                        color: dark_3
-                                    }
-                                }
-                            ]
-                        }
-                    }
-
-                    model: ListModel {
-                        id: buttonList
-                        ListElement { buttonText: "Excitation";     code: 1;    iconSource:"/icons/light/rf.png" }
-                        ListElement { buttonText: "Delay";          code: 2;    iconSource:"/icons/light/clock.png"  }
-                        ListElement { buttonText: "Dephase";        code: 3;    iconSource:"/icons/light/angle.png"  }
-                        ListElement { buttonText: "Readout";        code: 4;    iconSource:"/icons/light/readout.png"  }
-                        ListElement { buttonText: "EPI_ACQ";        code: 5;    iconSource:"/icons/light/misc.png"  }
-                        ListElement { buttonText: "GRE";            code: 6;    iconSource:"/icons/light/misc.png"  }
-                    } // ListModel
-                } // ListView
-            } // MouseArea
-
-
-                // MouseArea{
-                //     anchors.fill: parent
-
-                //     WheelHandler{
-                //         onWheel: (event)=> event.angleDelta.y<0 ? horizontalScrollBar.increase(): horizontalScrollBar.decrease();
-                //     }
-
-                //     ListView {
-                //         // id: buttonView
-                //         anchors.fill: parent
-                //         anchors.topMargin: 5
-                //         anchors.leftMargin: 10
-                //         spacing: 15
-
-                //         orientation: window.mobile ?  ListView.Horizontal : ListView.Vertical
-
-                //         ScrollBar.horizontal: ScrollBar {
-                //             // id: horizontalScrollBar
-                //             active: window.mobile
-                //             orientation: Qt.Horizontal
-                //         }
-
-                //         delegate: Button{
-                //             // id: button
-                //             parent: buttonView
-                //             Text {
-                //                 anchors.horizontalCenter: parent.horizontalCenter
-                //                 anchors.verticalCenter: parent.verticalCenter
-                //                 text: buttonText
-                //                 color: light
-                //                 font.pointSize: 8
-                //             }
-                //             height:25
-                //             width:60
-
-                //             background: Rectangle{
-                //                 anchors.fill:parent
-                //                 color: button.pressed? dark :"#595959"
-                //             }
-
-                //             scale: hovered? 0.9: 1
-
-                //             onClicked: {
-                //                 blockSeq.displayedMenu = -1;
-
-                //                 if(code<=6){
-                //                     blockList.append({ "cod":code,
-                //                                        "dur":0,
-                //                                        "gx":0,
-                //                                        "gy":0,
-                //                                        "gz":0,
-                //                                        "gxStep":0,
-                //                                        "gyStep":0,
-                //                                        "gzStep":0,
-                //                                        "b1x":0,
-                //                                        "b1y":0,
-                //                                        "delta_f":0,
-                //                                        "fov":0,
-                //                                        "n":0,
-                //                                        "grouped":false,
-                //                                        "ngroups":0,
-                //                                        "name":"",
-                //                                        "children":[],
-                //                                        "collapsed": false,
-                //                                        "reps":1});
-                //                 } else if(code>6){
-                //                     var index;
-                //                     for(var i=0; i<groupList.count; i++){
-                //                         if(groupList.get(i).group_cod == code){
-                //                             index = i;
-                //                         }
-                //                     }
-                //                     var num;
-                //                     var counter = 0;
-
-                //                     do{
-                //                         blockList.append(  {"cod":groupList.get(index).cod,
-                //                                             "dur":groupList.get(index).dur,
-                //                                             "gx":groupList.get(index).gx,
-                //                                             "gy":groupList.get(index).gy,
-                //                                             "gz":groupList.get(index).gz,
-                //                                             "gxStep":groupList.get(index).gxStep,
-                //                                             "gyStep":groupList.get(index).gyStep,
-                //                                             "gzStep":groupList.get(index).gzStep,
-                //                                             "b1x":groupList.get(index).b1x,
-                //                                             "b1y":groupList.get(index).b1y,
-                //                                             "delta_f":groupList.get(index).delta_f,
-                //                                             "fov":groupList.get(index).fov,
-                //                                             "n":groupList.get(index).n,
-                //                                             "grouped":false,
-                //                                             "ngroups":groupList.get(index).ngroups,
-                //                                             "name":groupList.get(index).name,
-                //                                             "children":[],
-                //                                             "collapsed": counter==0?false:true,
-                //                                             "reps":groupList.get(index).reps});
-
-                //                         num = groupList.get(index).children.count;
-                //                         for(i=0;i<num;i++){
-                //                             blockList.get(blockList.count-1).children.append({"number":groupList.get(index).children.get(i).number+(-index+blockList.count-1)});
-                //                         }
-                //                         index ++;
-                //                         counter ++;
-                //                     } while((index<groupList.count)&&(groupList.get(index).group_cod === -1));
-                //                     index--;
-                //                 }
-                //             }
-                //         }
-
-                //         model: ListModel {
-                //             // id: buttonList
-                //             ListElement { buttonText: "Excitation"; code: 1 }
-                //             ListElement { buttonText: "Delay"; code: 2 }
-                //             ListElement { buttonText: "Dephase"; code: 3 }
-                //             ListElement { buttonText: "Readout"; code: 4 }
-                //             ListElement { buttonText: "EPI_ACQ"; code: 5 }
-                //             ListElement { buttonText: "GRE"; code: 6 }
-                //         } // ListModel
-                //     } // ListView
-                // }
-        }
-        */
-
-
+        // CONFIGURATION PANEL
         Rectangle{
             id: defaultMenu
 
@@ -961,7 +695,6 @@ ApplicationWindow {
                 anchors.fill: parent
             }
         }
-
 
 
         // GLOBAL PARAMETERS PANEL
@@ -1137,13 +870,9 @@ ApplicationWindow {
         }
         */
 
-
-        // CREATE GROUP
         /*
         Rectangle{
             id: createGroupButton
-            // visible:false
-
             property bool active: false
 
             width: window.mobile ? blockSeq.width : buttons.width
@@ -1190,34 +919,35 @@ ApplicationWindow {
                 ]
             } // MouseArea
         } // Rectangle ---------------------------------------------------------------------------------
-        */
 
-        // Dialog{
-        //     id: groupDialog
-        //     property string input
-        //     title: "Choose a name for the group"
-        //     anchors.centerIn: window.center
-        //     height: 200
-        //     width: 400
-        //     standardButtons: Dialog.Ok | Dialog.Cancel
-        //     TextField{
-        //         id: nameInput
-        //         width: parent.width *0.75
-        //         anchors.horizontalCenter: parent.horizontalCenter
-        //     }
-        //     onAccepted: {
-        //         if (nameInput.text!=""){
-        //             input = nameInput.text;
-        //             nameInput.text = "";
-        //         } else{
-        //             createGroupButton.active = false;
-        //             console.log("You must choose a name")
-        //         }
-        //     }
-        //     onRejected: {
-        //         createGroupButton.active = false;
-        //     }
-        // }
+
+        Dialog{
+            id: groupDialog
+            property string input
+            title: "Choose a name for the group"
+            anchors.centerIn: window.center
+            height: 200
+            width: 400
+            standardButtons: Dialog.Ok | Dialog.Cancel
+            TextField{
+                id: nameInput
+                width: parent.width *0.75
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            onAccepted: {
+                if (nameInput.text!=""){
+                    input = nameInput.text;
+                    nameInput.text = "";
+                } else{
+                    createGroupButton.active = false;
+                    console.log("You must choose a name")
+                }
+            }
+            onRejected: {
+                createGroupButton.active = false;
+            }
+        }
+        */
 
 
         // SIMULATE

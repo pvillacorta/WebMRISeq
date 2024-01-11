@@ -352,7 +352,6 @@ Item {
             }
         }
 
-
         // APPLY CHANGES
         Button{
             id: applyButton

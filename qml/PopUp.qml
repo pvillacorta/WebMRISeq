@@ -60,6 +60,7 @@ Item {
             TextInput {
                 id: nameInput
                 anchors.fill:parent
+                anchors.margins:3
             }
         }
 
@@ -116,6 +117,7 @@ Item {
             var groupedBlocks = [];
             var counter = 0;
             var lastGrouped = -1;
+            var blockID = -1;
             for(var i = 0; i<blockList.count; i++){
                 if(blockList.get(i).grouped){
                     if (counter != 0){
@@ -123,6 +125,8 @@ Item {
                             log.text = "All selected blocks must be adjacent"
                             return;
                         }
+                    }else{
+                        blockID = i;
                     }
                     groupedBlocks.push(i);
                     lastGrouped = i;
@@ -211,6 +215,8 @@ Item {
                     configMenu.menuVisible = false;
                     blockSeq.displayedMenu = -1;
                 }
+
+                addGroup(nameInput.text, blockID);
                 closePopUp();
             }
         }
