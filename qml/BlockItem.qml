@@ -30,7 +30,8 @@ Item{
                                 cod==6? "#ffa361":
                                 undefined
 
-    function displayFields(cod){
+    function displayFields(index){
+        cod = blockList.get(index).cod
         switch(cod){
             // Group
             case 0:
@@ -115,6 +116,35 @@ Item{
                 configMenu.tVisible =           true;
                 break;
         }
+
+        configMenu.duration =       blockList.get(index).duration
+        configMenu.lines =          blockList.get(index).lines
+        configMenu.samples =        blockList.get(index).samples
+        configMenu.fov =            blockList.get(index).fov
+        if (configMenu.rfVisible){
+            configMenu.shape =      blockList.get(index).rf.get(0).shape
+            configMenu.b1Module =   blockList.get(index).rf.get(0).b1Module
+            configMenu.flipAngle =  blockList.get(index).rf.get(0).flipAngle
+            configMenu.deltaf =     blockList.get(index).rf.get(0).deltaf
+        }
+        if (configMenu.tVisible){
+            configMenu.te =         blockList.get(index).t.get(0).te
+            configMenu.tr =         blockList.get(index).t.get(0).tr
+        }
+        if (configMenu.groupVisible){
+            configMenu.repetitions= blockList.get(index).repetitions
+        }
+        if (configMenu.gradientsVisible){
+            var gradients = blockList.get(index).gradients
+            for (var i=0; i<gradients.count; i++){
+                var grad = gradients.get(i)
+                eval('configMenu.g' + grad.axis + 'Delay = grad.delay')
+                eval('configMenu.g' + grad.axis + 'Rise = grad.rise')
+                eval('configMenu.g' + grad.axis + 'FlatTop = grad.flatTop')
+                eval('configMenu.g' + grad.axis + 'Amplitude = grad.amplitude')
+                eval('configMenu.g' + grad.axis + 'Step = grad.step')
+            }
+        }
     }
 
     MouseArea {
@@ -145,7 +175,7 @@ Item{
                 configMenu.menuColor = blockColor;
                 configMenu.menuTitle = blockText;
 
-                displayFields(cod);
+                displayFields(dropIndex);
 
                 for(var i=0; i<blockList.count; i++){
                      collapse(i);

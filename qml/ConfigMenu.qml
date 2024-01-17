@@ -9,6 +9,10 @@ Item {
     property string menuTitle   
     property bool menuVisible: false
 
+    // ------- Duration
+    property bool durationVisible
+    property alias duration:    durationInput.text
+
     // ------- Lines
     property bool linesVisible
     property alias lines:       linesInput.text
@@ -16,10 +20,6 @@ Item {
     // ------- Samples
     property bool samplesVisible
     property alias samples:     samplesInput.text
-
-    // ------- Duration
-    property bool durationVisible
-    property alias duration:    durationInput.text
 
     // ------- FOV
     property bool fovVisible
@@ -61,7 +61,7 @@ Item {
 
     // ------- Group
     property bool groupVisible
-    property alias reps:        repsInput.text
+    property alias repetitions: repsInput.text
 
     Rectangle{
         id: rectConfig
@@ -179,9 +179,11 @@ Item {
             Loader { id: rf;            visible: rfVisible
                 sourceComponent: configPanel
                 height: 72
-                ScrollView {
+                Flickable {
                     anchors.fill:parent
                     anchors.leftMargin: 5; anchors.rightMargin: 5
+                    contentHeight: this.height
+                    contentWidth: rfLayout.width
                     clip:true
                     GridLayout{ id: rfLayout
                         anchors.fill: parent
@@ -284,9 +286,11 @@ Item {
             Loader { id: gradients;     visible: gradientsVisible
                 sourceComponent: configPanel
                 height: 90
-                ScrollView {
+                Flickable {
                     anchors.fill:parent
                     anchors.leftMargin: 5; anchors.rightMargin: 5
+                    contentHeight: this.height
+                    contentWidth: gradientsLayout.width
                     clip:true
                     GridLayout{ id: gradientsLayout
                         columns: 6
@@ -387,7 +391,7 @@ Item {
                                                     "delta_f":Number(deltafInput.text),
                                                     "fov":Number(fovInput.text),
                                                     "n":nVisible ? Number(nInput.text) : shapeInput.currentIndex,
-                                                    "reps":Number(repsInput.text)});
+                                                    "repetitions":Number(repsInput.text)});
                 var blockinfo = blockList.get(blockID)
                 duration = durationVisible? blockinfo.dur : 0;
                 alpha = durationVisible? 0 : blockinfo.dur;
@@ -431,6 +435,7 @@ Item {
         }
 
         // MAKE GROUP duplicatable (THIS ADDS A BUTTON TO THE "ADD BLOCK" MENU)
+        /*
         Button{
             id: duplicateButton
             visible: groupVisible
@@ -498,6 +503,7 @@ Item {
                 }
             }
         }
+        */
     } // Rectangle
 
     states: [

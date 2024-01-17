@@ -126,28 +126,47 @@ Item{
                         anchors.fill: parent
                         onClicked: {
                             blockSeq.displayedMenu = -1;
+                            // Default values ------
+                            var duration = 1e-3;
+                            var lines = 64;
+                            var samples = 64;
+                            var fov = 0.1;
+                            var shape = 0;
+                            var b1Module = 1e-6;
+                            var flipAngle = 10;
+                            var deltaf = 0;
+                            var te = 20e-3;
+                            var tr = 100e-3;
+                            var repetitions = 1;
+                            var gDelay = 0;
+                            var gRise = 1e-4;
+                            var gFlatTop = 1e-3;
+                            var gAmplitude = 1e-5;
+                            var gStep = 0;
+                            // ------------------
 
-                            if(code<=6){
-                                blockList.append({ "cod":code,
-                                                   "dur":0,
-                                                   "gx":0,
-                                                   "gy":0,
-                                                   "gz":0,
-                                                   "gxStep":0,
-                                                   "gyStep":0,
-                                                   "gzStep":0,
-                                                   "b1x":0,
-                                                   "b1y":0,
-                                                   "delta_f":0,
-                                                   "fov":0,
-                                                   "n":0,
-                                                   "grouped":false,
-                                                   "ngroups":0,
-                                                   "name":"",
-                                                   "children":[],
-                                                   "collapsed": false,
-                                                   "reps":1});
-                            } else if(code>6){
+                            var durationActive =    code in [1,2,3,4];
+                            var rfActive =          code in [1,6];
+                            var gradientsActive =   code in [1,3,4];
+                            var linesActive =       code in [5,6];
+                            var samplesActive =     code in [4,5,6];
+                            var fovActive =         code in [5,6];
+                            var groupActive =       code in [0];
+                            var tActive =           code in [6];
+
+                            if(code<=blockButtonList.count){
+                                blockList.append({
+                                                "cod": code,
+                                                "name": "",
+                                                "collapsed": false,
+                                                "ngroups": 0,
+                                                "children":[],
+                                                "grouped": false,
+                                                "duration": duration,
+                                                "rf": [],
+                                                "gradients": []
+                                                });
+                            } else if(code>blockButtonList.count){
                                 var index;
                                 for(var i=0; i<groupList.count; i++){
                                     if(groupList.get(i).group_cod == code){
@@ -176,7 +195,7 @@ Item{
                                                         "name":groupList.get(index).name,
                                                         "children":[],
                                                         "collapsed": counter==0?false:true,
-                                                        "reps":groupList.get(index).reps});
+                                                        "repetitions":groupList.get(index).repetitions});
 
                                     num = groupList.get(index).children.count;
                                     for(i=0;i<num;i++){
