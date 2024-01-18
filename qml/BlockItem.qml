@@ -137,12 +137,12 @@ Item{
         if (configMenu.gradientsVisible){
             var gradients = blockList.get(index).gradients
             for (var i=0; i<gradients.count; i++){
-                var grad = gradients.get(i)
-                eval('configMenu.g' + grad.axis + 'Delay = grad.delay')
-                eval('configMenu.g' + grad.axis + 'Rise = grad.rise')
-                eval('configMenu.g' + grad.axis + 'FlatTop = grad.flatTop')
-                eval('configMenu.g' + grad.axis + 'Amplitude = grad.amplitude')
-                eval('configMenu.g' + grad.axis + 'Step = grad.step')
+                var grad = gradients.get(i);
+                eval('configMenu.g' + grad.axis + 'Delay = grad.delay');
+                eval('configMenu.g' + grad.axis + 'Rise = grad.rise');
+                eval('configMenu.g' + grad.axis + 'FlatTop = grad.flatTop');
+                eval('configMenu.g' + grad.axis + 'Amplitude = grad.amplitude');
+                eval('configMenu.g' + grad.axis + 'Step = grad.step');
             }
         }
     }
@@ -422,6 +422,10 @@ Item{
 
             State {
                 name: "grouped"; when: grouped
+                PropertyChanges{
+                    target: itemGlow
+                    scale: 0.8
+                }
                 PropertyChanges{
                     target: item
                     scale: 0.8

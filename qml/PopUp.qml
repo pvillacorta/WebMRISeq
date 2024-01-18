@@ -181,25 +181,15 @@ Item {
                     }
                 }
 
-                blockList.append({  "cod": 0,
-                                    "dur":0,
-                                    "gx":0,
-                                    "gy":0,
-                                    "gz":0,
-                                    "gxStep":0,
-                                    "gyStep":0,
-                                    "gzStep":0,
-                                    "b1x":0,
-                                    "b1y":0,
-                                    "delta_f":0,
-                                    "fov":0,
-                                    "n":0,
-                                    "grouped":false,
-                                    "ngroups":numgroups,
+                blockList.append(  {"cod": 0,
                                     "name": nameInput.text,
-                                    "children":[],
                                     "collapsed": false,
-                                    "repetitions":1});
+                                    "ngroups": numgroups,
+                                    "children": [],
+                                    "grouped": false,
+                                    "rf": [],
+                                    "gradients": [],
+                                    "repetitions": 1});
 
                 for(j=blockList.count-1;j>=0;j--){
                     // Check if there are groups more to the right (we must displace their children one step to the right)

@@ -63,6 +63,60 @@ Item {
     property bool groupVisible
     property alias repetitions: repsInput.text
 
+    function applyChanges(blockID){
+        if(durationVisible) {blockList.setProperty(blockID,          "duration",     Number(duration));}
+        if(linesVisible)    {blockList.setProperty(blockID,          "lines",        Number(lines));}
+        if(samplesVisible)  {blockList.setProperty(blockID,          "samples",      Number(samples));}
+        if(fovVisible)      {blockList.setProperty(blockID,          "fov",          Number(fov));}
+        if(rfVisible)       {blockList.get(blockID).rf.set(0,       {"shape":        Number(shape),
+                                                                     "b1Module":     Number(b1Module),
+                                                                     "flipAngle":    Number(flipAngle),
+                                                                     "deltaf":       Number(deltaf)});}
+        if(gradientsVisible){
+            var gradients = blockList.get(blockID).gradients;
+            for(var i=0; i<gradients.count; i++){
+                var grad = gradients.get(i);
+                blockList.get(blockID).gradients.set(i,             {"axis":         grad.axis,
+                                                                     "delay":        eval('Number(g' + grad.axis + 'Delay)'),
+                                                                     "rise":         eval('Number(g' + grad.axis + 'Rise)'),
+                                                                     "flatTop":      eval('Number(g' + grad.axis + 'FlatTop)'),
+                                                                     "amplitude":    eval('Number(g' + grad.axis + 'Amplitude)'),
+                                                                     "step":         eval('Number(g' + grad.axis + 'Step)')});}
+        }
+        if(tVisible)        {blockList.get(blockID).t.set(0,        {"te":           Number(te),
+                                                                     "tr":           Number(tr)});}
+        if(groupVisible)    {blockList.setProperty(blockID,          "repetitions",  Number(repetitions));}
+
+        var blockInfo = blockList.get(blockID);
+
+        duration =      durationVisible ?   blockInfo.duration : 0;
+        lines =         linesVisible ?      blockInfo.lines : 0;
+        samples =       samplesVisible ?    blockInfo.samples : 0;
+        fov =           fovVisible ?        blockInfo.fov : 0;
+        shape =         rfVisible ?         blockInfo.rf.get(0).shape : 0;
+        b1Module =      rfVisible ?         blockInfo.rf.get(0).b1Module : 0;
+        flipAngle =     rfVisible ?         blockInfo.rf.get(0).flipAngle : 0;
+        deltaf =        rfVisible ?         blockInfo.rf.get(0).deltaf : 0;
+        gxDelay =       gradientsVisible ?  blockInfo.gradients.get(0).delay : 0;
+        gyDelay =       gradientsVisible ?  blockInfo.gradients.get(1).delay : 0;
+        gzDelay =       gradientsVisible ?  blockInfo.gradients.get(2).delay : 0;
+        gxRise =        gradientsVisible ?  blockInfo.gradients.get(0).rise : 0;
+        gyRise =        gradientsVisible ?  blockInfo.gradients.get(1).rise : 0;
+        gzRise =        gradientsVisible ?  blockInfo.gradients.get(2).rise : 0;
+        gxFlatTop =     gradientsVisible ?  blockInfo.gradients.get(0).flatTop : 0;
+        gyFlatTop =     gradientsVisible ?  blockInfo.gradients.get(1).flatTop : 0;
+        gzFlatTop =     gradientsVisible ?  blockInfo.gradients.get(2).flatTop : 0;
+        gxAmplitude =   gradientsVisible ?  blockInfo.gradients.get(0).amplitude : 0;
+        gyAmplitude =   gradientsVisible ?  blockInfo.gradients.get(1).amplitude : 0;
+        gzAmplitude =   gradientsVisible ?  blockInfo.gradients.get(2).amplitude : 0;
+        gxStep =        gradientsVisible ?  blockInfo.gradients.get(0).step : 0;
+        gyStep =        gradientsVisible ?  blockInfo.gradients.get(1).step : 0;
+        gzStep =        gradientsVisible ?  blockInfo.gradients.get(2).step : 0;
+        te =            tVisible ?          blockInfo.t.get(0).te : 0;
+        tr =            tVisible ?          blockInfo.t.get(0).tr : 0;
+        repetitions =   groupVisible ?      blockInfo.repetitions : 0;
+    }
+
     Rectangle{
         id: rectConfig
         visible: menuVisible
@@ -108,7 +162,7 @@ Item {
             anchors.topMargin: 5
             spacing: 5
 
-            Loader { id: lines;         visible: linesVisible
+            Loader { visible: linesVisible
                 sourceComponent: configPanel
                 width:200
                 height: 26
@@ -125,7 +179,7 @@ Item {
                 }
             }
 
-            Loader { id: samples;       visible: samplesVisible
+            Loader { visible: samplesVisible
                 sourceComponent: configPanel
                 width:200
                 height: 26
@@ -142,7 +196,7 @@ Item {
                 }
             }
 
-            Loader { id: duration;      visible: durationVisible
+            Loader { visible: durationVisible
                 sourceComponent: configPanel
                 width:200
                 height: 26
@@ -159,7 +213,7 @@ Item {
                 }
             }
 
-            Loader { id: fov;           visible: fovVisible
+            Loader { visible: fovVisible
                 sourceComponent: configPanel
                 width:200
                 height: 26
@@ -176,7 +230,7 @@ Item {
                 }
             }
 
-            Loader { id: rf;            visible: rfVisible
+            Loader { visible: rfVisible
                 sourceComponent: configPanel
                 height: 72
                 Flickable {
@@ -283,7 +337,7 @@ Item {
                 }
             }
 
-            Loader { id: gradients;     visible: gradientsVisible
+            Loader { visible: gradientsVisible
                 sourceComponent: configPanel
                 height: 90
                 Flickable {
@@ -331,7 +385,7 @@ Item {
                 }
             }
 
-            Loader { id: t;             visible: tVisible
+            Loader { visible: tVisible
                 sourceComponent: configPanel
                 height: 50
                 width: 200
@@ -350,7 +404,7 @@ Item {
                 }
             }
 
-            Loader { id: repetitions;   visible: groupVisible
+            Loader { visible: groupVisible
                 sourceComponent: configPanel
                 width: 200
                 height: 26
@@ -367,7 +421,7 @@ Item {
             }
         }
 
-        // APPLY CHANGES
+        //  APPLY CHANGES
         Button{
             id: applyButton
             anchors.right: parent.right
@@ -378,39 +432,7 @@ Item {
             width: 100
             text:"Apply changes"
             font.pointSize: window.fontSize
-            onClicked:{
-                blockList.set(configMenu.blockID,{  "dur":durationVisible ? Number(durationInput.text) : Number(alphaInput.text),
-                                                    "b1x":rfVisible ? Number(b1ModInput.text) : Number(teInput.text),
-                                                    "b1y":rfVisible ? Number(b1yInput.text) : Number(trInput.text),
-                                                    "gx":Number(gxInput.text),
-                                                    "gy":Number(gyInput.text),
-                                                    "gz":Number(gzInput.text),
-                                                    "gxStep":Number(gxStepInput.text),
-                                                    "gyStep":Number(gyStepInput.text),
-                                                    "gzStep":Number(gzStepInput.text),
-                                                    "delta_f":Number(deltafInput.text),
-                                                    "fov":Number(fovInput.text),
-                                                    "n":nVisible ? Number(nInput.text) : shapeInput.currentIndex,
-                                                    "repetitions":Number(repsInput.text)});
-                var blockinfo = blockList.get(blockID)
-                duration = durationVisible? blockinfo.dur : 0;
-                alpha = durationVisible? 0 : blockinfo.dur;
-                b1x = rfVisible ? blockinfo.b1x : 0;
-                b1y = rfVisible ? blockinfo.b1y : 0;
-                shape = nVisible ? 0 : blockinfo.n;
-                n = nVisible ? blockinfo.n : 0;
-                te = rfVisible ? 0 : blockinfo.b1x;
-                tr = rfVisible ? 0 : blockinfo.b1y;
-                gx = blockinfo.gx;
-                gy = blockinfo.gy;
-                gz = blockinfo.gz;
-                gxStep = blockinfo.gxStep;
-                gyStep = blockinfo.gyStep;
-                gzStep = blockinfo.gzStep;
-                delta_f = blockinfo.delta_f;
-                fov = blockinfo.fov;
-                reps = blockinfo.reps;
-            }
+            onClicked:{ applyChanges(blockID) }
         }
 
         // VIEW 3D MODEL OF SELECTED SLICE
@@ -433,77 +455,6 @@ Item {
                 }
             }
         }
-
-        // MAKE GROUP duplicatable (THIS ADDS A BUTTON TO THE "ADD BLOCK" MENU)
-        /*
-        Button{
-            id: duplicateButton
-            visible: groupVisible
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
-            anchors.margins: 10
-            height: applyButton.height
-            width: 200
-            text: "Make group duplicatable"
-
-            onClicked:{
-                for(var i=0; i<groupButtonList.count; i++){
-                    if(groupButtonList.get(i).buttonText === menuTitle){
-                        console.log("This block is already duplicatable");
-                        return;
-                    }
-                }
-                groupButtonList.append({"buttonText": menuTitle, "code": (blockButtonList.count + groupButtonList.count)+1, iconSource:"/icons/light/misc.png"});
-
-                console.log("blockID: " + blockID)
-
-                var group_cod;
-                var num_groups = blockList.get(blockID).ngroups;
-                var count = groupList.count;
-                var childrenList;
-
-                for(var j=0; j<=countChildren(blockID); j++){
-                    childrenList = [];
-
-                    if(j==0){
-                        group_cod = blockButtonList.count + groupButtonList.count;
-                    } else {
-                        group_cod = -1;
-                    }
-
-                    if(isGroup(blockID+j)){
-                        var num = blockList.get(blockID+j).children.count;
-                        for(var i=0;i<num;i++){
-                            childrenList.push( blockList.get(blockID+j).children.get(i).number + (count-blockID) );
-                        }
-                    }
-
-                    groupList.append(  {"group_cod":group_cod,
-                                        "cod":blockList.get(blockID+j).cod,
-                                        "dur":blockList.get(blockID+j).dur,
-                                        "gx":blockList.get(blockID+j).gx,
-                                        "gy":blockList.get(blockID+j).gy,
-                                        "gz":blockList.get(blockID+j).gz,
-                                        "gxStep":blockList.get(blockID+j).gxStep,
-                                        "gyStep":blockList.get(blockID+j).gyStep,
-                                        "gzStep":blockList.get(blockID+j).gzStep,
-                                        "b1x":blockList.get(blockID+j).b1x,
-                                        "b1y":blockList.get(blockID+j).b1y,
-                                        "delta_f":blockList.get(blockID+j).delta_f,
-                                        "fov":blockList.get(blockID+j).fov,
-                                        "n":blockList.get(blockID+j).n,
-                                        "ngroups":blockList.get(blockID+j).ngroups - num_groups,
-                                        "name":blockList.get(blockID+j).name,
-                                        "children":[],
-                                        "reps":blockList.get(blockID+j).reps});
-
-                    for(i=0;i<childrenList.length;i++){
-                        groupList.get(groupList.count-1).children.append({"number":childrenList[i]})
-                    }
-                }
-            }
-        }
-        */
     } // Rectangle
 
     states: [

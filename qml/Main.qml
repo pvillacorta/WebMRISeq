@@ -204,24 +204,55 @@ ApplicationWindow {
                 }
             }
 
+            var code = blockList.get(blockID+j).cod
+
+            var durationActive =    [1,2,3,4].includes(code);
+            var linesActive =       [5,6].includes(code);
+            var samplesActive =     [4,5,6].includes(code);
+            var fovActive =         [5,6].includes(code);
+            var rfActive =          [1,6].includes(code);
+            var gradientsActive =   [1,3,4].includes(code);
+            var tActive =           [6].includes(code);
+            var groupActive =       [0].includes(code);
+
             groupList.append(  {"group_cod":group_cod,
-                                "cod":blockList.get(blockID+j).cod,
-                                "dur":blockList.get(blockID+j).dur,
-                                "gx":blockList.get(blockID+j).gx,
-                                "gy":blockList.get(blockID+j).gy,
-                                "gz":blockList.get(blockID+j).gz,
-                                "gxStep":blockList.get(blockID+j).gxStep,
-                                "gyStep":blockList.get(blockID+j).gyStep,
-                                "gzStep":blockList.get(blockID+j).gzStep,
-                                "b1x":blockList.get(blockID+j).b1x,
-                                "b1y":blockList.get(blockID+j).b1y,
-                                "delta_f":blockList.get(blockID+j).delta_f,
-                                "fov":blockList.get(blockID+j).fov,
-                                "n":blockList.get(blockID+j).n,
-                                "ngroups":blockList.get(blockID+j).ngroups - num_groups,
+                                "cod":code,
                                 "name":blockList.get(blockID+j).name,
+                                "ngroups":blockList.get(blockID+j).ngroups - num_groups,
                                 "children":[],
-                                "repetitions":blockList.get(blockID+j).repetitions});
+                                "rf": [],
+                                "gradients": [] });
+
+            if(durationActive)  {groupList.setProperty(groupList.count-1,           "duration",     blockList.get(blockID+j).duration);}
+            if(linesActive)     {groupList.setProperty(groupList.count-1,           "lines",        blockList.get(blockID+j).lines);}
+            if(samplesActive)   {groupList.setProperty(groupList.count-1,           "samples",      blockList.get(blockID+j).samples);}
+            if(fovActive)       {groupList.setProperty(groupList.count-1,           "fov",          blockList.get(blockID+j).fov);}
+            if(rfActive)        {groupList.get(groupList.count-1).rf.append(       {"shape":        blockList.get(blockID+j).rf.get(0).shape,
+                                                                                    "b1Module":     blockList.get(blockID+j).rf.get(0).b1Module,
+                                                                                    "flipAngle":    blockList.get(blockID+j).rf.get(0).flipAngle,
+                                                                                    "deltaf":       blockList.get(blockID+j).rf.get(0).deltaf});
+                                }
+            if(gradientsActive) {groupList.get(groupList.count-1).gradients.append({"axis":         "x",
+                                                                                    "delay":        blockList.get(blockID+j).gradients.get(0).delay,
+                                                                                    "rise":         blockList.get(blockID+j).gradients.get(0).rise,
+                                                                                    "flatTop":      blockList.get(blockID+j).gradients.get(0).flatTop,
+                                                                                    "amplitude":    blockList.get(blockID+j).gradients.get(0).amplitude,
+                                                                                    "step":         blockList.get(blockID+j).gradients.get(0).step});
+                                 groupList.get(groupList.count-1).gradients.append({"axis":         "y",
+                                                                                    "delay":        blockList.get(blockID+j).gradients.get(1).delay,
+                                                                                    "rise":         blockList.get(blockID+j).gradients.get(1).rise,
+                                                                                    "flatTop":      blockList.get(blockID+j).gradients.get(1).flatTop,
+                                                                                    "amplitude":    blockList.get(blockID+j).gradients.get(1).amplitude,
+                                                                                    "step":         blockList.get(blockID+j).gradients.get(1).step});
+                                 groupList.get(groupList.count-1).gradients.append({"axis":         "z",
+                                                                                    "delay":        blockList.get(blockID+j).gradients.get(2).delay,
+                                                                                    "rise":         blockList.get(blockID+j).gradients.get(2).rise,
+                                                                                    "flatTop":      blockList.get(blockID+j).gradients.get(2).flatTop,
+                                                                                    "amplitude":    blockList.get(blockID+j).gradients.get(2).amplitude,
+                                                                                    "step":         blockList.get(blockID+j).gradients.get(2).step});}
+            if(tActive)         {groupList.get(groupList.count-1).t.append(        {"te":           blockList.get(blockID+j).t.get(0).te,
+                                                                                    "tr":           blockList.get(blockID+j).t.get(0).tr});}
+            if(groupActive)     {groupList.setProperty(groupList.count-1,           "repetitions",  blockList.get(blockID+j).repetitions);}
 
             for(i=0;i<childrenList.length;i++){
                 groupList.get(groupList.count-1).children.append({"number":childrenList[i]})

@@ -126,6 +126,7 @@ Item{
                         anchors.fill: parent
                         onClicked: {
                             blockSeq.displayedMenu = -1;
+
                             // Default values ------
                             var duration = 1e-3;
                             var lines = 64;
@@ -135,38 +136,70 @@ Item{
                             var b1Module = 1e-6;
                             var flipAngle = 10;
                             var deltaf = 0;
-                            var te = 20e-3;
-                            var tr = 100e-3;
-                            var repetitions = 1;
                             var gDelay = 0;
                             var gRise = 1e-4;
                             var gFlatTop = 1e-3;
                             var gAmplitude = 1e-5;
                             var gStep = 0;
+                            var te = 20e-3;
+                            var tr = 100e-3;
+                            var repetitions = 1;
                             // ------------------
 
-                            var durationActive =    code in [1,2,3,4];
-                            var rfActive =          code in [1,6];
-                            var gradientsActive =   code in [1,3,4];
-                            var linesActive =       code in [5,6];
-                            var samplesActive =     code in [4,5,6];
-                            var fovActive =         code in [5,6];
-                            var groupActive =       code in [0];
-                            var tActive =           code in [6];
-
+                            // Single block
                             if(code<=blockButtonList.count){
-                                blockList.append({
-                                                "cod": code,
-                                                "name": "",
-                                                "collapsed": false,
-                                                "ngroups": 0,
-                                                "children":[],
-                                                "grouped": false,
-                                                "duration": duration,
-                                                "rf": [],
-                                                "gradients": []
-                                                });
+
+                                var durationActive =    [1,2,3,4].includes(code);
+                                var linesActive =       [5,6].includes(code);
+                                var samplesActive =     [4,5,6].includes(code);
+                                var fovActive =         [5,6].includes(code);
+                                var rfActive =          [1,6].includes(code);
+                                var gradientsActive =   [1,3,4].includes(code);
+                                var tActive =           [6].includes(code);
+                                var groupActive =       [0].includes(code);
+
+                                blockList.append(  {"cod": code,
+                                                    "name": "",
+                                                    "collapsed": false,
+                                                    "ngroups": 0,
+                                                    "children": [],
+                                                    "grouped": false,
+                                                    "rf": [],
+                                                    "gradients": [] });
+
+                                if(durationActive)  {blockList.setProperty(blockList.count-1,           "duration", duration);}
+                                if(linesActive)     {blockList.setProperty(blockList.count-1,           "lines", lines);}
+                                if(samplesActive)   {blockList.setProperty(blockList.count-1,           "samples", samples);}
+                                if(fovActive)       {blockList.setProperty(blockList.count-1,           "fov", fov);}
+                                if(rfActive)        {blockList.get(blockList.count-1).rf.append(       {"shape":shape,
+                                                                                                        "b1Module": b1Module,
+                                                                                                        "flipAngle": flipAngle,
+                                                                                                        "deltaf": deltaf});}
+                                if(gradientsActive) {blockList.get(blockList.count-1).gradients.append({"axis":"x",
+                                                                                                        "delay": gDelay,
+                                                                                                        "rise": gRise,
+                                                                                                        "flatTop": gFlatTop,
+                                                                                                        "amplitude": gAmplitude,
+                                                                                                        "step": gStep});
+                                                     blockList.get(blockList.count-1).gradients.append({"axis":"y",
+                                                                                                        "delay": 0,
+                                                                                                        "rise": 0,
+                                                                                                        "flatTop": 0,
+                                                                                                        "amplitude": 0,
+                                                                                                        "step": 0});
+                                                     blockList.get(blockList.count-1).gradients.append({"axis":"z",
+                                                                                                        "delay": 0,
+                                                                                                        "rise": 0,
+                                                                                                        "flatTop": 0,
+                                                                                                        "amplitude": 0,
+                                                                                                        "step": 0});}
+                                if(tActive)         {blockList.get(blockList.count-1).t.append(        {"te": te,
+                                                                                                        "tr": tr});}
+                                if(groupActive)     {blockList.setProperty(blockList.count-1,           "repetitions", repetitions);}
+
+                            // Group of blocks
                             } else if(code>blockButtonList.count){
+
                                 var index;
                                 for(var i=0; i<groupList.count; i++){
                                     if(groupList.get(i).group_cod == code){
@@ -177,25 +210,48 @@ Item{
                                 var counter = 0;
 
                                 do{
-                                    blockList.append(  {"cod":groupList.get(index).cod,
-                                                        "dur":groupList.get(index).dur,
-                                                        "gx":groupList.get(index).gx,
-                                                        "gy":groupList.get(index).gy,
-                                                        "gz":groupList.get(index).gz,
-                                                        "gxStep":groupList.get(index).gxStep,
-                                                        "gyStep":groupList.get(index).gyStep,
-                                                        "gzStep":groupList.get(index).gzStep,
-                                                        "b1x":groupList.get(index).b1x,
-                                                        "b1y":groupList.get(index).b1y,
-                                                        "delta_f":groupList.get(index).delta_f,
-                                                        "fov":groupList.get(index).fov,
-                                                        "n":groupList.get(index).n,
-                                                        "grouped":false,
-                                                        "ngroups":groupList.get(index).ngroups,
-                                                        "name":groupList.get(index).name,
-                                                        "children":[],
+                                    var cod = groupList.get(index).cod;
+
+                                    durationActive =    [1,2,3,4].includes(cod);
+                                    linesActive =       [5,6].includes(cod);
+                                    samplesActive =     [4,5,6].includes(cod);
+                                    fovActive =         [5,6].includes(cod);
+                                    rfActive =          [1,6].includes(cod);
+                                    gradientsActive =   [1,3,4].includes(cod);
+                                    tActive =           [6].includes(cod);
+                                    groupActive =       [0].includes(cod);
+
+                                    blockList.append({  "cod": cod,
+                                                        "name": groupList.get(index).name,
                                                         "collapsed": counter==0?false:true,
-                                                        "repetitions":groupList.get(index).repetitions});
+                                                        "ngroups": groupList.get(index).ngroups,
+                                                        "children": [],
+                                                        "grouped": false,
+                                                        "rf": [],
+                                                        "gradients": [] });
+
+                                    if(durationActive)  {blockList.setProperty(blockList.count-1,           "duration",     groupList.get(index).duration);}
+                                    if(linesActive)     {blockList.setProperty(blockList.count-1,           "lines",        groupList.get(index).lines);}
+                                    if(samplesActive)   {blockList.setProperty(blockList.count-1,           "samples",      groupList.get(index).samples);}
+                                    if(fovActive)       {blockList.setProperty(blockList.count-1,           "fov",          groupList.get(index).fov);}
+                                    if(rfActive)        {blockList.get(blockList.count-1).rf.append(       {"shape":        groupList.get(index).rf.get(0).samples,
+                                                                                                            "b1Module":     groupList.get(index).rf.get(0).b1Module,
+                                                                                                            "flipAngle":    groupList.get(index).rf.get(0).flipAngle,
+                                                                                                            "deltaf":       groupList.get(index).rf.get(0).deltaf});}
+                                    if(gradientsActive) {
+                                        var gradients = groupList.get(index).gradients
+                                        for(i=0; i<gradients.count; i++){
+                                            var grad = gradients.get(i);
+                                            blockList.get(blockList.count-1).gradients.append(             {"axis":         grad.axis,
+                                                                                                            "delay":        grad.delay,
+                                                                                                            "rise":         grad.rise,
+                                                                                                            "flatTop":      grad.flatTop,
+                                                                                                            "amplitude":    grad.amplitude,
+                                                                                                            "step":         grad.step});}
+                                    }
+                                    if(tActive)         {blockList.get(blockList.count-1).t.append(        {"te":           groupList.get(index).t.get(0).te,
+                                                                                                            "tr":           groupList.get(index).t.get(0).tr});}
+                                    if(groupActive)     {blockList.setProperty(blockList.count-1,           "repetitions",  groupList.get(index).repetitions);}
 
                                     num = groupList.get(index).children.count;
                                     for(i=0;i<num;i++){
