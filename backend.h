@@ -10,6 +10,9 @@ public:
     explicit Backend(QObject *parent = nullptr);
 
 signals:
+
+public slots:
+    void getUploadFile();
 };
 
 #endif // BACKEND_H
