@@ -17,7 +17,7 @@ Item {
 
         Image{
             id: deleteIcon
-            source: "/icons/delete_white.png"
+            source: "qrc:/icons/delete_white.png"
             anchors.fill: parent
             anchors.margins:3
         }

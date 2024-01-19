@@ -1,7 +1,9 @@
-#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickStyle>
+#include <QQuickView>
+
 
 // #include <emscripten.h>
 
@@ -11,16 +13,19 @@
 
 int main(int argc, char *argv[])
 {
-    // Global property to enable/disable drag & drop:
-    bool dragDrop = true;
+    // QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+    QApplication app(argc, argv);
 
-    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-    QGuiApplication app(argc, argv);
+    // QQuickStyle::setStyle("Basic");
 
-    QQuickStyle::setStyle("Basic");
+    
+    QQuickView view;
+    view.setSource(QUrl::fromLocalFile("../qml/Main.qml"));
+    view.show();
+    
+
+    /*
     QQmlApplicationEngine engine;
-
-    engine.rootContext()->setContextProperty("dragDrop", dragDrop);
 
     engine.addImportPath(":/");
     const QUrl url(u"qrc:/WebMRISequenceEditor/qml/Main.qml"_qs);
@@ -33,6 +38,7 @@ int main(int argc, char *argv[])
     engine.load(url);
 
     // call_alert();
+    */
 
     return app.exec();
 }
