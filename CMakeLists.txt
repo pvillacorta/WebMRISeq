@@ -10,6 +10,8 @@ qt_standard_project_setup()
 
 qt_add_executable(appWebMRISequenceEditor
     main.cpp
+    backend.cpp
+    backend.h
 )
 
 qt_add_resources(appWebMRISequenceEditor "icons"

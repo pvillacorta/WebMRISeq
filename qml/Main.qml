@@ -3,7 +3,7 @@ import QtQuick.Controls
 import QtQuick.Dialogs
 import Qt5Compat.GraphicalEffects
 
-Rectangle {
+ApplicationWindow {
     id: window
 
     // WINDOW SIZE
@@ -33,7 +33,7 @@ Rectangle {
     property int buttonTextSize: 10
 
     // WINDOW RADIUS
-    // property int radius: window.mobile ? 2 : 6
+    property int radius: window.mobile ? 2 : 6
 
     width:  desktopWidth;
     height: desktop ? desktopHeight :
@@ -659,10 +659,13 @@ Rectangle {
         contentWidth: window.width
         boundsBehavior: Flickable.StopAtBounds
 
-        // Text{
-        //     color: "white"
-        //     text: window.width + " x " + window.height
-        // }
+        /*
+        Text{
+            id: textDim
+            color: "white"
+            text: "Window: " + window.width + " x " + window.height
+        }
+        */
 
         // SEQUENCE
         RectangularGlow {
