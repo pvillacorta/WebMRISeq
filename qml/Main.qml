@@ -33,7 +33,7 @@ ApplicationWindow {
     property int buttonTextSize: 10
 
     // WINDOW RADIUS
-    property int radius: mobile ? 2 : 6
+    property int radius: window.mobile ? 2 : 6
 
     width:  desktopWidth;
     height: desktop ? desktopHeight :
@@ -181,7 +181,7 @@ ApplicationWindow {
 
     // function addGroup() adds a group (created by the user) to the groupList
     function addGroup(menuTitle,blockID){
-        groupButtonList.append({"buttonText": menuTitle, "code": (blockButtonList.count + groupButtonList.count)+1, "iconSource":"/icons/light/misc.png"});
+        groupButtonList.append({"buttonText": menuTitle, "code": (blockButtonList.count + groupButtonList.count)+1, "iconSource":"qrc:/icons/light/misc.png"});
 
         var group_cod;
         var num_groups = blockList.get(blockID).ngroups;
@@ -659,10 +659,13 @@ ApplicationWindow {
         contentWidth: window.width
         boundsBehavior: Flickable.StopAtBounds
 
-        // Text{
-        //     color: "white"
-        //     text: window.width + " x " + window.height
-        // }
+        /*
+        Text{
+            id: textDim
+            color: "white"
+            text: "Window: " + window.width + " x " + window.height
+        }
+        */
 
         // SEQUENCE
         RectangularGlow {
@@ -813,12 +816,12 @@ ApplicationWindow {
         // This list stores information about the available "basic" blocks
         ListModel {
             id: blockButtonList
-            ListElement { buttonText: "Excitation";     code: 1;    iconSource:"/icons/light/rf.png" }
-            ListElement { buttonText: "Delay";          code: 2;    iconSource:"/icons/light/clock.png"  }
-            ListElement { buttonText: "Dephase";        code: 3;    iconSource:"/icons/light/angle.png"  }
-            ListElement { buttonText: "Readout";        code: 4;    iconSource:"/icons/light/readout.png"  }
-            ListElement { buttonText: "EPI_ACQ";        code: 5;    iconSource:"/icons/light/epi.png"  }
-            ListElement { buttonText: "GRE";            code: 6;    iconSource:"/icons/light/misc.png"  }
+            ListElement { buttonText: "Excitation";     code: 1;    iconSource:"qrc:/icons/light/rf.png" }
+            ListElement { buttonText: "Delay";          code: 2;    iconSource:"qrc:/icons/light/clock.png"  }
+            ListElement { buttonText: "Dephase";        code: 3;    iconSource:"qrc:/icons/light/angle.png"  }
+            ListElement { buttonText: "Readout";        code: 4;    iconSource:"qrc:/icons/light/readout.png"  }
+            ListElement { buttonText: "EPI_ACQ";        code: 5;    iconSource:"qrc:/icons/light/epi.png"  }
+            ListElement { buttonText: "GRE";            code: 6;    iconSource:"qrc:/icons/light/misc.png"  }
         }
 
         // This list stores information about the groups stored as duplicatable blocks

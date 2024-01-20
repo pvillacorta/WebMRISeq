@@ -257,16 +257,14 @@ Item{
         onPressed:{
             if (!window.mobile){
                 dragged = true;
-                if(dragDrop){
-                    if(!popup.active){
-                        held = true
-                        blockView.held = true;
-                        blockView.dragIndex = dropIndex
+                if(!popup.active){
+                    held = true
+                    blockView.held = true;
+                    blockView.dragIndex = dropIndex
 
-                        if(isGroup(dropIndex)){
-                            for(var i=0; i<blockList.get(dropIndex).children.count; i++){
-                                collapse(blockList.get(dropIndex).children.get(i).number);
-                            }
+                    if(isGroup(dropIndex)){
+                        for(var i=0; i<blockList.get(dropIndex).children.count; i++){
+                            collapse(blockList.get(dropIndex).children.get(i).number);
                         }
                     }
                 }
@@ -276,16 +274,14 @@ Item{
         onPressAndHold:{
             if (window.mobile){
                 dragged = true;
-                if(dragDrop){
-                    if(!popup.active){
-                        held = true
-                        blockView.held = true;
-                        blockView.dragIndex = dropIndex
+                if(!popup.active){
+                    held = true
+                    blockView.held = true;
+                    blockView.dragIndex = dropIndex
 
-                        if(isGroup(dropIndex)){
-                            for(var i=0; i<blockList.get(dropIndex).children.count; i++){
-                                collapse(blockList.get(dropIndex).children.get(i).number);
-                            }
+                    if(isGroup(dropIndex)){
+                        for(var i=0; i<blockList.get(dropIndex).children.count; i++){
+                            collapse(blockList.get(dropIndex).children.get(i).number);
                         }
                     }
                 }
@@ -294,10 +290,8 @@ Item{
 
         onReleased: {
             dragged = false;
-            if(dragDrop){
-                held = false;
-                blockView.held = false;
-            }
+            held = false;
+            blockView.held = false;
         }
 
         Drag.active: held
@@ -311,14 +305,12 @@ Item{
             anchors {fill: parent; margins: 10}
 
             onEntered: {
-                if(dragDrop){
-                    // Blocks must be siblings so we can move them
-                    if(getParent(dropIndex) === getParent(blockView.dragIndex)){
-                        configMenu.menuVisible = false;
-                        blockSeq.displayedMenu = -1;
+                // Blocks must be siblings so we can move them
+                if(getParent(dropIndex) === getParent(blockView.dragIndex)){
+                    configMenu.menuVisible = false;
+                    blockSeq.displayedMenu = -1;
 
-                        moveBlock(blockView.dragIndex,dropIndex)
-                    }
+                    moveBlock(blockView.dragIndex,dropIndex)
                 }
             }
         } // DropArea
@@ -396,7 +388,7 @@ Item{
             width:8
             Image{
                 visible:index==blockList.count-1?false:true
-                source: "/icons/arrow_gray.png"
+                source: "qrc:/icons/arrow_gray.png"
                 anchors.fill:parent
             }
         }

@@ -53,7 +53,7 @@ Item{
                 contentItem: Image{
                     anchors.fill: parent
                     anchors.margins: 3
-                    source: "/icons/light/plus.png"
+                    source: "qrc:/icons/light/plus.png"
                 }
 
                 scale: hovered? 0.9: 1

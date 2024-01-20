@@ -25,7 +25,7 @@ Item {
     z: 20
     Image {
         anchors.fill: parent
-        source: "/icons/balloon.png"
+        source: "qrc:/icons/balloon.png"
     }
 
     Column {

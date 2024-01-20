@@ -4,12 +4,14 @@ project(appWebMRISequenceEditor VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.4 REQUIRED COMPONENTS Quick QuickControls2)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Quick QuickControls2 Widgets)
 
 qt_standard_project_setup()
 
 qt_add_executable(appWebMRISequenceEditor
     main.cpp
+    backend.cpp
+    backend.h
 )
 
 qt_add_resources(appWebMRISequenceEditor "icons"
@@ -67,6 +69,7 @@ set_target_properties(appWebMRISequenceEditor PROPERTIES
 target_link_libraries(appWebMRISequenceEditor
     PRIVATE Qt6::Quick
     PRIVATE Qt6::QuickControls2
+    PRIVATE Qt6::Widgets
 )
 
 include(GNUInstallDirs)
