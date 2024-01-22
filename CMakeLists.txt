@@ -52,8 +52,8 @@ qt_add_qml_module(appWebMRISequenceEditor
         qml/ButtonsMenu.qml
         qml/PopUp.qml
         qml/DeleteButton.qml
+        qml/LoadedSequence.qml
         qml/Seq_Example.qml
-
 )
 
 

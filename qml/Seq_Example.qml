@@ -44,6 +44,7 @@ ListModel{
                 step: 1e-4
             }
         ]
+        t:[]
     }
     ListElement{
         cod: 2
@@ -53,6 +54,9 @@ ListModel{
         children:[]
         grouped: false
         duration: 1
+        rf: []
+        gradients: []
+        t: []
     }
     ListElement{
         cod: 3
@@ -62,6 +66,7 @@ ListModel{
         children:[]
         grouped: false
         duration: 1
+        rf: []
         gradients:[
             ListElement{
                 axis: "x"
@@ -88,6 +93,7 @@ ListModel{
                 step: 1e-4
             }
         ]
+        t: []
     }
     ListElement{
         cod: 4
@@ -98,6 +104,7 @@ ListModel{
         grouped: false
         duration: 1
         samples: 32
+        rf: []
         gradients:[
             ListElement{
                 axis: "x"
@@ -124,6 +131,7 @@ ListModel{
                 step: 1e-4
             }
         ]
+        t: []
     }
     ListElement{
         cod: 5
@@ -132,6 +140,9 @@ ListModel{
         ngroups: 0
         children:[]
         grouped: false
+        rf: []
+        gradients: []
+        t: []
         lines: 32
         samples: 32
         fov: 0.1
@@ -151,6 +162,7 @@ ListModel{
                 deltaf: 0
             }
         ]
+        gradients: []
         lines: 32
         samples: 32
         fov: 0.1

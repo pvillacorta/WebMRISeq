@@ -221,7 +221,8 @@ ApplicationWindow {
                                 "ngroups":blockList.get(blockID+j).ngroups - num_groups,
                                 "children":[],
                                 "rf": [],
-                                "gradients": [] });
+                                "gradients": [],
+                                "t": []});
 
             if(durationActive)  {groupList.setProperty(groupList.count-1,           "duration",     blockList.get(blockID+j).duration);}
             if(linesActive)     {groupList.setProperty(groupList.count-1,           "lines",        blockList.get(blockID+j).lines);}
@@ -410,43 +411,51 @@ ApplicationWindow {
     // passed to C++ so we will be able to save the Sequence in a file for future use
     function saveSeq(){
         var array = [];
-        for(var i=0; i<18; i++){
+        for(var i=0; i<13; i++){
             array[i] = [];
             for(var j=0; j<blockList.count; j++){
-                array[i][j] = []; //We need to store the children so we need a 3D array
+                array[i][j] = [];
+                for(var k=0; k<3; k++){
+                    array[i][j][k] = [];
+                }
             }
         }
+
         for(j=0; j<blockList.count; j++){
-            array[0][j].push(blockList.get(j).cod);
-            array[1][j].push(blockList.get(j).dur);
-            array[2][j].push(blockList.get(j).gx);
-            array[3][j].push(blockList.get(j).gy);
-            array[4][j].push(blockList.get(j).gz);
-            array[5][j].push(blockList.get(j).gxStep);
-            array[6][j].push(blockList.get(j).gyStep);
-            array[7][j].push(blockList.get(j).gzStep);
-            array[8][j].push(blockList.get(j).b1x);
-            array[9][j].push(blockList.get(j).b1y);
-            array[10][j].push(blockList.get(j).delta_f);
-            array[11][j].push(blockList.get(j).fov);
-            array[12][j].push(blockList.get(j).n);
-            array[13][j].push(blockList.get(j).ngroups);
+            var code = blockList.get(j).cod
 
-            for(var k=0; k<blockList.get(j).name.length; k++){
-                array[14][j].push(blockList.get(j).name.charCodeAt(k));
-            }
+            var durationActive =    [1,2,3,4].includes(code);
+            var linesActive =       [5,6].includes(code);
+            var samplesActive =     [4,5,6].includes(code);
+            var fovActive =         [5,6].includes(code);
+            var rfActive =          [1,6].includes(code);
+            var gradientsActive =   [1,3,4].includes(code);
+            var tActive =           [6].includes(code);
+            var groupActive =       [0].includes(code);
 
-            for(k=0; k<blockList.get(j).children.count; k++){
-                array[15][j].push(blockList.get(j).children.get(k).number);
-            }
-
-            if(isChild(j)){
-                array[16][j].push(1);
-            } else {
-                array[16][j].push(0);
-            }
-
-            array[17][j].push(blockList.get(j).reps);
+                                                                array[0][j][0].push(blockList.get(j).cod);
+            for(k=0; k<blockList.get(j).name.length; k++){      array[1][j][0].push(blockList.get(j).name.charCodeAt(k));}
+                                                                array[2][j][0].push(blockList.get(j).ngroups);
+            for(k=0; k<blockList.get(j).children.count; k++){   array[3][j][0].push(blockList.get(j).children.get(k).number);}
+            if(durationActive)  {                               array[4][j][0].push(blockList.get(j).duration)}
+            if(linesActive)     {                               array[5][j][0].push(blockList.get(j).lines)}
+            if(samplesActive)   {                               array[6][j][0].push(blockList.get(j).samples)}
+            if(fovActive)       {                               array[7][j][0].push(blockList.get(j).fov)}
+            if(rfActive){                                       array[8][j][0].push(blockList.get(j).rf.get(0).shape);
+                                                                array[8][j][0].push(blockList.get(j).rf.get(0).b1Module);
+                                                                array[8][j][0].push(blockList.get(j).rf.get(0).flipAngle);
+                                                                array[8][j][0].push(blockList.get(j).rf.get(0).deltaf);}
+            if(gradientsActive){ for(k=0; k<3; k++){            array[9][j][k].push(blockList.get(j).gradients.get(k).axis);
+                                                                array[9][j][k].push(blockList.get(j).gradients.get(k).delay);
+                                                                array[9][j][k].push(blockList.get(j).gradients.get(k).rise);
+                                                                array[9][j][k].push(blockList.get(j).gradients.get(k).flatTop);
+                                                                array[9][j][k].push(blockList.get(j).gradients.get(k).amplitude);
+                                                                array[9][j][k].push(blockList.get(j).gradients.get(k).step);}}
+            if(tActive)         {                               array[10][j][0].push(blockList.get(j).t.get(0).te);
+                                                                array[10][j][0].push(blockList.get(j).t.get(0).tr);}
+            if(groupActive)     {                               array[11][j][0].push(blockList.get(j).repetitions);}
+            if(isChild(j))      {                               array[12][j][0].push(1);
+            } else {                                            array[12][j][0].push(0);}
         }
 
         return array;
@@ -491,39 +500,118 @@ ApplicationWindow {
         id:menuBar
         anchors.top: parent.top
         width: parent.width
-        height: 30
+        height: 20
 
         color: "gray"
 
         Button {
-            width:100
-            height:parent.height
+            id: fileButton
+            text: "File"
+            font.pointSize: 10
+            height: parent.height
+            width: 20 * text.length
+            z: 20
 
-            text: "Load"
-            onClicked:{
-                backend.getUploadFile();
+            onClicked: menu.open()
+
+            Menu {
+                id: menu
+                y: fileButton.height
+                font.pointSize: 10
+
+                Action {
+                    text: "New Sequence"
+                }
+                Action {
+                    text: "Open Sequence"
+                    onTriggered: backend.getUploadFile();
+                }
+                Action {
+                    text: "Save Sequence"
+                    onTriggered: backend.getDownloadFile();
+                }
             }
         }
     }
 
+    /*
+    ComboBox {  id:fileInput
+        model: ["New Sequence", "Load Sequence", "Save Sequence"]
+        font.pointSize: window.fontSize;
+        width: 50
+        delegate: ItemDelegate {
+            width: fileInput.width
+            height: fileInput.height
+            Item{
+                width: popupText.width + 20
+                anchors.leftMargin: 5
+                Text {
+                    id: popupText
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.leftMargin: 50
+                    text: modelData
+                    color: "#292929"
+                    font: fileInput.font
+                    elide: Text.ElideRight
+                }
+            }
+            highlighted: fileInput.highlightedIndex === index
+        }
+        indicator: Canvas {}
+        contentItem: Text {
+            leftPadding: 5
+            rightPadding: fileInput.indicator.width + fileInput.spacing
+
+            text: "File"
+            font: fileInput.font
+            color: fileInput.pressed ? "black" : "#292929"
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+        }
+        background: Rectangle {
+            implicitHeight: window.fieldHeight
+            border.color: fileInput.pressed ? "black" : "#595959"
+            border.width: fileInput.visualFocus ? 2 : 1
+            radius: 2
+        }
+        popup: Popup {
+            y: fileInput.height - 1
+            width: fileInput.delegate.width + 20
+            implicitHeight: contentItem.implicitHeight
+            padding: 1
+
+            contentItem: ListView {
+                clip: true
+                implicitHeight: contentHeight
+                model: fileInput.popup.visible ? fileInput.delegateModel : null
+                currentIndex: fileInput.highlightedIndex
+            }
+            background: Rectangle {
+                border.color: "#292929"
+                radius: 2
+            }
+        }
+    }
+    */
+
     Connections {
         target: backend
-        function onUploadFileSelected(fileName,data) {
-            console.log("File name:", fileName);
+        function onUploadFileSelected(wasm) {
+            if(wasm){
+                modelLoader.source = "file:///LoadedSequence.qml"
+            }
+            else{
+                modelLoader.source = "LoadedSequence.qml"
+            }
 
-
-
-            modelLoader.source = "file:///D:/work/WebMRISequenceEditor/qml/LoadedSequence.qml"
             blockList.clear();
             configMenu.menuVisible = false;
             for(var i=0; i<modelLoader.item.count; i++){
                 blockList.append(modelLoader.item.get(i));
             }
-            // if(typeof modelLoader.item.seqDescription !== 'undefined'){
-            //     seqDescription.text = modelLoader.item.seqDescription;
-            // }
         }
     }
+
 
     Flickable{
         anchors.top: menuBar.bottom

@@ -165,7 +165,9 @@ Item{
                                                     "children": [],
                                                     "grouped": false,
                                                     "rf": [],
-                                                    "gradients": [] });
+                                                    "gradients": [],
+                                                    "t": []
+                                                });
 
                                 if(durationActive)  {blockList.setProperty(blockList.count-1,           "duration", duration);}
                                 if(linesActive)     {blockList.setProperty(blockList.count-1,           "lines", lines);}
@@ -228,7 +230,8 @@ Item{
                                                         "children": [],
                                                         "grouped": false,
                                                         "rf": [],
-                                                        "gradients": [] });
+                                                        "gradients": [],
+                                                        "t": []});
 
                                     if(durationActive)  {blockList.setProperty(blockList.count-1,           "duration",     groupList.get(index).duration);}
                                     if(linesActive)     {blockList.setProperty(blockList.count-1,           "lines",        groupList.get(index).lines);}
