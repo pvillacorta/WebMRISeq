@@ -1,6 +1,7 @@
 import QtQuick
 
 ListModel{
+    property string description: "Secuencia de prueba"
     // Example blocks
     ListElement{
         cod: 1
