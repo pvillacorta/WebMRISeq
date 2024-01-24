@@ -407,58 +407,31 @@ ApplicationWindow {
     }
 
 
-    // Function saveSeq() creates an array from the block Sequence. This array will be
-    // passed to C++ so we will be able to save the Sequence in a file for future use
+    // Function saveSeq()
     function saveSeq(){
-        var array = [];
-        for(var i=0; i<13; i++){
-            array[i] = [];
-            for(var j=0; j<blockList.count; j++){
-                array[i][j] = [];
-                for(var k=0; k<3; k++){
-                    array[i][j][k] = [];
-                }
+        var description = "Sequence description";
+        var datamodel = { "description": description, "blocks": [] };
+
+        for (var i = 0; i < blockList.count; ++i) {
+            datamodel.blocks.push(blockList.get(i));
+        }
+
+        var datastore = JSON.stringify(datamodel);
+        backend.getDownloadFile(datastore);
+
+        /*
+        for (var i = 0; i < blockList.count; i++) {
+            // Agrega un nuevo elemento a saveBlockList con los mismos valores que blockList
+            saveBlockList.append(blockList.get(i));
+
+            // Modifica el elemento recién agregado si es un hijo
+            if (isChild(i)) {
+                saveBlockList.setProperty(i, "collapsed", true);
             }
         }
-
-        for(j=0; j<blockList.count; j++){
-            var code = blockList.get(j).cod
-
-            var durationActive =    [1,2,3,4].includes(code);
-            var linesActive =       [5,6].includes(code);
-            var samplesActive =     [4,5,6].includes(code);
-            var fovActive =         [5,6].includes(code);
-            var rfActive =          [1,6].includes(code);
-            var gradientsActive =   [1,3,4].includes(code);
-            var tActive =           [6].includes(code);
-            var groupActive =       [0].includes(code);
-
-                                                                array[0][j][0].push(blockList.get(j).cod);
-            for(k=0; k<blockList.get(j).name.length; k++){      array[1][j][0].push(blockList.get(j).name.charCodeAt(k));}
-                                                                array[2][j][0].push(blockList.get(j).ngroups);
-            for(k=0; k<blockList.get(j).children.count; k++){   array[3][j][0].push(blockList.get(j).children.get(k).number);}
-            if(durationActive)  {                               array[4][j][0].push(blockList.get(j).duration)}
-            if(linesActive)     {                               array[5][j][0].push(blockList.get(j).lines)}
-            if(samplesActive)   {                               array[6][j][0].push(blockList.get(j).samples)}
-            if(fovActive)       {                               array[7][j][0].push(blockList.get(j).fov)}
-            if(rfActive){                                       array[8][j][0].push(blockList.get(j).rf.get(0).shape);
-                                                                array[8][j][0].push(blockList.get(j).rf.get(0).b1Module);
-                                                                array[8][j][0].push(blockList.get(j).rf.get(0).flipAngle);
-                                                                array[8][j][0].push(blockList.get(j).rf.get(0).deltaf);}
-            if(gradientsActive){ for(k=0; k<3; k++){            array[9][j][k].push(blockList.get(j).gradients.get(k).axis);
-                                                                array[9][j][k].push(blockList.get(j).gradients.get(k).delay);
-                                                                array[9][j][k].push(blockList.get(j).gradients.get(k).rise);
-                                                                array[9][j][k].push(blockList.get(j).gradients.get(k).flatTop);
-                                                                array[9][j][k].push(blockList.get(j).gradients.get(k).amplitude);
-                                                                array[9][j][k].push(blockList.get(j).gradients.get(k).step);}}
-            if(tActive)         {                               array[10][j][0].push(blockList.get(j).t.get(0).te);
-                                                                array[10][j][0].push(blockList.get(j).t.get(0).tr);}
-            if(groupActive)     {                               array[11][j][0].push(blockList.get(j).repetitions);}
-            if(isChild(j))      {                               array[12][j][0].push(1);
-            } else {                                            array[12][j][0].push(0);}
-        }
-
-        return array;
+        backend.getDownloadFile(saveBlockList);
+        saveBlockList.clear();
+        */
     }
 
 
@@ -489,6 +462,8 @@ ApplicationWindow {
 
     // ------------------------- BLOCK LIST ---------------------------------------------------
     ListModel{ id:blockList }
+
+    ListModel{ id:saveBlockList }
 
     ListModel{id:groupList}
 
@@ -528,7 +503,7 @@ ApplicationWindow {
                 }
                 Action {
                     text: "Save Sequence"
-                    onTriggered: backend.getDownloadFile();
+                    onTriggered: saveSeq();
                 }
             }
         }
@@ -596,14 +571,8 @@ ApplicationWindow {
 
     Connections {
         target: backend
-        function onUploadFileSelected(wasm) {
-            if(wasm){
-                modelLoader.source = "file:///LoadedSequence.qml"
-            }
-            else{
-                modelLoader.source = "LoadedSequence.qml"
-            }
-
+        function onUploadFileSelected(path) {
+            modelLoader.source = path
             blockList.clear();
             configMenu.menuVisible = false;
             for(var i=0; i<modelLoader.item.count; i++){
