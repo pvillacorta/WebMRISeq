@@ -4,8 +4,15 @@
 #include <QObject>
 #include <QFileDialog>
 
+#include <iostream>
 #include <fstream>
 #include <filesystem>
+#include <string>
+
+#include <nlohmann/json.hpp>
+// for convenience
+using json = nlohmann::json;
+
 
 #ifdef Q_OS_WASM
     #include <emscripten.h>
@@ -18,12 +25,16 @@ class Backend : public QObject
 public:
     explicit Backend(QObject *parent = nullptr);
 
+private:
+    bool active(int code, std::vector<int> vector);
+    QByteArray parseJSONtoQML(QByteArray data);
+
 signals:
-    void uploadFileSelected(const bool wasm);
+    void uploadFileSelected(QString path);
 
 public slots:
     void getUploadFile();
-    void getDownloadFile(QVector<QVector<QVector<QVector<double>>>> seq, QString desc);
+    void getDownloadFile(QString qmlModel);
 };
 
 #endif // BACKEND_H
