@@ -117,10 +117,18 @@ Item{
                 break;
         }
 
-        configMenu.duration =       blockList.get(index).duration
-        configMenu.lines =          blockList.get(index).lines
-        configMenu.samples =        blockList.get(index).samples
-        configMenu.fov =            blockList.get(index).fov
+        if(configMenu.durationVisible){
+            configMenu.duration =       blockList.get(index).duration
+        }
+        if(configMenu.linesVisible){
+            configMenu.lines =       blockList.get(index).lines
+        }
+        if(configMenu.samplesVisible){
+            configMenu.samples =       blockList.get(index).samples
+        }
+        if(configMenu.fovVisible){
+            configMenu.fov =       blockList.get(index).fov
+        }
         if (configMenu.rfVisible){
             configMenu.shape =      blockList.get(index).rf.get(0).shape
             configMenu.b1Module =   blockList.get(index).rf.get(0).b1Module
