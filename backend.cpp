@@ -21,7 +21,7 @@ QByteArray Backend::parseJSONtoQML(QByteArray data){
 
     qmlData.append("import QtQuick \n");
     qmlData.append("ListModel{ \n");
-    qmlData.append("    property string description: \"" + j["description"].template get<std::string>() + "\" \n");
+    qmlData.append("    property string description: " + j["description"].dump() + " \n");
 
     // Iterar sobre los elementos de la matriz "blocks"
     for (const auto& block : blocksArray) {
@@ -178,7 +178,7 @@ void Backend::getUploadFile()
                 return;
             }
 
-            std::cout << qmlData.data();
+            // std::cout << qmlData.data();
 
             #ifdef Q_OS_WASM
                 EM_ASM_({
@@ -190,7 +190,8 @@ void Backend::getUploadFile()
                 }, qmlData.data(), qmlData.size());
                 emit this->uploadFileSelected("file:///LoadedSequence.qml");
             #else
-                std::string tempFileName =  std::filesystem::temp_directory_path().string() + "/LoadedSequence.qml";
+                std::string tempFileName =  std::filesystem::temp_directory_path().string() + std::to_string(fileNumber) + ".qml";
+                fileNumber++;
 
                 // Aquí tendríamos que escribir data dentro del fichero LoadedSequence.qml
                 ofstream MyFile(tempFileName);
