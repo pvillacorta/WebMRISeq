@@ -11,8 +11,8 @@ ApplicationWindow {
     property int mobileWidth: 840
 
     property int desktopHeight: 500
-    property int tabletHeight: 670
-    property int mobileHeight: 950
+    property int tabletHeight: 870
+    property int mobileHeight: 2000
 
     property bool desktop: width>=desktopWidth
     property bool tablet: width >= mobileWidth & width < desktopWidth
@@ -409,7 +409,7 @@ ApplicationWindow {
 
     // Function saveSeq()
     function saveSeq(){
-        var description = "Sequence description";
+        var description = seqDescription.text;
         var datamodel = { "description": description, "blocks": [] };
 
         for (var i = 0; i < blockList.count; ++i) {
@@ -418,20 +418,6 @@ ApplicationWindow {
 
         var datastore = JSON.stringify(datamodel);
         backend.getDownloadFile(datastore);
-
-        /*
-        for (var i = 0; i < blockList.count; i++) {
-            // Agrega un nuevo elemento a saveBlockList con los mismos valores que blockList
-            saveBlockList.append(blockList.get(i));
-
-            // Modifica el elemento recién agregado si es un hijo
-            if (isChild(i)) {
-                saveBlockList.setProperty(i, "collapsed", true);
-            }
-        }
-        backend.getDownloadFile(saveBlockList);
-        saveBlockList.clear();
-        */
     }
 
 
@@ -574,6 +560,7 @@ ApplicationWindow {
         function onUploadFileSelected(path) {
             modelLoader.source = path
             blockList.clear();
+            seqDescription.text = modelLoader.item.description;
             configMenu.menuVisible = false;
             for(var i=0; i<modelLoader.item.count; i++){
                 blockList.append(modelLoader.item.get(i));
@@ -829,6 +816,58 @@ ApplicationWindow {
             }
         }
 
+        // SEQUENCE DESCRIPTION
+        Rectangle{
+            id:descriptionRect
+
+            anchors.top: window.desktop ? blockSeq.bottom : defaultMenu.bottom
+            anchors.left: globalMenu.left
+            anchors.right: globalMenu.right
+
+            height: window.mobile ? 400 : defaultMenu.height - globalMenu.height - anchors.topMargin
+
+            anchors.topMargin:15
+
+            radius: window.radius
+            color: dark_2
+
+            Item{
+                id: descriptionTitle
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                height: 25
+
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    text: "Sequence description"
+
+                    font.pointSize: 10
+
+                    color: light
+               }
+            }
+
+            ScrollView {
+                id: descriptionView
+
+                anchors.top:descriptionTitle.bottom
+                anchors.bottom:parent.bottom
+                anchors.right: parent.right
+                anchors.left: parent.left
+
+                TextArea {
+                    id: seqDescription
+                    color: light
+                    font.family: "Nimbus Mono PS [UKWN]"
+                    text: "Write Here\n...\n...\n...\n"
+                }
+            }
+        }
+
 
         // GLOBAL PARAMETERS PANEL
         GlobalMenu{
@@ -836,11 +875,11 @@ ApplicationWindow {
             visible: true
 
             anchors.left: window.desktop ? defaultMenu.right : blockSeq.left
-            anchors.top: window.desktop ? blockSeq.bottom : defaultMenu.bottom
-            anchors.leftMargin: window.desktop ? 10 : 0
+            anchors.top: descriptionRect.bottom
+            anchors.leftMargin: window.desktop ? 15 : 0
             anchors.topMargin: 15
 
-            width: window.mobile ? blockSeq.width : (window.tablet ? 2*blockMenu.width + 15 : 270)
+            width: window.mobile ? blockSeq.width : (window.tablet ? 2*blockMenu.width + 15 : 265)
             height: 155
             z: 15
 
