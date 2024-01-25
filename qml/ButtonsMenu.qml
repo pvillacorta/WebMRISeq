@@ -46,7 +46,7 @@ Item{
 
                 background: Rectangle{
                     anchors.fill:parent
-                    color: groupButton.pressed? dark_1 : dark_3
+                    color: groupButton.pressed? Qt.darker(dark_3,1.3) : dark_3
                     radius: 2
                 }
 
@@ -276,7 +276,7 @@ Item{
                                 when: buttonArea.pressed
                                 PropertyChanges{
                                     target: bgButton
-                                    color: dark_1
+                                    color: Qt.darker(dark_3,1.3)
                                 }
                             },
                             State{
