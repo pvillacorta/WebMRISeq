@@ -26,6 +26,7 @@ QByteArray Backend::parseJSONtoQML(QByteArray data){
     // Iterar sobre los elementos de la matriz "blocks"
     for (const auto& block : blocksArray) {
         int code = block["cod"];
+        int cont = 0;
 
         // Verificar si el valor 'code' está presente en cada vector
         bool durationActive = this->active(code,{1, 2, 3, 4});
@@ -37,45 +38,118 @@ QByteArray Backend::parseJSONtoQML(QByteArray data){
         bool tActive = this->active(code,{6});
         bool groupActive = this->active(code,{0});
 
-
-        std::cout << "  Cod: " << code << std::endl;
-
-
         qmlData.append("    ListElement { \n");
         qmlData.append("        cod: " + block["cod"].dump() + " \n");
         qmlData.append("        name: " + block["name"].dump() + " \n");
         qmlData.append("        collapsed: " + block["collapsed"].dump() + " \n");
         qmlData.append("        ngroups: " + block["ngroups"].dump() + " \n");
+        qmlData.append("        grouped: false \n");
+
+        qmlData.append("        children: [");
+        json childrenArray = block["children"];
+        cont = 0;
+        if(childrenArray.size()>0){
+            for (const auto& child : childrenArray) {
+                cont++;
+                qmlData.append("\n            ListElement { \n");
+                qmlData.append("                number: " + child["number"].dump() + "\n");
+                if(cont<childrenArray.size()){
+                    qmlData.append("            },");
+                } else {
+                    qmlData.append("            } \n");
+                }
+            }
+            qmlData.append("        ");
+        }
+        qmlData.append("] \n");
+
 
         if(durationActive){
-            std::cout << "  Duration: " << block["duration"] << std::endl;
-            // qmlData.append("        duration: " + std::to_string(block["duration"]) + " \n");
+            qmlData.append("        duration: " + block["duration"].dump() + " \n");
         }
 
         if(linesActive){
-            std::cout << "  Lines: " << block["lines"] << std::endl;
-            // qmlData.append("        lines: " + std::to_string(block["lines"]) + " \n");
+            qmlData.append("        lines: " + block["lines"].dump() + " \n");
         }
 
-        //...
+        if(samplesActive){
+            qmlData.append("        samples: " + block["samples"].dump() + " \n");
+        }
 
-        // Acceder a elementos dentro de "gradients" si existen
+        if(fovActive){
+            qmlData.append("        fov: " + block["fov"].dump() + " \n");
+        }
+
+        qmlData.append("        rf: [");
+        if(rfActive){
+            json rfArray = block["rf"];
+            cont = 0;
+            for (const auto& rf : rfArray) {
+                cont ++;
+                qmlData.append("\n            ListElement { \n");
+                qmlData.append("                shape: " +      rf["shape"].dump() + "\n");
+                qmlData.append("                b1Module: " +   rf["b1Module"].dump() + "\n");
+                qmlData.append("                flipAngle: " +  rf["flipAngle"].dump() + "\n");
+                qmlData.append("                deltaf: " +     rf["deltaf"].dump() + "\n");
+                if(cont<rfArray.size()){
+                    qmlData.append("            },");
+                } else {
+                    qmlData.append("            } \n");
+                }
+            }
+            qmlData.append("        ");
+        }
+        qmlData.append("] \n");
+
+        qmlData.append("        gradients: [");
         if (gradientsActive) {
             json gradientsArray = block["gradients"];
-            std::cout << "  Gradients:" << std::endl;
+            cont = 0;
             for (const auto& gradient : gradientsArray) {
-                std::cout << "    Axis: " << gradient["axis"] << std::endl;
-                std::cout << "    Amplitude: " << gradient["amplitude"] << std::endl;
-                // ... puedes acceder a otros elementos dentro de "gradients"
+                cont++;
+                qmlData.append("\n            ListElement { \n");
+                qmlData.append("                axis: " +       gradient["axis"].dump() + "\n");
+                qmlData.append("                delay: " +      gradient["delay"].dump() + "\n");
+                qmlData.append("                rise: " +       gradient["rise"].dump() + "\n");
+                qmlData.append("                flatTop: " +    gradient["flatTop"].dump() + "\n");
+                qmlData.append("                amplitude: " +  gradient["amplitude"].dump() + "\n");
+                qmlData.append("                step: " +       gradient["step"].dump() + "\n");
+                if(cont<gradientsArray.size()){
+                    qmlData.append("            },");
+                } else {
+                    qmlData.append("            } \n");
+                }
             }
+            qmlData.append("        ");
         }
+        qmlData.append("] \n");
 
+        qmlData.append("        t: [");
+        if(tActive){
+            json tArray = block["t"];
+            cont = 0;
+            for (const auto& t : tArray) {
+                cont++;
+                qmlData.append("\n            ListElement { \n");
+                qmlData.append("                te: " + t["te"].dump() + "\n");
+                qmlData.append("                tr: " + t["tr"].dump() + "\n");
+                if(cont<tArray.size()){
+                    qmlData.append("            },");
+                } else {
+                    qmlData.append("            } \n");
+                }
+            }
+            qmlData.append("        ");
+        }
+        qmlData.append("] \n");
+
+        if(groupActive){
+            qmlData.append("        repetitions: " + block["repetitions"].dump() + " \n");
+        }
         qmlData.append("    } \n");
-
-        std::cout << std::endl;
     }
 
-    qmlData.append("}");
+    qmlData.append("} \n");
 
     return qmlData;
 }
@@ -106,7 +180,6 @@ void Backend::getUploadFile()
 
             std::cout << qmlData.data();
 
-            /*
             #ifdef Q_OS_WASM
                 EM_ASM_({
                     var stream = FS.open('LoadedSequence.qml','w');
@@ -114,21 +187,22 @@ void Backend::getUploadFile()
                     var dataSize = $1; // Obtén el tamaño de los datos
                     FS.write(stream, HEAPU8, dataPtr, dataSize, 0);
                     FS.close(stream);
-                }, data.qmlData(), qmlData.size());
+                }, qmlData.data(), qmlData.size());
                 emit this->uploadFileSelected("file:///LoadedSequence.qml");
             #else
+                std::string tempFileName =  std::filesystem::temp_directory_path().string() + "/LoadedSequence.qml";
+
                 // Aquí tendríamos que escribir data dentro del fichero LoadedSequence.qml
-                // ofstream MyFile("qml/LoadedSequence.qml");
+                ofstream MyFile(tempFileName);
 
-                // // Write to the file
-                // MyFile << qmlData.toStdString();
+                // Write to the file
+                MyFile << qmlData.toStdString();
 
-                // // Close the file
-                // MyFile.close();
+                // Close the file
+                MyFile.close();
 
-                emit this->uploadFileSelected("file:///"+fileName);
+                emit this->uploadFileSelected("file:///"+QString::fromStdString(tempFileName));
             #endif
-            */
         }
     });
 }
