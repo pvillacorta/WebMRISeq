@@ -873,6 +873,7 @@ ApplicationWindow {
                     font.family: "Consolas"
                     text: "Write Here\n...\n...\n...\n"
                     font.pointSize: 10
+                    wrapMode: TextEdit.Wrap
                 }
             }
         }
