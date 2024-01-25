@@ -208,12 +208,17 @@ void Backend::getUploadFile()
     });
 }
 
-void Backend::getDownloadFile(QString qmlModel){
-    QByteArray data; // obtained from e.g. QImage::save()
+void Backend::getDownloadFile(QString qmlModel, QString extension){
+    QByteArray data;
     std::string str = qmlModel.toStdString();
     json j = json::parse(str);
     std::string s = j.dump(4);
     data.append(s);
-    QFileDialog::saveFileContent(data, "Sequence.json");
+    if(extension == "json"){
+        QFileDialog::saveFileContent(data, "Sequence.json");
+    } else if(extension == "qml"){
+        QFileDialog::saveFileContent(parseJSONtoQML(data), "Sequence.qml");
+    }
+
 }
 

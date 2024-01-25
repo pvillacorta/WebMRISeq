@@ -408,7 +408,7 @@ ApplicationWindow {
 
 
     // Function saveSeq()
-    function saveSeq(){
+    function saveSeq(extension){
         var description = seqDescription.text;
         var datamodel = { "description": description, "blocks": [] };
 
@@ -417,7 +417,7 @@ ApplicationWindow {
         }
 
         var datastore = JSON.stringify(datamodel);
-        backend.getDownloadFile(datastore);
+        backend.getDownloadFile(datastore,extension);
     }
 
 
@@ -487,9 +487,17 @@ ApplicationWindow {
                     text: "Open Sequence"
                     onTriggered: backend.getUploadFile();
                 }
-                Action {
-                    text: "Save Sequence"
-                    onTriggered: saveSeq();
+
+                Menu {
+                    title: "Save Sequence"
+                    Action {
+                        text: ".json"
+                        onTriggered: saveSeq("json");
+                    }
+                    Action {
+                        text: ".qml"
+                        onTriggered: saveSeq("qml");
+                    }
                 }
             }
         }
@@ -862,8 +870,9 @@ ApplicationWindow {
                 TextArea {
                     id: seqDescription
                     color: light
-                    font.family: "Nimbus Mono PS [UKWN]"
+                    font.family: "Consolas"
                     text: "Write Here\n...\n...\n...\n"
+                    font.pointSize: 10
                 }
             }
         }

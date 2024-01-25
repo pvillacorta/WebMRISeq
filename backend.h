@@ -35,7 +35,7 @@ signals:
 
 public slots:
     void getUploadFile();
-    void getDownloadFile(QString qmlModel);
+    void getDownloadFile(QString qmlModel, QString extension);
 };
 
 #endif // BACKEND_H
