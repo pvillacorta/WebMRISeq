@@ -1,1 +1,1 @@
-<center><img width="500px" src="./docs/assets/ui.gif"/></center>
+<img width="700px" src="./docs/assets/ui.gif"/>
