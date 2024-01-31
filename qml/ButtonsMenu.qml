@@ -132,6 +132,7 @@ Item{
                             var lines = 64;
                             var samples = 64;
                             var fov = 0.1;
+                            var select = 0;
                             var shape = 0;
                             var b1Module = 1e-6;
                             var flipAngle = 10;
@@ -173,7 +174,8 @@ Item{
                                 if(linesActive)     {blockList.setProperty(blockList.count-1,           "lines", lines);}
                                 if(samplesActive)   {blockList.setProperty(blockList.count-1,           "samples", samples);}
                                 if(fovActive)       {blockList.setProperty(blockList.count-1,           "fov", fov);}
-                                if(rfActive)        {blockList.get(blockList.count-1).rf.append(       {"shape":shape,
+                                if(rfActive)        {blockList.get(blockList.count-1).rf.append(       {"select":select,
+                                                                                                        "shape":shape,
                                                                                                         "b1Module": b1Module,
                                                                                                         "flipAngle": flipAngle,
                                                                                                         "deltaf": deltaf});}
@@ -237,7 +239,8 @@ Item{
                                     if(linesActive)     {blockList.setProperty(blockList.count-1,           "lines",        groupList.get(index).lines);}
                                     if(samplesActive)   {blockList.setProperty(blockList.count-1,           "samples",      groupList.get(index).samples);}
                                     if(fovActive)       {blockList.setProperty(blockList.count-1,           "fov",          groupList.get(index).fov);}
-                                    if(rfActive)        {blockList.get(blockList.count-1).rf.append(       {"shape":        groupList.get(index).rf.get(0).samples,
+                                    if(rfActive)        {blockList.get(blockList.count-1).rf.append(       {"select":       groupList.get(index).rf.get(0).select,
+                                                                                                            "shape":        groupList.get(index).rf.get(0).shape,
                                                                                                             "b1Module":     groupList.get(index).rf.get(0).b1Module,
                                                                                                             "flipAngle":    groupList.get(index).rf.get(0).flipAngle,
                                                                                                             "deltaf":       groupList.get(index).rf.get(0).deltaf});}

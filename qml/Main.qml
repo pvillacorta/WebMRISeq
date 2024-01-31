@@ -228,7 +228,8 @@ ApplicationWindow {
             if(linesActive)     {groupList.setProperty(groupList.count-1,           "lines",        blockList.get(blockID+j).lines);}
             if(samplesActive)   {groupList.setProperty(groupList.count-1,           "samples",      blockList.get(blockID+j).samples);}
             if(fovActive)       {groupList.setProperty(groupList.count-1,           "fov",          blockList.get(blockID+j).fov);}
-            if(rfActive)        {groupList.get(groupList.count-1).rf.append(       {"shape":        blockList.get(blockID+j).rf.get(0).shape,
+            if(rfActive)        {groupList.get(groupList.count-1).rf.append(       {"select":       blockList.get(blockID+j).rf.get(0).select,
+                                                                                    "shape":        blockList.get(blockID+j).rf.get(0).shape,
                                                                                     "b1Module":     blockList.get(blockID+j).rf.get(0).b1Module,
                                                                                     "flipAngle":    blockList.get(blockID+j).rf.get(0).flipAngle,
                                                                                     "deltaf":       blockList.get(blockID+j).rf.get(0).deltaf});
@@ -406,9 +407,8 @@ ApplicationWindow {
         return array;
     }
 
-
-    // Function saveSeq()
-    function saveSeq(extension){
+    // Function toJSON()
+    function toJSON(){
         var description = seqDescription.text;
         var datamodel = { "description": description, "blocks": [] };
 
@@ -417,6 +417,12 @@ ApplicationWindow {
         }
 
         var datastore = JSON.stringify(datamodel);
+        return datastore;
+    }
+
+    // Function saveSeq()
+    function saveSeq(extension){
+        var datastore = toJSON();
         backend.getDownloadFile(datastore,extension);
     }
 
@@ -572,6 +578,11 @@ ApplicationWindow {
             configMenu.menuVisible = false;
             for(var i=0; i<modelLoader.item.count; i++){
                 blockList.append(modelLoader.item.get(i));
+                if(isChild(i)){
+                    blockList.get(i).collapsed = true;
+                } else {
+                    blockList.get(i).collapsed = false;
+                }
             }
         }
     }
@@ -832,7 +843,7 @@ ApplicationWindow {
             anchors.left: globalMenu.left
             anchors.right: globalMenu.right
 
-            height: window.mobile ? 400 : defaultMenu.height - globalMenu.height - anchors.topMargin
+            height: window.mobile ? 200 : defaultMenu.height - globalMenu.height - anchors.topMargin
 
             anchors.topMargin:15
 

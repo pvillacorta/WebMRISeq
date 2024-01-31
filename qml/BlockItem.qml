@@ -130,6 +130,7 @@ Item{
             configMenu.fov =       blockList.get(index).fov
         }
         if (configMenu.rfVisible){
+            configMenu.select =     blockList.get(index).rf.get(0).select
             configMenu.shape =      blockList.get(index).rf.get(0).shape
             configMenu.b1Module =   blockList.get(index).rf.get(0).b1Module
             configMenu.flipAngle =  blockList.get(index).rf.get(0).flipAngle

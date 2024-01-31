@@ -55,6 +55,7 @@ qt_add_qml_module(appWebMRISequenceEditor
         qml/PopUp.qml
         qml/DeleteButton.qml
         qml/Seq_Example.qml
+        qml/ComboBoxItem.qml
 )
 
 

@@ -27,6 +27,7 @@ Item {
 
     // ------- RF
     property bool rfVisible
+    property alias select:      rfSelect.currentIndex
     property alias shape:       shapeInput.currentIndex
     property alias b1Module:    b1ModuleInput.text
     property alias flipAngle:   flipAngleInput.text
@@ -68,7 +69,8 @@ Item {
         if(linesVisible)    {blockList.setProperty(blockID,          "lines",        Number(lines));}
         if(samplesVisible)  {blockList.setProperty(blockID,          "samples",      Number(samples));}
         if(fovVisible)      {blockList.setProperty(blockID,          "fov",          Number(fov));}
-        if(rfVisible)       {blockList.get(blockID).rf.set(0,       {"shape":        Number(shape),
+        if(rfVisible)       {blockList.get(blockID).rf.set(0,       {"select":       Number(select),
+                                                                     "shape":        Number(shape),
                                                                      "b1Module":     Number(b1Module),
                                                                      "flipAngle":    Number(flipAngle),
                                                                      "deltaf":       Number(deltaf)});}
@@ -154,6 +156,43 @@ Item {
             }
         }
 
+        Row{
+            visible: rfVisible
+            anchors.right: column.right
+            anchors.top: column.top
+            anchors.margins: 2
+            Label{
+                visible: !window.mobile
+                text: "Select: "
+            }
+
+            ComboBoxItem{
+                id: rfSelect;
+                model: ["Flip angle and duration", "Flip angle and amplitude", "Duration and amplitude"];
+                // onAccepted:{
+                //     switch(currentIndex){
+                //     case 0:
+                //         b1ModuleInput.visible = false;
+                //         durationInput.visible = true;
+                //         flipAngleInput.visible = true;
+                //         break;
+                //     case 1:
+                //         durationInput.visible = false;
+                //         b1ModuleInput.visible = true;
+                //         flipAngleInput.visible = true;
+                //         break;
+                //     case 2:
+                //         flipAngleInput.visible = false;
+                //         b1ModuleInput.visible = true;
+                //         durationInput.visible = true;
+                //         break;
+                //     }
+                // }
+            }
+        }
+
+
+
         Column {
             id: column
             anchors.top: configText.bottom
@@ -200,6 +239,8 @@ Item {
                 sourceComponent: configPanel
                 width:200
                 height: 26
+                enabled: rfVisible & rfSelect.currentIndex === 1 ? false : true
+                opacity: enabled
                 GridLayout{ id: durationLayout
                     uniformCellWidths: true
                     anchors.fill: parent
@@ -247,89 +288,20 @@ Item {
 
                         MenuLabel { text: "RF:";                    bold: true}
                         MenuLabel { text: "RF Shape:";              Layout.alignment: Qt.AlignRight}
-                        ComboBox {  id:shapeInput
-                            model: ["Rectangle (hard)", "Sinc"]
-                            font.pointSize: window.fontSize;
-                            delegate: ItemDelegate {
-                                width: shapeInput.width
-                                height: shapeInput.height
-                                Item{
-                                    anchors.fill:parent
-                                    anchors.leftMargin: 5
-                                    Text {
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        anchors.leftMargin: 50
-                                        text: modelData
-                                        color: "#292929"
-                                        font: shapeInput.font
-                                        elide: Text.ElideRight
-                                    }
-                                }
-                                highlighted: shapeInput.highlightedIndex === index
-                            }
-                            indicator: Canvas {
-                                id: canvas
-                                x: shapeInput.width - width - shapeInput.rightPadding
-                                y: shapeInput.topPadding + (shapeInput.availableHeight - height) / 2
-                                width: 12
-                                height: 8
-                                contextType: "2d"
-
-                                Connections {
-                                    target: shapeInput
-                                    function onPressedChanged() { canvas.requestPaint(); }
-                                }
-                                onPaint: {
-                                    context.reset();
-                                    context.moveTo(0, 0);
-                                    context.lineTo(width, 0);
-                                    context.lineTo(width / 2, height);
-                                    context.closePath();
-                                    context.fillStyle = shapeInput.pressed ? "black" : "#292929";
-                                    context.fill();
-                                }
-                            }
-                            contentItem: Text {
-                                leftPadding: 5
-                                rightPadding: shapeInput.indicator.width + shapeInput.spacing
-
-                                text: shapeInput.displayText
-                                font: shapeInput.font
-                                color: shapeInput.pressed ? "black" : "#292929"
-                                verticalAlignment: Text.AlignVCenter
-                                elide: Text.ElideRight
-                            }
-                            background: Rectangle {
-                                implicitWidth: 120
-                                implicitHeight: window.fieldHeight
-                                border.color: shapeInput.pressed ? "black" : "#595959"
-                                border.width: shapeInput.visualFocus ? 2 : 1
-                                radius: 2
-                            }
-                            popup: Popup {
-                                y: shapeInput.height - 1
-                                width: shapeInput.width
-                                implicitHeight: contentItem.implicitHeight
-                                padding: 1
-
-                                contentItem: ListView {
-                                    clip: true
-                                    implicitHeight: contentHeight
-                                    model: shapeInput.popup.visible ? shapeInput.delegateModel : null
-                                    currentIndex: shapeInput.highlightedIndex
-                                }
-                                background: Rectangle {
-                                    border.color: "#292929"
-                                    radius: 2
-                                }
-                            }
+                        ComboBoxItem{
+                            id: shapeInput;
+                            model: ["Rectangle (hard)", "Sinc"];
                         }
 
-                        MenuLabel { text: "Peak |B1|[T]:";          Layout.alignment: Qt.AlignRight}
-                        TextInputItem{ id:b1ModuleInput}
+                        MenuLabel { text: "Peak |B1|[T]:";          Layout.alignment: Qt.AlignRight;                                enabled:b1ModuleInput.enabled; opacity: enabled}
+                        TextInputItem{  id:b1ModuleInput
+                                        enabled: rfVisible & rfSelect.currentIndex === 0 ? false : true
+                                        opacity: enabled }
 
-                        MenuLabel { text: "Flip Angle [º]:";        Layout.alignment: Qt.AlignRight;        Layout.columnSpan: 2}
-                        TextInputItem{ id:flipAngleInput;           Layout.columnSpan: 3}
+                        MenuLabel { text: "Flip Angle [º]:";        Layout.alignment: Qt.AlignRight;        Layout.columnSpan: 2;   enabled:flipAngleInput.enabled; opacity: enabled}
+                        TextInputItem{  id:flipAngleInput;           Layout.columnSpan: 3
+                                        enabled: rfVisible & rfSelect.currentIndex === 2 ? false : true
+                                        opacity: enabled }
 
                         MenuLabel { text: "Δf [Hz]:";               Layout.alignment: Qt.AlignRight;        Layout.columnSpan: 2}
                         TextInputItem{ id:deltafInput}
