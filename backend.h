@@ -28,6 +28,7 @@ public:
 private:
     bool active(int code, std::vector<int> vector);
     QByteArray parseJSONtoQML(QByteArray data);
+    QByteArray processJSON(QByteArray data);
     int fileNumber = 0;
 
 signals:
