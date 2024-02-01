@@ -455,12 +455,10 @@ ApplicationWindow {
     // ------------------------- BLOCK LIST ---------------------------------------------------
     ListModel{ id:blockList }
 
-    ListModel{ id:saveBlockList }
-
-    ListModel{id:groupList}
+    ListModel{ id:groupList }
 
     // In this loader we will store the loaded sequence from a previously saved file
-    Loader{id: modelLoader}
+    Loader{ id: modelLoader }
     // -----------------------------------------------------------------------------------------
 
     Rectangle {
@@ -471,103 +469,98 @@ ApplicationWindow {
 
         color: "gray"
 
-        Button {
-            id: fileButton
-            text: "File"
-            font.pointSize: 10
-            height: parent.height
-            width: 20 * text.length
-            z: 20
-
-            onClicked: menu.open()
-
-            Menu {
-                id: menu
-                y: fileButton.height
+        Row{
+            anchors.fill: parent
+            Button {
+                id: fileButton
+                text: "File"
                 font.pointSize: 10
+                height: parent.height
+                width: 20 * text.length
+                z: 20
+                background: Rectangle {
+                    color: light
+                }
 
-                Action {
-                    text: "New Sequence"
-                }
-                Action {
-                    text: "Open Sequence"
-                    onTriggered: backend.getUploadFile();
-                }
+                onClicked: menuFile.open()
 
                 Menu {
-                    title: "Save Sequence"
+                    id: menuFile
+                    y: fileButton.height
+                    font.pointSize: 10
+
                     Action {
-                        text: ".json"
-                        onTriggered: saveSeq("json");
+                        text: "New Sequence"
                     }
                     Action {
-                        text: ".qml"
-                        onTriggered: saveSeq("qml");
+                        text: "Open Sequence"
+                        onTriggered: backend.getUploadFile();
+                    }
+
+                    Menu {
+                        title: "Save Sequence"
+                        font.pointSize: 10
+                        Action {
+                            text: ".json"
+                            onTriggered: saveSeq("json");
+                        }
+                        Action {
+                            text: ".qml"
+                            onTriggered: saveSeq("qml");
+                        }
                     }
                 }
+                states: [
+                    State{
+                        when: fileButton.hovered
+                        PropertyChanges {
+                            target: fileButton.background
+                            color: Qt.darker(light, 1.3)
+                        }
+                    }
+                ] // states
+            }
+            Button {
+                id: plotButton
+                text: "Plot"
+                font.pointSize: 10
+                height: parent.height
+                width: 20 * text.length
+                z: 20
+                background: Rectangle {
+                    color: light
+                }
+
+                onClicked: menuPlot.open()
+
+                Menu {
+                    id: menuPlot
+                    y: plotButton.height
+                    font.pointSize: 10
+
+                    Action {
+                        text: "Sequence Diagram"
+                        onTriggered: backend.getUploadFile();
+                    }
+                    Action {
+                        text: "3D Model"
+                        onTriggered: {}
+                    }
+                }
+
+                states: [
+                    State{
+                        when: plotButton.hovered
+                        PropertyChanges {
+                            target: plotButton.background
+                            color: Qt.darker(light, 1.3)
+                        }
+                    }
+                ] // states
             }
         }
     }
 
-    /*
-    ComboBox {  id:fileInput
-        model: ["New Sequence", "Load Sequence", "Save Sequence"]
-        font.pointSize: window.fontSize;
-        width: 50
-        delegate: ItemDelegate {
-            width: fileInput.width
-            height: fileInput.height
-            Item{
-                width: popupText.width + 20
-                anchors.leftMargin: 5
-                Text {
-                    id: popupText
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.leftMargin: 50
-                    text: modelData
-                    color: "#292929"
-                    font: fileInput.font
-                    elide: Text.ElideRight
-                }
-            }
-            highlighted: fileInput.highlightedIndex === index
-        }
-        indicator: Canvas {}
-        contentItem: Text {
-            leftPadding: 5
-            rightPadding: fileInput.indicator.width + fileInput.spacing
-
-            text: "File"
-            font: fileInput.font
-            color: fileInput.pressed ? "black" : "#292929"
-            verticalAlignment: Text.AlignVCenter
-            elide: Text.ElideRight
-        }
-        background: Rectangle {
-            implicitHeight: window.fieldHeight
-            border.color: fileInput.pressed ? "black" : "#595959"
-            border.width: fileInput.visualFocus ? 2 : 1
-            radius: 2
-        }
-        popup: Popup {
-            y: fileInput.height - 1
-            width: fileInput.delegate.width + 20
-            implicitHeight: contentItem.implicitHeight
-            padding: 1
-
-            contentItem: ListView {
-                clip: true
-                implicitHeight: contentHeight
-                model: fileInput.popup.visible ? fileInput.delegateModel : null
-                currentIndex: fileInput.highlightedIndex
-            }
-            background: Rectangle {
-                border.color: "#292929"
-                radius: 2
-            }
-        }
-    }
-    */
 
     Connections {
         target: backend

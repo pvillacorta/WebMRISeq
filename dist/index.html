@@ -20,25 +20,6 @@
     </div>
     <div class="container">
         <div class="box col-8" id="screenEditor">
-            <!-- https://forum.qt.io/topic/135253/can-qml-filedialog-be-used-to-select-upload-file-from-web-browser/2 -->
-            <!-- <div id="menuBar">
-                <div class="dropdown" id="fileMenu">
-                    <button onclick="openDropDownMenu('fileContent')" onmouseover="menuHovered('fileContent')" class="dropbtn">File</button>
-                    <div class="dropdown-content" id="fileContent">
-                        <button>New Sequence</button>
-                        <button onclick="loadSequence()">Load Sequence</button><input type="file" id="my_file">
-                        <button>Save Sequence</button>
-                    </div>
-                </div>
-                <div class="dropdown" id="otherMenu">
-                    <button onclick="openDropDownMenu('otherContent')" onmouseover="menuHovered('otherContent')" class="dropbtn">Other</button>
-                    <div class="dropdown-content" id="otherContent">
-                        <button>Other</button>
-                        <button>Other</button>
-                        <button>Other</button>
-                    </div>
-                </div>
-            </div> -->
             <div id="wasmView">
                 <div id="qtspinner" style="height:100%">
                     <center>
@@ -51,11 +32,11 @@
                 </div>
             </div>
         </div> 
-        <div class="box col-3" id="screenVtk">
-            <div id="vtkView"></div>
-        </div>
         <div class="box col-11" id="screenSeq">
             <iframe src="seq_example.html" style="height: 100%; width:100%"></iframe>
+        </div>
+        <div class="box col-3" id="screenVtk">
+            <div id="vtkView"></div>
         </div>
     </div>
     
