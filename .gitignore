@@ -10,4 +10,5 @@ dist/*
 !dist/main.css
 !dist/style.js
 !dist/wasmFunctions.js
+!dist/seq_example.html
  
