@@ -426,6 +426,11 @@ ApplicationWindow {
         backend.getDownloadFile(datastore,extension);
     }
 
+    // Function plotSeq()
+    function plotSeq(){
+        var datastore = toJSON();
+        backend.plotSequence(datastore);
+    }
 
     // functions getMaxOfArray and getMinOfArray
     function getMaxOfArray(numArray) {
@@ -540,7 +545,7 @@ ApplicationWindow {
 
                     Action {
                         text: "Sequence Diagram"
-                        onTriggered: backend.getUploadFile();
+                        onTriggered: plotSeq();
                     }
                     Action {
                         text: "3D Model"

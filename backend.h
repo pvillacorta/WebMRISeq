@@ -19,6 +19,7 @@ using json = nlohmann::json;
     #include <emscripten/html5.h>
 #endif
 
+
 class Backend : public QObject
 {
     Q_OBJECT
@@ -29,6 +30,8 @@ private:
     bool active(int code, std::vector<int> vector);
     QByteArray parseJSONtoQML(QByteArray data);
     QByteArray processJSON(QByteArray data);
+    QByteArray parseQStringtoQByteArray(QString model);
+
     int fileNumber = 0;
 
 signals:
@@ -37,6 +40,7 @@ signals:
 public slots:
     void getUploadFile();
     void getDownloadFile(QString qmlModel, QString extension);
+    void plotSequence(QString qmlModel);
 };
 
 #endif // BACKEND_H

@@ -10,6 +10,7 @@ bool Backend::active(int code, std::vector<int> vector){
     return std::find(vector.begin(), vector.end(), code) != vector.end();
 }
 
+// Private
 QByteArray Backend::processJSON(QByteArray data){
     std::string str = QString(data).toStdString();
     json j = json::parse(str);
@@ -258,6 +259,24 @@ QByteArray Backend::parseJSONtoQML(QByteArray data){
     return qmlData;
 }
 
+QByteArray Backend::parseQStringtoQByteArray(QString model){
+    QByteArray data;
+    std::string str = model.toStdString();
+    json j = json::parse(str);
+    std::string s = j.dump();
+    data.append(s);
+    return data;
+}
+
+// WebAssembly
+#ifdef Q_OS_WASM
+EM_JS(void, plot_sequence, (const char* model), {
+    plot_seq(UTF8ToString(model));
+})
+#endif
+
+
+// Slots
 void Backend::getUploadFile()
 {
     QFileDialog::getOpenFileContent("(*.json *.qml)", [this](const QString &fileName, const QByteArray &data){
@@ -329,3 +348,9 @@ void Backend::getDownloadFile(QString qmlModel, QString extension){
 
 }
 
+void Backend::plotSequence(QString qmlModel){
+    #ifdef Q_OS_WASM
+        QByteArray data = processJSON(parseQStringtoQByteArray(qmlModel));
+        plot_sequence(QString(data).toStdString().c_str());
+    #endif
+}
