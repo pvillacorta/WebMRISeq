@@ -22,4 +22,7 @@ module.exports = {
             sourcePath,
         ],
     },
+    devServer: {
+        port: 9000
+    }
 };
