@@ -1,44 +1,3 @@
-// Sequence Editor Menu Bar -----------------------------------------
-function openDropDownMenu(id){
-    closeAllDropDownMenu();
-    var content = document.getElementById(id);
-    content.style.display = "block";
-}
-
-function closeAllDropDownMenu(){
-    var dropdowns = document.getElementsByClassName("dropdown-content");
-    var i;
-    for (i = 0; i < dropdowns.length; i++) {
-        dropdowns[i].style.display = "none";
-    }
-}
-
-function isMenuOpened() {
-    var dropdowns = document.getElementsByClassName("dropdown-content");
-    var i;
-    for (i = 0; i < dropdowns.length; i++) {
-        if(dropdowns[i].style.display == "block"){
-            return true;
-        }
-    }
-    return false;
-}
-
-function menuHovered(id){
-    if (isMenuOpened()){
-        openDropDownMenu(id);
-    }
-}
-
-// Close the dropdown if the user clicks outside of it
-window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
-        closeAllDropDownMenu();
-    }
-}
-// -----------------------------------------------------------------------
-
-
 
 // ---------------------- Mobile tabs handling ----------------------------
 function openScreen(screenId) {
@@ -94,10 +53,6 @@ function initTabs(){
 
 // Manejar el cambio de tamaño de pantalla
 window.addEventListener("resize", handleResize);
-
-function loadSequence(){
-    document.getElementById('my_file').click();
-}
 
 // Disable long-press text selection inside wasm View
 function absorbEvent(event) {
