@@ -1,22 +1,38 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(appWebMRISequenceEditor VERSION 0.1 LANGUAGES CXX)
+project(appWebMRISeq VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 6.4 REQUIRED COMPONENTS Quick QuickControls2 Widgets)
 
-include_directories(include/json/include)
+include(ExternalProject)
 
 qt_standard_project_setup()
 
-qt_add_executable(appWebMRISequenceEditor
+
+# The JSON for modern C++ package
+set(JSON_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/contrib)
+set(JSON_LIB ${JSON_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/libjson.so)
+
+ExternalProject_Add(nlohmann_json GIT_REPOSITORY
+                https://github.com/nlohmann/json
+                CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${JSON_INSTALL_PREFIX}
+                BUILD_BYPRODUCTS ${JSON_LIB})
+
+# Incluye el directorio de encabezados de la biblioteca JSON para que puedas incluir sus archivos de encabezado en tu código
+include_directories(${JSON_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR})
+
+
+qt_add_executable(appWebMRISeq
     main.cpp
     backend.cpp
     backend.h
 )
 
-qt_add_resources(appWebMRISequenceEditor "icons"
+add_dependencies(appWebMRISeq nlohmann_json)
+
+qt_add_resources(appWebMRISeq "icons"
     PREFIX "/"
     FILES
         icons/arrow.png
@@ -40,8 +56,8 @@ qt_add_resources(appWebMRISequenceEditor "icons"
         icons/balloon.png
 )
 
-qt_add_qml_module(appWebMRISequenceEditor
-    URI WebMRISequenceEditor
+qt_add_qml_module(appWebMRISeq
+    URI WebMRISeq
     RESOURCE_PREFIX /
     VERSION 1.0
     QML_FILES
@@ -62,7 +78,7 @@ qt_add_qml_module(appWebMRISequenceEditor
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
-set_target_properties(appWebMRISequenceEditor PROPERTIES
+set_target_properties(appWebMRISeq PROPERTIES
 #    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appFooWasm
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -70,15 +86,19 @@ set_target_properties(appWebMRISequenceEditor PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-target_link_libraries(appWebMRISequenceEditor
+target_link_libraries(appWebMRISeq
     PRIVATE Qt6::Quick
     PRIVATE Qt6::QuickControls2
     PRIVATE Qt6::Widgets
+    # ${JSON_LIB}
 )
 
 include(GNUInstallDirs)
-install(TARGETS appWebMRISequenceEditor
+install(TARGETS appWebMRISeq
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+
+

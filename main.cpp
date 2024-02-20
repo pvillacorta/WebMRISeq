@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 
     QQuickStyle::setStyle("Basic");
     QQmlApplicationEngine engine;
-    const QUrl url(u"qrc:/WebMRISequenceEditor/qml/Main.qml"_qs);
+    const QUrl url(u"qrc:/WebMRISeq/qml/Main.qml"_qs);
 
     // Creation of an instance of the class Backend
     Backend backend;
