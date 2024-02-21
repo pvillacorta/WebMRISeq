@@ -11,4 +11,5 @@ dist/*
 !dist/style.js
 !dist/wasmFunctions.js
 !dist/seq_example.html
+!dist/seqEditor.js
  
