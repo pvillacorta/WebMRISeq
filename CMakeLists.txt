@@ -90,7 +90,6 @@ target_link_libraries(appWebMRISeq
     PRIVATE Qt6::Quick
     PRIVATE Qt6::QuickControls2
     PRIVATE Qt6::Widgets
-    # ${JSON_LIB}
 )
 
 include(GNUInstallDirs)
