@@ -15,5 +15,5 @@ dist/*
 !dist/mainVTK.js
 !dist/qtloader.js
 !dist/qtlogo.svg
-appWebMRISeq.js
+!dist/appWebMRISeq.wasm
  
