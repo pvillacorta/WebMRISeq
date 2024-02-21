@@ -100,37 +100,6 @@
             } 
         }
     </script>
-
-    
-    <h1>KomaMRI Simulator</h1>
-
-    <label for="phantom">Phantom:</label>
-    <select id="phantom" name="phantom">
-    <option value="brain">Brain</option>
-    <option value="pelvis">Pelvis</option>
-    </select>
-
-    <button id="simButton" onclick="komaMRISim()">Simulate</button>
-    <p id="response"></p>
-
-    <div id="myProgress">
-    <div id="myBar"></div>
-    </div>
-
-    <canvas id="canvas" height="0" width="0"></canvas>
-
-    <div style="display:flex; flex-direction: column">
-    <div>
-        <h2>Display sequence</h2>
-        <label for="sequence">Choose a sequence file:</label>
-        <input type="file" id="fileInput" name="fileInput" accept="application/json" />
-    </div>
-    <div>
-        <button onclick="plot_selected_seq()">Plot Sequence</button>
-    </div>
-    </div>    
-
-    <script src="static/app.js"></script>
     <script src="dynamic/appWebMRISequenceEditor.js"></script>
     <script src="dynamic/qtloader.js"></script>
     <script src="dynamic/mainVTK.js"></script>
