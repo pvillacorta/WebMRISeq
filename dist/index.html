@@ -1,0 +1,107 @@
+<!doctype html> 
+<html lang="en-us"> 
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <!--Set visual viewport size for mobile devices to the device size,
+        witch results in a scale of 1 and a 1:1 mapping between CSS pixels
+        and Qt device independent pixels. -->
+    <meta name="viewport" content="width=device-width, height=device-height, user-scalable=0"/>
+
+    <title>MRI Sequence Editor</title>
+    <link rel="stylesheet" href="dynamic/main.css">
+
+    <style>
+        #myProgress {
+          width: 100%;
+          background-color: #ddd;
+          visibility: collapse;
+        }
+  
+        #myBar {
+          width: 0%;
+          height: 30px;
+          background-color: #1d9bf0;
+        }
+      </style>
+      
+  </head>
+  <body onload="init()">
+    <div class="tabs-mobile">
+        <button id="btn-screenEditor" class="tablinks" onclick="openScreen('screenEditor')">Editor</button>
+        <button id="btn-screenSeq" class="tablinks" onclick="openScreen('screenSeq')">Diagram</button>
+        <button id="btn-screenVtk" class="tablinks" onclick="openScreen('screenVtk')">3D Viewer</button>
+    </div>
+    <div class="container">
+        <div class="box col-8" id="screenEditor">
+            <div id="wasmView">
+                <div id="qtspinner" style="height:100%">
+                    <center>
+                        <div style="height:20px"></div>
+                        <img src="dynamic/qtlogo.svg" width="320" height="200" style="display:block"></img>
+                        <strong>Qt for WebAssembly: appFooWasm</strong>
+                        <div id="qtstatus"></div>
+                        <noscript>JavaScript is disabled. Please enable JavaScript to use this application.</noscript>
+                    </center>
+                </div>
+            </div>
+        </div> 
+        <div class="box col-11" id="screenSeq">
+            <iframe src="dynamic/seq_example.html" style="height: 100%; width:100%"></iframe>
+        </div>
+        <div class="box col-3" id="screenVtk">
+            <div id="vtkView"></div>
+        </div>
+    </div>
+    
+
+    <script type="text/javascript">
+        async function init()
+        {
+            const spinner = document.querySelector('#qtspinner');
+            const wasmView = document.querySelector('#wasmView');
+            const status = document.querySelector('#qtstatus');
+
+            const showUi = (ui) => {
+                [spinner].forEach(element => element.style.display = 'none');
+                if (wasmView === ui)
+                    wasmView.style.position = 'default';
+                ui.style.display = 'block';
+            }
+
+            try {
+                showUi(spinner);
+                status.innerHTML = 'Loading...';
+
+                const instance = await qtLoad({
+                    qt: {
+                        onLoaded: () => showUi(wasmView),
+                        onExit: exitData =>
+                        {
+                            status.innerHTML = 'Application exit';
+                            status.innerHTML +=
+                                exitData.code !== undefined ? ` with code ${exitData.code}` : '';
+                            status.innerHTML +=
+                                exitData.text !== undefined ? ` (${exitData.text})` : '';
+                            showUi(spinner);
+                        },
+                        entryFunction: window.createQtAppInstance,
+                        containerElements: [wasmView],
+                        
+                    }
+                });
+            } catch (e) {
+                console.error(e);
+                console.error(e.stack);
+                console.log("error");
+            } 
+        }
+    </script>
+    <script src="static/app.js"></script>
+    <script src="dynamic/seqEditor.js"></script>
+    <script src="dynamic/qtloader.js"></script>
+    <script src="dynamic/mainVTK.js"></script>
+    <script src="dynamic/style.js"></script>
+  </body>
+</html>
