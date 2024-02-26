@@ -11,7 +11,7 @@ bool Backend::active(int code, std::vector<int> vector){
 }
 
 // Private
-QByteArray Backend::processJSON(QByteArray data){
+QByteArray Backend::processSeqJSON(QByteArray data){
     std::string str = QString(data).toStdString();
     json j = json::parse(str);
     QByteArray processedData;
@@ -341,16 +341,16 @@ void Backend::getDownloadFile(QString qmlModel, QString extension){
     std::string s = j.dump(4);
     data.append(s);
     if(extension == "json"){
-        QFileDialog::saveFileContent(processJSON(data), "Sequence.json");
+        QFileDialog::saveFileContent(processSeqJSON(data), "Sequence.json");
     } else if(extension == "qml"){
-        QFileDialog::saveFileContent(parseJSONtoQML(processJSON(data)), "Sequence.qml");
+        QFileDialog::saveFileContent(parseJSONtoQML(processSeqJSON(data)), "Sequence.qml");
     }
 
 }
 
 void Backend::plotSequence(QString qmlModel){
     #ifdef Q_OS_WASM
-        QByteArray data = processJSON(parseQStringtoQByteArray(qmlModel));
+        QByteArray data = processSeqJSON(parseQStringtoQByteArray(qmlModel));
         plot_sequence(QString(data).toStdString().c_str());
     #endif
 }
