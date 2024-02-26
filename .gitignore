@@ -12,4 +12,8 @@ dist/*
 !dist/wasmFunctions.js
 !dist/seq_example.html
 !dist/seqEditor.js
+!dist/mainVTK.js
+!dist/qtloader.js
+!dist/qtlogo.svg
+!dist/appWebMRISeq.wasm
  
