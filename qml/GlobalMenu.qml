@@ -9,7 +9,7 @@ Rectangle{
 
     property alias b0: b0Input.text
     property alias b1: b1Input.text
-    property alias delta_t: deltatInput.text
+    property alias deltat: deltatInput.text
     property alias gmax : gmaxInput.text
     property alias smax : smaxInput.text
 

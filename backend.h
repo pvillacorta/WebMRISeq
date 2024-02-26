@@ -28,19 +28,25 @@ public:
 
 private:
     bool active(int code, std::vector<int> vector);
-    QByteArray parseJSONtoQML(QByteArray data);
-    QByteArray processJSON(QByteArray data);
+    QByteArray parseJSONSequenceToQML(QByteArray data);
+    QByteArray parseJSONScannerToQML(QByteArray data);
+    QByteArray processJSONSequence(QByteArray data);
+
     QByteArray parseQStringtoQByteArray(QString model);
 
     int fileNumber = 0;
 
 signals:
-    void uploadFileSelected(QString path);
+    void uploadSequenceSelected(QString path);
+    void uploadScannerSelected(QString path);
 
 public slots:
-    void getUploadFile();
-    void getDownloadFile(QString qmlModel, QString extension);
+    void getUploadSequence();
+    void getDownloadSequence(QString qmlModel, QString extension);
     void plotSequence(QString qmlModel);
+
+    void getUploadScanner();
+    void getDownloadScanner(QString qmlModel);
 };
 
 #endif // BACKEND_H

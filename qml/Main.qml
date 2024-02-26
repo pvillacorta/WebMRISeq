@@ -398,7 +398,7 @@ ApplicationWindow {
 
         array[0] = Number(globalMenu.b0);
         array[1] = Number(globalMenu.b1);
-        array[2] = Number(globalMenu.delta_t);
+        array[2] = Number(globalMenu.deltat);
         array[3] = Number(globalMenu.gmax);
         array[4] = Number(globalMenu.smax);
 
@@ -407,8 +407,8 @@ ApplicationWindow {
         return array;
     }
 
-    // Function toJSON()
-    function toJSON(){
+    // Function seqToJSON()
+    function seqToJSON(){
         var description = seqDescription.text;
         var datamodel = { "description": description, "blocks": [] };
 
@@ -420,15 +420,32 @@ ApplicationWindow {
         return datastore;
     }
 
+    // Function scannerToJSON()
+    function scannerToJSON(){
+        var datamodel = { "b0":     Number(globalMenu.b0),
+                          "b1":     Number(globalMenu.b1),
+                          "deltat": Number(globalMenu.deltat),
+                          "gmax":   Number(globalMenu.gmax),
+                          "smax":   Number(globalMenu.smax) };
+        var datastore = JSON.stringify(datamodel);
+        return datastore;
+    }
+
     // Function saveSeq()
     function saveSeq(extension){
-        var datastore = toJSON();
-        backend.getDownloadFile(datastore,extension);
+        var datastore = seqToJSON();
+        backend.getDownloadSequence(datastore,extension);
+    }
+
+    // Function saveScanner()
+    function saveScanner(){
+        var datastore = scannerToJSON();
+        backend.getDownloadScanner(datastore);
     }
 
     // Function plotSeq()
     function plotSeq(){
-        var datastore = toJSON();
+        var datastore = seqToJSON();
         backend.plotSequence(datastore);
     }
 
@@ -494,27 +511,44 @@ ApplicationWindow {
                     y: fileButton.height
                     font.pointSize: 10
 
-                    Action {
-                        text: "New Sequence"
-                    }
-                    Action {
-                        text: "Open Sequence"
-                        onTriggered: backend.getUploadFile();
+                    Menu {
+                        title: "Sequence"
+                        Action {
+                            text: "New Sequence"
+                        }
+                        Action {
+                            text: "Load Sequence"
+                            onTriggered: backend.getUploadSequence();
+                        }
+
+                        Menu {
+                            title: "Save Sequence"
+                            font.pointSize: 10
+                            Action {
+                                text: ".json"
+                                onTriggered: saveSeq("json");
+                            }
+                            Action {
+                                text: ".qml"
+                                onTriggered: saveSeq("qml");
+                            }
+                        }
                     }
 
                     Menu {
-                        title: "Save Sequence"
-                        font.pointSize: 10
+                        title: "Scanner"
                         Action {
-                            text: ".json"
-                            onTriggered: saveSeq("json");
+                            text: "Load Scanner"
+                            onTriggered: backend.getUploadScanner();
                         }
+
                         Action {
-                            text: ".qml"
-                            onTriggered: saveSeq("qml");
+                            text: "Save Scanner"
+                            onTriggered: saveScanner();
                         }
                     }
                 }
+
                 states: [
                     State{
                         when: fileButton.hovered
@@ -569,7 +603,7 @@ ApplicationWindow {
 
     Connections {
         target: backend
-        function onUploadFileSelected(path) {
+        function onUploadSequenceSelected(path) {
             modelLoader.source = path
             blockList.clear();
             seqDescription.text = modelLoader.item.description;
@@ -582,6 +616,15 @@ ApplicationWindow {
                     blockList.get(i).collapsed = false;
                 }
             }
+        }
+
+        function onUploadScannerSelected(path) {
+            modelLoader.source = path
+            globalMenu.b0      = modelLoader.item.b0
+            globalMenu.b1      = modelLoader.item.b1
+            globalMenu.deltat = modelLoader.item.deltat
+            globalMenu.gmax    = modelLoader.item.gmax
+            globalMenu.smax    = modelLoader.item.smax
         }
     }
 
@@ -907,7 +950,7 @@ ApplicationWindow {
             // Default parameters
             b0: "1.5"
             b1: "10e-6"
-            delta_t: "2e-6"
+            deltat: "2e-6"
             gmax: "60e-3"
             smax: "500"
         }

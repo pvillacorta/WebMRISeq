@@ -11,7 +11,7 @@ bool Backend::active(int code, std::vector<int> vector){
 }
 
 // Private
-QByteArray Backend::processSeqJSON(QByteArray data){
+QByteArray Backend::processJSONSequence(QByteArray data){
     std::string str = QString(data).toStdString();
     json j = json::parse(str);
     QByteArray processedData;
@@ -89,7 +89,7 @@ QByteArray Backend::processSeqJSON(QByteArray data){
     return processedData;
 }
 
-QByteArray Backend::parseJSONtoQML(QByteArray data){
+QByteArray Backend::parseJSONSequenceToQML(QByteArray data){
     std::string str = QString(data).toStdString();
     json j = json::parse(str);
     json blocksArray = j["blocks"];
@@ -259,6 +259,25 @@ QByteArray Backend::parseJSONtoQML(QByteArray data){
     return qmlData;
 }
 
+QByteArray Backend::parseJSONScannerToQML(QByteArray data){
+    std::string str = QString(data).toStdString();
+    json j = json::parse(str);
+
+    QByteArray qmlData;
+
+    qmlData.append("import QtQuick \n");
+    qmlData.append("Item{ \n");
+    qmlData.append("    property var b0: "       + j["b0"].dump() + " \n");
+    qmlData.append("    property var b1: "       + j["b1"].dump() + " \n");
+    qmlData.append("    property var deltat: "   + j["deltat"].dump() + " \n");
+    qmlData.append("    property var gmax: "     + j["gmax"].dump() + " \n");
+    qmlData.append("    property var smax: "     + j["smax"].dump() + " \n");
+
+    qmlData.append("} \n");
+
+    return qmlData;
+}
+
 QByteArray Backend::parseQStringtoQByteArray(QString model){
     QByteArray data;
     std::string str = model.toStdString();
@@ -268,6 +287,7 @@ QByteArray Backend::parseQStringtoQByteArray(QString model){
     return data;
 }
 
+
 // WebAssembly
 #ifdef Q_OS_WASM
 EM_JS(void, plot_sequence, (const char* model), {
@@ -275,10 +295,8 @@ EM_JS(void, plot_sequence, (const char* model), {
 })
 #endif
 
-
 // Slots
-void Backend::getUploadFile()
-{
+void Backend::getUploadSequence(){
     QFileDialog::getOpenFileContent("(*.json *.qml)", [this](const QString &fileName, const QByteArray &data){
         if (fileName.isEmpty()) {
             // No file was selected
@@ -292,7 +310,7 @@ void Backend::getUploadFile()
             if (lastDotPosition != std::string::npos) {
                 std::string extension = name.substr(lastDotPosition + 1);
                 if (extension == "json"){
-                    qmlData = parseJSONtoQML(data);
+                    qmlData = parseJSONSequenceToQML(data);
                 } else {
                     qmlData = data;
                 }
@@ -312,12 +330,9 @@ void Backend::getUploadFile()
                     FS.write(stream, HEAPU8, dataPtr, dataSize, 0);
                     FS.close(stream);
                 }, qmlData.data(), qmlData.size(), fileNumber);
-                emit this->uploadFileSelected("file:///" + QString::fromStdString(to_string(fileNumber)) + ".qml");
-                fileNumber++;
+                emit this->uploadSequenceSelected("file:///" + QString::fromStdString(to_string(fileNumber)) + ".qml");
             #else
                 std::string tempFileName =  std::filesystem::temp_directory_path().string() + std::to_string(fileNumber) + ".qml";
-
-                // Aquí tendríamos que escribir data dentro del fichero LoadedSequence.qml
                 ofstream MyFile(tempFileName);
 
                 // Write to the file
@@ -326,31 +341,78 @@ void Backend::getUploadFile()
                 // Close the file
                 MyFile.close();
 
-                emit this->uploadFileSelected("file:///"+QString::fromStdString(tempFileName));
+                qDebug() << "file:///"+QString::fromStdString(tempFileName);
 
-                fileNumber++;
+                emit this->uploadSequenceSelected("file:///"+QString::fromStdString(tempFileName));
             #endif
+            fileNumber++;
         }
     });
 }
 
-void Backend::getDownloadFile(QString qmlModel, QString extension){
+void Backend::getDownloadSequence(QString qmlModel, QString extension){
     QByteArray data;
     std::string str = qmlModel.toStdString();
     json j = json::parse(str);
     std::string s = j.dump(4);
     data.append(s);
     if(extension == "json"){
-        QFileDialog::saveFileContent(processSeqJSON(data), "Sequence.json");
+        QFileDialog::saveFileContent(processJSONSequence(data), "Sequence.json");
     } else if(extension == "qml"){
-        QFileDialog::saveFileContent(parseJSONtoQML(processSeqJSON(data)), "Sequence.qml");
+        QFileDialog::saveFileContent(parseJSONSequenceToQML(processJSONSequence(data)), "Sequence.qml");
     }
-
 }
 
 void Backend::plotSequence(QString qmlModel){
     #ifdef Q_OS_WASM
-        QByteArray data = processSeqJSON(parseQStringtoQByteArray(qmlModel));
+        QByteArray data = processJSONSequence(parseQStringtoQByteArray(qmlModel));
         plot_sequence(QString(data).toStdString().c_str());
     #endif
+}
+
+void Backend::getUploadScanner(){
+    QFileDialog::getOpenFileContent("(*.json)", [this](const QString &fileName, const QByteArray &data){
+        if (fileName.isEmpty()) {
+            // No file was selected
+        } else {
+            QByteArray qmlData;
+            qmlData = parseJSONScannerToQML(data);
+
+            std::cout << qmlData.data();
+
+            #ifdef Q_OS_WASM
+                EM_ASM({
+                    var tempFileName = $2 + ".qml";
+                    var stream = FS.open(tempFileName,'w');
+                    var dataPtr = $0; // Obtén el puntero al inicio del bloque de datos
+                    var dataSize = $1; // Obtén el tamaño de los datos
+                    FS.write(stream, HEAPU8, dataPtr, dataSize, 0);
+                    FS.close(stream);
+                }, qmlData.data(), qmlData.size(), fileNumber);
+                emit this->uploadScannerSelected("file:///" + QString::fromStdString(to_string(fileNumber)) + ".qml");
+            #else
+                std::string tempFileName =  std::filesystem::temp_directory_path().string() + std::to_string(fileNumber) + ".qml";
+                ofstream MyFile(tempFileName);
+
+                // Write to the file
+                MyFile << qmlData.toStdString();
+
+                // Close the file
+                MyFile.close();
+
+                emit this->uploadScannerSelected("file:///"+QString::fromStdString(tempFileName));
+            #endif
+
+            fileNumber++;
+        }
+    });
+}
+
+void Backend::getDownloadScanner(QString qmlModel){
+    QByteArray data;
+    std::string str = qmlModel.toStdString();
+    json j = json::parse(str);
+    std::string s = j.dump(4);
+    data.append(s);
+    QFileDialog::saveFileContent(data, "Scanner.json");
 }
