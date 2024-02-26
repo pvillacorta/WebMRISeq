@@ -319,7 +319,7 @@ void Backend::getUploadSequence(){
                 return;
             }
 
-            std::cout << qmlData.data();
+            // std::cout << qmlData.data();
 
             #ifdef Q_OS_WASM
                 EM_ASM({
@@ -378,7 +378,7 @@ void Backend::getUploadScanner(){
             QByteArray qmlData;
             qmlData = parseJSONScannerToQML(data);
 
-            std::cout << qmlData.data();
+            // std::cout << qmlData.data();
 
             #ifdef Q_OS_WASM
                 EM_ASM({
