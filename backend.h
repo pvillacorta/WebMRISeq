@@ -43,7 +43,7 @@ signals:
 public slots:
     void getUploadSequence();
     void getDownloadSequence(QString qmlModel, QString extension);
-    void plotSequence(QString qmlModel);
+    void plotSequence(QString qmlScan, QString qmlSeq);
 
     void getUploadScanner();
     void getDownloadScanner(QString qmlModel);

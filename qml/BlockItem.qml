@@ -32,90 +32,15 @@ Item{
 
     function displayFields(index){
         cod = blockList.get(index).cod
-        switch(cod){
-            // Group
-            case 0:
-                configMenu.durationVisible =    false;
-                configMenu.rfVisible =          false;
-                configMenu.gradientsVisible =   false;
-                configMenu.linesVisible =       false;
-                configMenu.samplesVisible =     false;
-                configMenu.fovVisible =         false;
-                configMenu.groupVisible =       true;
-                configMenu.tVisible =           false;
-                break;
-            // Excitation
-            case 1:
-                configMenu.durationVisible =    true;
-                configMenu.rfVisible =          true;
-                configMenu.gradientsVisible =   true;
-                configMenu.linesVisible =       false;
-                configMenu.samplesVisible =     false;
-                configMenu.fovVisible =         false;
-                configMenu.groupVisible =       false;
-                configMenu.tVisible =           false;
-                break;
-
-            // Delay
-            case 2:
-                configMenu.durationVisible =    true;
-                configMenu.rfVisible =          false;
-                configMenu.gradientsVisible =   false;
-                configMenu.linesVisible =       false;
-                configMenu.samplesVisible =     false;
-                configMenu.fovVisible =         false;
-                configMenu.groupVisible =       false;
-                configMenu.tVisible =           false;
-                break;
-
-            // Dephase
-            case 3:
-                configMenu.durationVisible =    true;
-                configMenu.rfVisible =          false;
-                configMenu.gradientsVisible =   true;
-                configMenu.linesVisible =       false;
-                configMenu.samplesVisible =     false;
-                configMenu.fovVisible =         false;
-                configMenu.groupVisible =       false;
-                configMenu.tVisible =           false;
-                break;
-
-            // Readout
-            case 4:
-                configMenu.durationVisible =    true;
-                configMenu.rfVisible =          false;
-                configMenu.gradientsVisible =   true;
-                configMenu.linesVisible =       false;
-                configMenu.samplesVisible =     true;
-                configMenu.fovVisible =         false;
-                configMenu.groupVisible =       false;
-                configMenu.tVisible =           false;
-                break;
-
-            // EPI Adquisition
-            case 5:
-                configMenu.durationVisible =    false;
-                configMenu.rfVisible =          false;
-                configMenu.gradientsVisible =   false;
-                configMenu.linesVisible =       true;
-                configMenu.samplesVisible =     true;
-                configMenu.fovVisible =         true;
-                configMenu.groupVisible =       false;
-                configMenu.tVisible =           false;
-                break;
-
-            // GRE (Gradient Echo)
-            case 6:
-                configMenu.durationVisible =    false;
-                configMenu.rfVisible =          true;
-                configMenu.gradientsVisible =   false;
-                configMenu.linesVisible =       true;
-                configMenu.samplesVisible =     true;
-                configMenu.fovVisible =         true;
-                configMenu.groupVisible =       false;
-                configMenu.tVisible =           true;
-                break;
-        }
+        configMenu.durationVisible =    [1,2,3,4].includes(cod);
+        configMenu.linesVisible =       [5,6].includes(cod);
+        configMenu.samplesVisible =     [4,5,6].includes(cod);
+        configMenu.adcDelayVisible =    [4].includes(cod);
+        configMenu.fovVisible =         [5,6].includes(cod);
+        configMenu.rfVisible =          [1,6].includes(cod);
+        configMenu.gradientsVisible =   [1,3,4].includes(cod);
+        configMenu.tVisible =           [6].includes(cod);
+        configMenu.groupVisible =       [0].includes(cod);
 
         if(configMenu.durationVisible){
             configMenu.duration =       blockList.get(index).duration
@@ -125,6 +50,9 @@ Item{
         }
         if(configMenu.samplesVisible){
             configMenu.samples =       blockList.get(index).samples
+        }
+        if(configMenu.adcDelayVisible){
+            configMenu.adcDelay =      blockList.get(index).adcDelay
         }
         if(configMenu.fovVisible){
             configMenu.fov =       blockList.get(index).fov

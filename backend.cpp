@@ -24,6 +24,7 @@ QByteArray Backend::processJSONSequence(QByteArray data){
         bool durationActive = this->active(code,{1, 2, 3, 4});
         bool linesActive = this->active(code,{5, 6});
         bool samplesActive = this->active(code,{4, 5, 6});
+        bool adcDelayActive = this->active(code,{4});
         bool fovActive = this->active(code,{5, 6});
         bool rfActive = this->active(code,{1, 6});
         bool gradientsActive = this->active(code,{1, 3, 4});
@@ -64,6 +65,10 @@ QByteArray Backend::processJSONSequence(QByteArray data){
 
         if(!samplesActive){
             block.erase("samples");
+        }
+
+        if(!adcDelayActive){
+            block.erase("adcDelay");
         }
 
         if(!fovActive){
@@ -112,6 +117,7 @@ QByteArray Backend::parseJSONSequenceToQML(QByteArray data){
         bool durationActive = this->active(code,{1, 2, 3, 4});
         bool linesActive = this->active(code,{5, 6});
         bool samplesActive = this->active(code,{4, 5, 6});
+        bool adcDelayActive = this->active(code,{4});
         bool fovActive = this->active(code,{5, 6});
         bool rfActive = this->active(code,{1, 6});
         bool gradientsActive = this->active(code,{1, 3, 4});
@@ -148,6 +154,10 @@ QByteArray Backend::parseJSONSequenceToQML(QByteArray data){
 
         if(linesActive){
             qmlData.append("        lines: " + block["lines"].dump() + " \n");
+        }
+
+        if(adcDelayActive){
+            qmlData.append("        adcDelay: " + block["adcDelay"].dump() + " \n");
         }
 
         if(samplesActive){
@@ -290,8 +300,8 @@ QByteArray Backend::parseQStringtoQByteArray(QString model){
 
 // WebAssembly
 #ifdef Q_OS_WASM
-EM_JS(void, plot_sequence, (const char* model), {
-    plot_seq(UTF8ToString(model));
+EM_JS(void, plot_sequence, (const char* scanModel, const char* seqModel), {
+    plot_seq(UTF8ToString(scanModel), UTF8ToString(seqModel));
 })
 #endif
 
@@ -332,7 +342,12 @@ void Backend::getUploadSequence(){
                 }, qmlData.data(), qmlData.size(), fileNumber);
                 emit this->uploadSequenceSelected("file:///" + QString::fromStdString(to_string(fileNumber)) + ".qml");
             #else
-                std::string tempFileName =  std::filesystem::temp_directory_path().string() + std::to_string(fileNumber) + ".qml";
+                #ifdef _WIN32
+                    std::string tempFileName =  std::filesystem::temp_directory_path().string() + std::to_string(fileNumber) + ".qml";
+                #elif linux
+                    std::string tempFileName =  std::filesystem::temp_directory_path().string() + "/" + std::to_string(fileNumber) + ".qml";
+                #endif
+
                 ofstream MyFile(tempFileName);
 
                 // Write to the file
@@ -340,8 +355,6 @@ void Backend::getUploadSequence(){
 
                 // Close the file
                 MyFile.close();
-
-                qDebug() << "file:///"+QString::fromStdString(tempFileName);
 
                 emit this->uploadSequenceSelected("file:///"+QString::fromStdString(tempFileName));
             #endif
@@ -363,10 +376,11 @@ void Backend::getDownloadSequence(QString qmlModel, QString extension){
     }
 }
 
-void Backend::plotSequence(QString qmlModel){
+void Backend::plotSequence(QString qmlScan, QString qmlSeq){
     #ifdef Q_OS_WASM
-        QByteArray data = processJSONSequence(parseQStringtoQByteArray(qmlModel));
-        plot_sequence(QString(data).toStdString().c_str());
+        QByteArray scanData = processJSONScanner(parseQStringtoQByteArray(qmlScan));
+        QByteArray seqData  = processJSONSequence(parseQStringtoQByteArray(qmlSeq));
+        plot_sequence(QString(scanData).toStdString().c_str(), QString(seqData).toStdString().c_str());
     #endif
 }
 
@@ -391,7 +405,11 @@ void Backend::getUploadScanner(){
                 }, qmlData.data(), qmlData.size(), fileNumber);
                 emit this->uploadScannerSelected("file:///" + QString::fromStdString(to_string(fileNumber)) + ".qml");
             #else
-                std::string tempFileName =  std::filesystem::temp_directory_path().string() + std::to_string(fileNumber) + ".qml";
+                #ifdef _WIN32
+                    std::string tempFileName =  std::filesystem::temp_directory_path().string() + std::to_string(fileNumber) + ".qml";
+                #elif linux
+                    std::string tempFileName =  std::filesystem::temp_directory_path().string() + "/" + std::to_string(fileNumber) + ".qml";
+                #endif
                 ofstream MyFile(tempFileName);
 
                 // Write to the file

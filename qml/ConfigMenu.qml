@@ -21,6 +21,10 @@ Item {
     property bool samplesVisible
     property alias samples:     samplesInput.text
 
+    // ------- ADC Delay
+    property bool adcDelayVisible
+    property alias adcDelay:    adcDelayInput.text
+
     // ------- FOV
     property bool fovVisible
     property alias fov:         fovInput.text
@@ -67,7 +71,8 @@ Item {
     function applyChanges(blockID){
         if(durationVisible) {blockList.setProperty(blockID,          "duration",     Number(duration));}
         if(linesVisible)    {blockList.setProperty(blockID,          "lines",        Number(lines));}
-        if(samplesVisible)  {blockList.setProperty(blockID,          "samples",      Number(samples));}
+        if(samplesVisible)  {blockList.setProperty(blockID,          "samples",      Number(samples));
+                             blockList.setProperty(blockID,          "adcDelay",     Number(adcDelay));}
         if(fovVisible)      {blockList.setProperty(blockID,          "fov",          Number(fov));}
         if(rfVisible)       {blockList.get(blockID).rf.set(0,       {"select":       Number(select),
                                                                      "shape":        Number(shape),
@@ -94,6 +99,7 @@ Item {
         duration =      durationVisible ?   blockInfo.duration : 0;
         lines =         linesVisible ?      blockInfo.lines : 0;
         samples =       samplesVisible ?    blockInfo.samples : 0;
+        adcDelay =      adcDelayVisible ?   blockInfo.adcDelay : 0;
         fov =           fovVisible ?        blockInfo.fov : 0;
         shape =         rfVisible ?         blockInfo.rf.get(0).shape : 0;
         b1Module =      rfVisible ?         blockInfo.rf.get(0).b1Module : 0;
@@ -232,6 +238,23 @@ Item {
                     MenuLabel { text: "Samples:";  bold: true;  Layout.columnSpan: 2}
                     TextInputItem{ id: samplesInput;            Layout.alignment: Qt.AlignRight}
                     MenuLabel { text: "samples" }
+                }
+            }
+
+            Loader { visible: samplesVisible
+                sourceComponent: configPanel
+                width:200
+                height: 26
+                GridLayout{ id: adcDelayLayout
+                    uniformCellWidths: true
+                    anchors.fill: parent
+                    anchors.margins:3
+                    columns: 4
+                    rowSpacing: 3
+
+                    MenuLabel { text: "ADC Delay:";  bold: true;  Layout.columnSpan: 2}
+                    TextInputItem{ id: adcDelayInput;            Layout.alignment: Qt.AlignRight}
+                    MenuLabel { text: "s" }
                 }
             }
 
