@@ -60,49 +60,6 @@ html, body {
 }
 
 
-/* Seq Editor menu bar */
-#menuBar { 
-    height: 20px;
-    background-color: rgb(171, 168, 168)
-}
-.dropbtn{
-    width: 100%;
-    background-color: rgb(171, 168, 168);
-    border:none
-}
-.dropbtn:hover{
-    background-color: #343a40;
-    color: white
-}
-.dropdown {
-    display: inline-block;
-    position: relative;
-    margin-right: -4px;
-    z-index: 10;
-}
-.dropdown-content {
-    display: none;
-    position: absolute;
-    overflow: auto;
-    width: max-content;
-    box-shadow: 0px 10px 10px 0px rgba(0,0,0,0.4);
-}
-.dropdown-content button {
-    display: block;
-    width: 100%;
-    color: #000000;
-    padding: 5px;
-    text-decoration: none;
-    text-align: left;
-    padding-right: 50px;
-    border: none
-}
-.dropdown-content button:hover {
-    color: #FFFFFF;
-    background-color: #00A4BD;
-}
-
-
 /* File loader */
 #my_file {
     display: none;
@@ -123,4 +80,9 @@ html, body {
     height: 100%;
 }
 
+#screenSeq{
+    background-color: #212529;
+    text-align: center;
+    color: white;
+}
 
