@@ -117,6 +117,7 @@ Item{
                             color: light
                             text: buttonText
                             font.bold: true
+                            font.pointSize: buttonTextSize
                         }
                     }
 
@@ -132,7 +133,7 @@ Item{
                             var lines = 64;
                             var samples = 64;
                             var adcDelay = 0;
-                            var fov = 0.1;
+                            var fov = 0.2;
                             var select = 0;
                             var shape = 0;
                             var b1Module = 1e-6;

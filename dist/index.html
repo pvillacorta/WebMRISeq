@@ -1,6 +1,7 @@
 <!doctype html> 
 <html lang="en-us"> 
   <head>
+    <base href="dynamic/">
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
@@ -10,7 +11,7 @@
     <meta name="viewport" content="width=device-width, height=device-height, user-scalable=0"/>
 
     <title>MRI Sequence Editor</title>
-    <link rel="stylesheet" href="dynamic/main.css">
+    <link rel="stylesheet" href="main.css">
 
     <style>
         #myProgress {
@@ -39,7 +40,7 @@
                 <div id="qtspinner" style="height:100%">
                     <center>
                         <div style="height:20px"></div>
-                        <img src="dynamic/qtlogo.svg" width="320" height="200" style="display:block"></img>
+                        <img src="qtlogo.svg" width="320" height="200" style="display:block"></img>
                         <strong>Qt for WebAssembly: appFooWasm</strong>
                         <div id="qtstatus"></div>
                         <noscript>JavaScript is disabled. Please enable JavaScript to use this application.</noscript>
@@ -48,7 +49,7 @@
             </div>
         </div> 
         <div class="box col-11" id="screenSeq">
-            <iframe src="dynamic/seq_example.html" style="height: 100%; width:100%"></iframe>
+            <iframe id="seq-diagram" src="seq_example.html" style="height: 100%; width:100%"></iframe>
         </div>
         <div class="box col-3" id="screenVtk">
             <div id="vtkView"></div>
@@ -98,10 +99,10 @@
             } 
         }
     </script>
-    <script src="static/app.js"></script>
-    <script src="dynamic/seqEditor.js"></script>
-    <script src="dynamic/qtloader.js"></script>
-    <script src="dynamic/mainVTK.js"></script>
-    <script src="dynamic/style.js"></script>
+    <script src="../static/app.js"></script>
+    <script src="appWebMRISeq.js"></script>
+    <script src="qtloader.js"></script>
+    <script src="mainVTK.js"></script>
+    <script src="style.js"></script>
   </body>
 </html>

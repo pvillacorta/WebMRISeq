@@ -340,7 +340,7 @@ void Backend::getUploadSequence(){
                     FS.write(stream, HEAPU8, dataPtr, dataSize, 0);
                     FS.close(stream);
                 }, qmlData.data(), qmlData.size(), fileNumber);
-                emit this->uploadSequenceSelected("file:///" + QString::fromStdString(to_string(fileNumber)) + ".qml");
+                emit this->uploadSequenceSelected("file://" + QString::fromStdString(to_string(fileNumber)) + ".qml");
             #else
                 #ifdef _WIN32
                     std::string tempFileName =  std::filesystem::temp_directory_path().string() + std::to_string(fileNumber) + ".qml";
@@ -356,7 +356,7 @@ void Backend::getUploadSequence(){
                 // Close the file
                 MyFile.close();
 
-                emit this->uploadSequenceSelected("file:///"+QString::fromStdString(tempFileName));
+                emit this->uploadSequenceSelected("file://"+QString::fromStdString(tempFileName));
             #endif
             fileNumber++;
         }
@@ -378,8 +378,9 @@ void Backend::getDownloadSequence(QString qmlModel, QString extension){
 
 void Backend::plotSequence(QString qmlScan, QString qmlSeq){
     #ifdef Q_OS_WASM
-        QByteArray scanData = processJSONScanner(parseQStringtoQByteArray(qmlScan));
+        QByteArray scanData = parseQStringtoQByteArray(qmlScan);
         QByteArray seqData  = processJSONSequence(parseQStringtoQByteArray(qmlSeq));
+
         plot_sequence(QString(scanData).toStdString().c_str(), QString(seqData).toStdString().c_str());
     #endif
 }

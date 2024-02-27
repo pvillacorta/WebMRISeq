@@ -226,8 +226,8 @@ ApplicationWindow {
 
             if(durationActive)  {groupList.setProperty(groupList.count-1,           "duration",     blockList.get(blockID+j).duration);}
             if(linesActive)     {groupList.setProperty(groupList.count-1,           "lines",        blockList.get(blockID+j).lines);}
-            if(samplesActive)   {groupList.setProperty(groupList.count-1,           "samples",      blockList.get(blockID+j).samples);
-                                 groupList.setProperty(groupList.count-1,           "adcDelay",     blockList.get(blockID+j).adcDelay);}
+            if(samplesActive)   {groupList.setProperty(groupList.count-1,           "samples",      blockList.get(blockID+j).samples);}
+            if(adcDelayActive)  {groupList.setProperty(groupList.count-1,           "adcDelay",     blockList.get(blockID+j).adcDelay);}
             if(fovActive)       {groupList.setProperty(groupList.count-1,           "fov",          blockList.get(blockID+j).fov);}
             if(rfActive)        {groupList.get(groupList.count-1).rf.append(       {"select":       blockList.get(blockID+j).rf.get(0).select,
                                                                                     "shape":        blockList.get(blockID+j).rf.get(0).shape,

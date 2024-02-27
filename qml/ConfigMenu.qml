@@ -71,8 +71,8 @@ Item {
     function applyChanges(blockID){
         if(durationVisible) {blockList.setProperty(blockID,          "duration",     Number(duration));}
         if(linesVisible)    {blockList.setProperty(blockID,          "lines",        Number(lines));}
-        if(samplesVisible)  {blockList.setProperty(blockID,          "samples",      Number(samples));
-                             blockList.setProperty(blockID,          "adcDelay",     Number(adcDelay));}
+        if(samplesVisible)  {blockList.setProperty(blockID,          "samples",      Number(samples));}
+        if(adcDelayVisible) {blockList.setProperty(blockID,          "adcDelay",     Number(adcDelay));}
         if(fovVisible)      {blockList.setProperty(blockID,          "fov",          Number(fov));}
         if(rfVisible)       {blockList.get(blockID).rf.set(0,       {"select":       Number(select),
                                                                      "shape":        Number(shape),
@@ -175,25 +175,6 @@ Item {
             ComboBoxItem{
                 id: rfSelect;
                 model: ["Flip angle and duration", "Flip angle and amplitude", "Duration and amplitude"];
-                // onAccepted:{
-                //     switch(currentIndex){
-                //     case 0:
-                //         b1ModuleInput.visible = false;
-                //         durationInput.visible = true;
-                //         flipAngleInput.visible = true;
-                //         break;
-                //     case 1:
-                //         durationInput.visible = false;
-                //         b1ModuleInput.visible = true;
-                //         flipAngleInput.visible = true;
-                //         break;
-                //     case 2:
-                //         flipAngleInput.visible = false;
-                //         b1ModuleInput.visible = true;
-                //         durationInput.visible = true;
-                //         break;
-                //     }
-                // }
             }
         }
 
@@ -241,7 +222,7 @@ Item {
                 }
             }
 
-            Loader { visible: samplesVisible
+            Loader { visible: adcDelayVisible
                 sourceComponent: configPanel
                 width:200
                 height: 26
