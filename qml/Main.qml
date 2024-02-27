@@ -515,6 +515,7 @@ ApplicationWindow {
 
                     Menu {
                         title: "Sequence"
+                        font.pointSize: 10
                         Action {
                             text: "New Sequence"
                         }
@@ -539,6 +540,7 @@ ApplicationWindow {
 
                     Menu {
                         title: "Scanner"
+                        font.pointSize: 10
                         Action {
                             text: "Load Scanner"
                             onTriggered: backend.getUploadScanner();
