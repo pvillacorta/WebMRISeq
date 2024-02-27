@@ -32,48 +32,45 @@ qt_add_executable(appWebMRISeq
 
 add_dependencies(appWebMRISeq nlohmann_json)
 
-qt_add_resources(appWebMRISeq "icons"
-    PREFIX "/"
+set(qml_resource_files
+    "qml/Main.qml"
+    "qml/BlockItem.qml"
+    "qml/ConfigMenu.qml"
+    "qml/GlobalMenu.qml"
+    "qml/TextInputItem.qml"
+    "qml/MenuLabel.qml"
+    "qml/ButtonsMenu.qml"
+    "qml/PopUp.qml"
+    "qml/DeleteButton.qml"
+    "qml/Seq_Example.qml"
+    "qml/ComboBoxItem.qml"
+    "icons/arrow.png"
+    "icons/arrow_gray.png"
+    "icons/delete_white.png"
+    "icons/delete_black.png"
+    "icons/dark/angle.png"
+    "icons/dark/clock.png"
+    "icons/dark/misc.png"
+    "icons/dark/readout.png"
+    "icons/dark/rf.png"
+    "icons/dark/plus.png"
+    "icons/dark/epi.png"
+    "icons/light/angle.png"
+    "icons/light/clock.png"
+    "icons/light/misc.png"
+    "icons/light/readout.png"
+    "icons/light/rf.png"
+    "icons/light/plus.png"
+    "icons/light/epi.png"
+    "icons/balloon.png"
+)
+
+qt6_add_resources(appWebMRISeq "qml"
+    PREFIX
+        "/"
     FILES
-        icons/arrow.png
-        icons/arrow_gray.png
-        icons/delete_white.png
-        icons/delete_black.png
-        icons/dark/angle.png
-        icons/dark/clock.png
-        icons/dark/misc.png
-        icons/dark/readout.png
-        icons/dark/rf.png
-        icons/dark/plus.png
-        icons/dark/epi.png
-        icons/light/angle.png
-        icons/light/clock.png
-        icons/light/misc.png
-        icons/light/readout.png
-        icons/light/rf.png
-        icons/light/plus.png
-        icons/light/epi.png
-        icons/balloon.png
+        ${qml_resource_files}
 )
-
-qt_add_qml_module(appWebMRISeq
-    URI WebMRISeq
-    RESOURCE_PREFIX /
-    VERSION 1.0
-    QML_FILES
-        qml/Main.qml
-        qml/BlockItem.qml
-        qml/ConfigMenu.qml
-        qml/GlobalMenu.qml
-        qml/TextInputItem.qml
-        qml/MenuLabel.qml
-        qml/ButtonsMenu.qml
-        qml/PopUp.qml
-        qml/DeleteButton.qml
-        qml/Seq_Example.qml
-        qml/ComboBoxItem.qml
-)
-
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
