@@ -163,7 +163,7 @@ Item {
         }
 
         Row{
-            visible: rfVisible
+            visible: rfVisible & !linesVisible
             anchors.right: column.right
             anchors.top: column.top
             anchors.margins: 2

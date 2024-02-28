@@ -209,6 +209,7 @@ ApplicationWindow {
             var durationActive =    [1,2,3,4].includes(code);
             var linesActive =       [5,6].includes(code);
             var samplesActive =     [4,5,6].includes(code);
+            var adcDelayActive =    [4].includes(code);
             var fovActive =         [5,6].includes(code);
             var rfActive =          [1,6].includes(code);
             var gradientsActive =   [1,3,4].includes(code);
