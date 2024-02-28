@@ -294,7 +294,7 @@ Item {
                         MenuLabel { text: "RF Shape:";              Layout.alignment: Qt.AlignRight}
                         ComboBoxItem{
                             id: shapeInput;
-                            model: ["Rectangle (hard)", "Sinc"];
+                            model: linesVisible ? ["Sinc"] : ["Rectangle (hard)", "Sinc"];
                         }
 
                         MenuLabel { text: "Peak |B1|[T]:";          Layout.alignment: Qt.AlignRight;                                enabled:b1ModuleInput.enabled; opacity: enabled}
