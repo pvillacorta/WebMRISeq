@@ -303,6 +303,10 @@ QByteArray Backend::parseQStringtoQByteArray(QString model){
 EM_JS(void, plot_sequence, (const char* scanModel, const char* seqModel), {
     plot_seq(UTF8ToString(scanModel), UTF8ToString(seqModel));
 })
+
+EM_JS(void, plot_3d_slice, (float gx, float gy, float gz, float deltaf), {
+    prueba_vtk(gx, gy, gz, deltaf);
+})
 #endif
 
 // Slots
@@ -377,6 +381,15 @@ void Backend::getDownloadSequence(QString qmlModel, QString extension){
 }
 
 void Backend::plotSequence(QString qmlScan, QString qmlSeq){
+    #ifdef Q_OS_WASM
+        QByteArray scanData = parseQStringtoQByteArray(qmlScan);
+        QByteArray seqData  = processJSONSequence(parseQStringtoQByteArray(qmlSeq));
+
+        plot_sequence(QString(scanData).toStdString().c_str(), QString(seqData).toStdString().c_str());
+    #endif
+}
+
+void Backend::plot3D(float gx, float gy, float gz, float deltaf){
     #ifdef Q_OS_WASM
         QByteArray scanData = parseQStringtoQByteArray(qmlScan);
         QByteArray seqData  = processJSONSequence(parseQStringtoQByteArray(qmlSeq));

@@ -83,4 +83,8 @@ window.addEventListener('resize', function() {
     interactor.setView(openGLRenderWindow);
     interactor.initialize();
     interactor.bindEvents(container);
-  });
+});
+
+function prueba_vtk(gx, gy, gz, deltaf) {
+  console.log("Hola :)");
+}

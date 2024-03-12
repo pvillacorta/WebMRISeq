@@ -44,6 +44,7 @@ public slots:
     void getUploadSequence();
     void getDownloadSequence(QString qmlModel, QString extension);
     void plotSequence(QString qmlScan, QString qmlSeq);
+    void plot3D(float gx, float gy, float gz, float deltaf);
 
     void getUploadScanner();
     void getDownloadScanner(QString qmlModel);
