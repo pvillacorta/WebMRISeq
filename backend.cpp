@@ -391,10 +391,7 @@ void Backend::plotSequence(QString qmlScan, QString qmlSeq){
 
 void Backend::plot3D(float gx, float gy, float gz, float deltaf){
     #ifdef Q_OS_WASM
-        QByteArray scanData = parseQStringtoQByteArray(qmlScan);
-        QByteArray seqData  = processJSONSequence(parseQStringtoQByteArray(qmlSeq));
-
-        plot_sequence(QString(scanData).toStdString().c_str(), QString(seqData).toStdString().c_str());
+        plot_3d_slice(gx, gy, gz, deltaf);
     #endif
 }
 

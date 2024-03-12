@@ -1,7 +1,7 @@
 var path = require('path');
 var webpack = require('webpack');
 
-var entry = path.join(__dirname, './src/cono.js');
+var entry = path.join(__dirname, './src/phantom_vtk.js');
 const sourcePath = path.join(__dirname, './src');
 const outputPath = path.join(__dirname, './dist');
 

@@ -2,7 +2,7 @@
   "name": "foowasm",
   "version": "1.0.0",
   "description": "",
-  "main": "src/cono.js",
+  "main": "src/phantom_vtk.js",
   "scripts": {
     "build": "webpack --progress --mode=development",
     "start": "webpack serve --progress --mode=development --static=dist",
@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@itk-wasm/image-io": "^1.1.1",
     "@kitware/vtk.js": "^29.2.0",
     "html-loader": "^4.2.0",
     "webpack": "^5.89.0"

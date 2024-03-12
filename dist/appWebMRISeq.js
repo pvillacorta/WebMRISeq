@@ -1016,10 +1016,11 @@ function dbg(text) {
 // === Body ===
 
 var ASM_CONSTS = {
-  15991742: ($0, $1, $2) => { var tempFileName = $2 + ".qml"; var stream = FS.open(tempFileName,'w'); var dataPtr = $0; var dataSize = $1; FS.write(stream, HEAPU8, dataPtr, dataSize, 0); FS.close(stream); },  
- 15991921: ($0, $1, $2) => { var tempFileName = $2 + ".qml"; var stream = FS.open(tempFileName,'w'); var dataPtr = $0; var dataSize = $1; FS.write(stream, HEAPU8, dataPtr, dataSize, 0); FS.close(stream); }
+  15991874: ($0, $1, $2) => { var tempFileName = $2 + ".qml"; var stream = FS.open(tempFileName,'w'); var dataPtr = $0; var dataSize = $1; FS.write(stream, HEAPU8, dataPtr, dataSize, 0); FS.close(stream); },  
+ 15992053: ($0, $1, $2) => { var tempFileName = $2 + ".qml"; var stream = FS.open(tempFileName,'w'); var dataPtr = $0; var dataSize = $1; FS.write(stream, HEAPU8, dataPtr, dataSize, 0); FS.close(stream); }
 };
 function plot_sequence(scanModel,seqModel) { plot_seq(UTF8ToString(scanModel), UTF8ToString(seqModel)); }
+function plot_3d_slice(gx,gy,gz,deltaf) { prueba_vtk(gx, gy, gz, deltaf); }
 function jsHaveAsyncify() { return typeof Asyncify !== "undefined"; }
 function qt_asyncify_suspend_js() { if (Module.qtSuspendId === undefined) Module.qtSuspendId = 0; let sleepFn = (wakeUp) => { Module.qtAsyncifyWakeUp = wakeUp; }; ++Module.qtSuspendId; return Asyncify.handleSleep(sleepFn); }
 function qt_asyncify_resume_js() { let wakeUp = Module.qtAsyncifyWakeUp; if (wakeUp == undefined) return; Module.qtAsyncifyWakeUp = undefined; const suspendId = Module.qtSuspendId; setTimeout(() => { if (Module.qtSuspendId !== suspendId) return; wakeUp(); }); }
@@ -12982,6 +12983,7 @@ function qt_asyncify_resume_js() { let wakeUp = Module.qtAsyncifyWakeUp; if (wak
 
 
 
+
   
   function arraySum(array, index) {
       var sum = 0;
@@ -13958,6 +13960,7 @@ var wasmImports = {
   "invoke_viiiiiii": invoke_viiiiiii,
   "invoke_viiiiiiiii": invoke_viiiiiiiii,
   "jsHaveAsyncify": jsHaveAsyncify,
+  "plot_3d_slice": plot_3d_slice,
   "plot_sequence": plot_sequence,
   "qt_asyncify_resume_js": qt_asyncify_resume_js,
   "qt_asyncify_suspend_js": qt_asyncify_suspend_js,
@@ -14025,8 +14028,8 @@ var _emscripten_stack_get_current = function() {
 var ___cxa_demangle = createExportWrapper("__cxa_demangle");
 /** @type {function(...*):?} */
 var ___cxa_is_pointer_type = createExportWrapper("__cxa_is_pointer_type");
-var ___start_em_js = Module['___start_em_js'] = 15991148;
-var ___stop_em_js = Module['___stop_em_js'] = 15991742;
+var ___start_em_js = Module['___start_em_js'] = 15991196;
+var ___stop_em_js = Module['___stop_em_js'] = 15991874;
 function invoke_ii(index,a1) {
   var sp = stackSave();
   try {
