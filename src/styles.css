@@ -1,0 +1,90 @@
+html, body { 
+    padding: 0; 
+    margin: 0; 
+    overflow: hidden; 
+    height: 100%;
+}
+ 
+* {
+    margin: 0;
+    padding: 0;
+}
+
+/* RESPONSIVITY */
+/* For mobile phones: */
+[class*="col-"] {
+    height: 100%;
+    margin: 0;
+}
+
+@media only screen and (min-width: 1275px) {
+/* For desktop and tablet: */
+    /* .col-1 {width: 8.33%;}
+    .col-2 {width: 16.66%;}
+    .col-3 {width: 25%;}
+    .col-4 {width: 33.33%;}
+    .col-5 {width: 41.66%;}
+    .col-6 {width: 50%;}
+    .col-7 {width: 58.33%;}
+    .col-8 {width: 66.66%;}
+    .col-9 {width: 75%;}
+    .col-10 {width: 83.33%;}
+    .col-11 {width: 91.66%;}
+    .col-12 {width: 100%;} */
+
+    [class*="col-"] {
+        height:  500px;
+        width: 80%;
+        box-shadow: rgb(133, 133, 133) 0px 0px 20px;
+        margin: 15px;
+    }
+}
+
+
+/* Tab links */
+.tablinks {
+    background-color: #04AA6D;
+    border: none;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin-right: -4px;
+} 
+
+.tab-active {
+    background-color: #046642; /* Puedes ajustar este color a tu gusto */
+    font-weight: bold; /* O cualquier otro estilo que desees */
+}
+
+
+/* File loader */
+#my_file {
+    display: none;
+}
+
+
+.container {
+    height: 100%;
+    overflow: auto; 
+}
+
+#wasmView{
+    height: 100%;
+}
+
+#vtkView{
+    width: 100%;
+    height: 100%;
+}
+
+#screenSeq{
+    background-color: #212529;
+    text-align: center;
+    color: white;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+

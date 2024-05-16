@@ -1,28 +1,54 @@
-var path = require('path');
-var webpack = require('webpack');
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const { ProgressPlugin } = require('webpack');
+const CopyPlugin = require('copy-webpack-plugin');
 
-var entry = path.join(__dirname, './src/cono.js');
-const sourcePath = path.join(__dirname, './src');
-const outputPath = path.join(__dirname, './dist');
+module.exports = (env, argv) => {
+    const isProduction = argv.mode === 'production';
 
-module.exports = {
-    entry,
-    output: {
-        path: outputPath,
-        filename: 'mainVTK.js',
-    },
-    module: {
-        rules: [
-            {test: /\.html$/, loader: 'html-loader'},
+    return {
+        entry: './src/main.js',
+        module: {
+            rules: [
+                {
+                    test: /\.css$/i,
+                    use: ["style-loader", "css-loader"],
+                    exclude: /node_modules/,
+                },
+            ],
+        },
+        resolve: {
+            extensions: ['.js'],
+        },
+        output: {
+            filename: '[name].js',
+            path: path.resolve(__dirname, 'dist'),
+        },
+        optimization: {
+            minimize: isProduction,
+            minimizer: [new TerserPlugin()],
+        },
+        plugins: [
+            new ProgressPlugin(),
+            new CleanWebpackPlugin(),
+            new HtmlWebpackPlugin({
+                template: 'src/index.html',
+            }),
+            new CopyPlugin({
+                patterns: [
+                    { from: 'public', to: 'public' },
+                    { from: 'node_modules/@itk-wasm/image-io/dist/pipelines/*.{js,wasm,wasm.zst}', to: 'pipelines/[name][ext]' }
+                ],
+            }),
         ],
-    },
-    resolve: {
-        modules: [
-            path.resolve(__dirname, 'node_modules'),
-            sourcePath,
-        ],
-    },
-    devServer: {
-        port: 9000
-    }
+        devServer: {
+            static: {
+                directory: './public',
+                publicPath: '/public',
+            }
+        },
+        devtool: 'source-map',
+    };
 };

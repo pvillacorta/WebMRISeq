@@ -1,22 +1,28 @@
 {
-  "name": "foowasm",
-  "version": "1.0.0",
+  "name": "vtkjs-webpack",
+  "version": "0.0.1",
   "description": "",
-  "main": "src/cono.js",
+  "main": "src/main.js",
   "scripts": {
-    "build": "webpack --progress --mode=development",
-    "start": "webpack serve --progress --mode=development --static=dist",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack --progress --mode=production",
+    "dev": "webpack --progress --mode=development",
+    "start": "webpack serve --progress --mode=development"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@kitware/vtk.js": "^29.2.0",
-    "html-loader": "^4.2.0",
-    "webpack": "^5.89.0"
+    "@itk-wasm/image-io": "^1.1.0",
+    "@kitware/vtk.js": "^29.7.3"
   },
   "devDependencies": {
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^7.1.1",
+    "html-webpack-plugin": "^5.6.0",
+    "style-loader": "^4.0.0",
+    "terser-webpack-plugin": "^5.3.10",
+    "webpack": "^5.90.3",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.15.1"
+    "webpack-dev-server": "^5.0.2"
   }
 }
