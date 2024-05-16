@@ -2,4 +2,3 @@ Qt
 src/seqEditor/CMakeLists.txt.user
 node_modules
 package-lock.json
-dist
