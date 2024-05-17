@@ -1,5 +1,5 @@
 Qt
-src/seqEditor/CMakeLists.txt.user
-node_modules
-package-lock.json
-dist
+client/src/seqEditor/CMakeLists.txt.user
+client/package-lock.json
+client/dist
+client/node_modules

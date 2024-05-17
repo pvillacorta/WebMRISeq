@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-
+    <base href="static/">
     <!--Set visual viewport size for mobile devices to the device size,
         witch results in a scale of 1 and a 1:1 mapping between CSS pixels
         and Qt device independent pixels. -->
@@ -16,7 +16,7 @@
     <div class="tabs-mobile">
         <button id="btn-screenEditor" class="tablinks">Editor</button>
         <button id="btn-screenSeq" class="tablinks">Diagram</button>
-        <!-- <button id="btn-screenVtk" class="tablinks">3D Viewer</button> -->
+        <button id="btn-screenVtk" class="tablinks">3D Viewer</button>
     </div>
     <div class="container">
         <div class="box col-8" id="screenEditor">
@@ -32,13 +32,13 @@
                 </div>
             </div>
         </div> 
-        <div class="box col-11" id="screenSeq">
+        <div class="box col-8" id="screenSeq">
             <h3>Sequence Diagram</h3>
             <iframe id="seq-diagram" style="margin-top: 10px; visibility: hidden; height: 90%; width:95%"></iframe>
         </div>
-        <!-- <div class="box col-3" id="screenVtk">
-            <div id="vtk-3d-root"></div>
-        </div> -->
+        <div class="box col-8" id="screenVtk">
+            <!-- <div id="vtk-3d-root"></div> -->
+        </div>
     </div>
     
 
@@ -85,5 +85,8 @@
         }
     </script>
     <script src="main.js" type="module"></script>
+    <script src="utils.js"></script>
+    <script src="appWebMRISeq.js"></script>
+    <script type="text/javascript" src="qtloader.js"></script>
   </body>
 </html>

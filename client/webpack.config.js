@@ -38,14 +38,15 @@ module.exports = (env, argv) => {
             }),
             new CopyPlugin({
                 patterns: [
-                    { from: 'public', to: 'public' },
+                    { from: '../public', to: 'public' },
+                    { from: 'src/utils.js', to: '.' },
                     { from: 'node_modules/@itk-wasm/image-io/dist/pipelines/*.{js,wasm,wasm.zst}', to: 'pipelines/[name][ext]' }
                 ],
             }),
         ],
         devServer: {
             static: {
-                directory: './public',
+                directory: '../public',
                 publicPath: '/public',
             }
         },

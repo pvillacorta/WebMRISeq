@@ -1,0 +1,10 @@
+[deps]
+Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
+FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
+KomaMRI = "6a340f8b-2cdf-4c04-99be-4953d9b66d0a"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Oxygen = "df9a0d86-3283-4920-82dc-4555fc0d1d8b"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+StructTypes = "856f2bd8-1eba-4b0a-8007-ebc267875bd4"
