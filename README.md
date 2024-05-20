@@ -1,9 +1,11 @@
 # Web MRI Sequence Editor
 
 ## Requirements
-- Qt version 6.6
-- Emscripten (emsdk) version 3.1.37
-- Julia 1.10
+- Qt version v6.6
+- CMake
+- Emscripten (emsdk) v3.1.37
+- Julia v1.10
+- Node v20.11 and NPM
 
 ## Download and Instalation steps
 1. Define environment variables:
@@ -20,4 +22,4 @@
    ./serve.sh
 ```
 3. Open browser and go to 127.0.0.1:8085/editor:
-<img width="350px" src="./assets/screenshot.png"/>
+<img width="100%" src="./assets/screenshot.png"/>
