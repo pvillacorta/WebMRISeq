@@ -8,7 +8,6 @@
         witch results in a scale of 1 and a 1:1 mapping between CSS pixels
         and Qt device independent pixels. -->
     <meta name="viewport" content="width=device-width, height=device-height, user-scalable=0"/>
-
     <title>MRI Sequence Editor</title>
       
   </head>
@@ -33,12 +32,10 @@
             </div>
         </div> 
         <div class="box col-8" id="screenSeq">
-            <h3>Sequence Diagram</h3>
-            <iframe id="seq-diagram" style="margin-top: 10px; visibility: hidden; height: 90%; width:95%"></iframe>
+            <h3 style="padding-top: 10px">Sequence Diagram</h3>
+            <iframe id="seq-diagram" style="padding-top: 10px; padding-bottom: 10px; visibility: hidden; height: 85%; width:95%"></iframe>
         </div>
-        <div class="box col-8" id="screenVtk">
-            <div id="vtk-3d-root"></div>
-        </div>
+        <div class="box col-8" id="screenVtk"></div>
     </div>
     
 
@@ -84,7 +81,6 @@
             } 
         }
     </script>
-    <script src="main.js" type="module"></script>
     <script src="utils.js"></script>
     <script src="appWebMRISeq.js"></script>
     <script type="text/javascript" src="qtloader.js"></script>

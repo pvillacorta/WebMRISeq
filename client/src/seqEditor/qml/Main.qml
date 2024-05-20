@@ -586,10 +586,6 @@ ApplicationWindow {
                         text: "Sequence Diagram"
                         onTriggered: plotSeq();
                     }
-                    Action {
-                        text: "3D Model"
-                        onTriggered: {}
-                    }
                 }
 
                 states: [

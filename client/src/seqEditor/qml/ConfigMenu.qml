@@ -423,12 +423,7 @@ Item {
             text: "View 3D Model"
             font.pointSize: window.fontSize
             onClicked:{
-                if (phantomInput.text !== ''){
-                    // C++ slot call:
-                    backend.plot3D(Number(gxInput.text),Number(gyInput.text),Number(gzInput.text),Number(deltafInput.text));
-                } else {
-                    console.log("Please, select a phantom");
-                }
+                // PENDING
             }
         }
     } // Rectangle

@@ -9,7 +9,7 @@ module.exports = (env, argv) => {
     const isProduction = argv.mode === 'production';
 
     return {
-        entry: './src/main.js',
+        entry: './src/index.js',
         module: {
             rules: [
                 {
@@ -25,6 +25,7 @@ module.exports = (env, argv) => {
         output: {
             filename: '[name].js',
             path: path.resolve(__dirname, 'dist'),
+            clean: false,
         },
         optimization: {
             minimize: isProduction,

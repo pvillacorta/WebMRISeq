@@ -65,4 +65,4 @@ div1.addEventListener("touchend", absorbEvent);
 div1.addEventListener("touchmove", absorbEvent);
 div1.addEventListener("touchcancel", absorbEvent);
 
-export { openScreen }
+export { openScreen, initTabs }

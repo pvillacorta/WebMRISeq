@@ -1,3 +1,8 @@
+import * as css from "./styles.css";
+import * as utils from "./utils";
+import { openScreen, initTabs } from "./style"
+
+
 import "@kitware/vtk.js/Rendering/Profiles/All"
 import vtkGenericRenderWindow from "@kitware/vtk.js/Rendering/Misc/GenericRenderWindow"
 import "@kitware/vtk.js/IO/Core/DataAccessHelper/HttpDataAccessHelper"
@@ -27,7 +32,7 @@ function setup() {
                   0.145,
                   0.161] 
   })
-  genericRenderer3d.setContainer(document.querySelector("#vtk-3d-root"))
+  genericRenderer3d.setContainer(document.querySelector("#screenVtk"))
   genericRenderer3d.resize()
   renderer3d = genericRenderer3d.getRenderer()
   renderWindow3d = genericRenderer3d.getRenderWindow()
@@ -138,10 +143,17 @@ function updateCameraBounds() {
 }
 
 async function main() {
+  initTabs()
+
   setup()
   await loadNifti()
   addReslicerToRenderer()
   updateCameraBounds()
+
+  document.getElementById("btn-screenEditor").onclick = function() {openScreen('screenEditor')}
+  document.getElementById("btn-screenSeq").onclick = function() {openScreen('screenSeq')}
+  document.getElementById("btn-screenVtk").onclick = function() {openScreen('screenVtk')}
 }
 
 main()
+

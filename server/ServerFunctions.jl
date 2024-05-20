@@ -1,3 +1,5 @@
+include("Sequences.jl")
+
 "Convert a 1D vector with system paramaters into a KomaMRICore.Scanner object"
 vec_to_scanner(vec) = begin
    sys = Scanner()
@@ -219,8 +221,9 @@ json_to_seq(json_seq::JSON3.Object, sys::Scanner) = begin
             print("Readout\n")
          end
 
-         DEPHASE = Sequence()
-         DEPHASE.GR = get_gradients(block, rep)
+         DEPHASE = Sequence(get_gradients(block, rep))
+
+         display(DEPHASE)
 
          if block["cod"] == 4
             DEPHASE.ADC[1].N = block["samples"]
@@ -260,9 +263,7 @@ json_to_seq(json_seq::JSON3.Object, sys::Scanner) = begin
          α     = rf["flipAngle"]
          Δf    = rf["deltaf"]
 
-         GRE = PulseDesigner.GRE(fov, lines, te, tr, α, sys; Δf=Δf)
-
-         seq += GRE
+         seq += GRE(fov, lines, te, tr, α, sys; Δf=Δf)
       end 
    end
 
@@ -274,7 +275,8 @@ json_to_seq(json_seq::JSON3.Object, sys::Scanner) = begin
 
    seq.DEF = Dict("Nx"=>N_x,"Ny"=>N_x,"Nz"=>1)
 
-   return seq[2:end]
+   display(seq)
+   return seq
 end
 
 "Convert a json string containing scanner information into a KomaMRIBase.Scanner object"
