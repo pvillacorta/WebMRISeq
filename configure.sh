@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Configurar variables de entorno
-export QT=/home/pablov/Qt/6.6.2
-export EMSDK=/home/pablov/emsdk
-
 cd client
 
 # NPM
