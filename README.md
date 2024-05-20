@@ -20,4 +20,4 @@
    ./serve.sh
 ```
 3. Open browser and go to 127.0.0.1:8085/editor:
-<img width="350px" src="./assets/screenshot.png"/>
+<img width="500px" src="./assets/screenshot.png"/>
