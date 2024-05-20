@@ -3,3 +3,5 @@ client/src/seqEditor/CMakeLists.txt.user
 client/package-lock.json
 client/dist
 client/node_modules
+.vscode
+server/Manifest.toml
