@@ -1,7 +1,7 @@
 # Web MRI Sequence Editor
 
 ## Requirements
-- Qt version v6.6
+- Qt v6.6
 - CMake
 - Emscripten (emsdk) v3.1.37
 - Julia v1.10
