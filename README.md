@@ -13,6 +13,12 @@
   export QT=/path/to/Qt/6.6.2
   export EMSDK=/path/to/emsdk
 ```
+
+This is done automatically when executing:
+```
+  ./env.sh
+```
+
 2. Execute the following lines:
 ```
    git clone https://github.com/pvillacorta/WebMRISeq
