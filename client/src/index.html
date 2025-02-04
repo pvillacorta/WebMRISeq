@@ -3,22 +3,23 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <base href="static/">
+    <base href="dynamic/">
     <!--Set visual viewport size for mobile devices to the device size,
         witch results in a scale of 1 and a 1:1 mapping between CSS pixels
         and Qt device independent pixels. -->
     <meta name="viewport" content="width=device-width, height=device-height, user-scalable=0"/>
-    <title>MRI Sequence Editor</title>
+    <title>Web MRI Seq</title>
       
   </head>
   <body onload="init()">
     <div class="tabs-mobile">
         <button id="btn-screenEditor" class="tablinks">Editor</button>
         <button id="btn-screenSeq" class="tablinks">Diagram</button>
-        <button id="btn-screenVtk" class="tablinks">3D Viewer</button>
+        <button id="btn-screen3DViewer" class="tablinks">3D Viewer</button>
+        <button id="btn-screenSimulator" class="tablinks">Simulator</button>
     </div>
     <div class="container">
-        <div class="box col-8" id="screenEditor">
+        <div class="box col-11" id="screenEditor">
             <div id="wasmView">
                 <div id="qtspinner" style="height:100%">
                     <center>
@@ -31,11 +32,31 @@
                 </div>
             </div>
         </div> 
-        <div class="box col-8" id="screenSeq">
-            <h3 style="padding-top: 10px">Sequence Diagram</h3>
-            <iframe id="seq-diagram" style="padding-top: 10px; padding-bottom: 10px; visibility: hidden; height: 85%; width:95%"></iframe>
+        <div class="box col-11" id="screenSeq">
+            <p class="title">Sequence Diagram</p>
+            <iframe id="seq-diagram" style="padding-top: 10px; padding-bottom: 10px; visibility: hidden; height: 90%; width:95%"></iframe>
         </div>
-        <div class="box col-8" id="screenVtk"></div>
+        <div class="box col-11" id="screen3DViewer">
+            <p class="title">3D Slice Viewer</p>
+            <div id="VTKjs" style="width:100%; height: 90%; overflow:hidden"></div>
+        </div>
+        <div class="box col-11" id="screenSimulator">
+            <p class="title">KomaMRI Simulation Launcher</p>
+            <label for="phantom">Phantom:</label>
+            <select id="phantom" name="phantom">
+            <option value="brain">Brain</option>
+            <option value="pelvis">Pelvis</option>
+            </select>
+
+            <button id="simButton" onclick="komaMRISim()">Simulate</button>
+            <p id="response"></p>
+
+            <div id="myProgress">
+            <div id="myBar"></div>
+            </div>
+
+            <canvas id="canvas" height="0" width="0"></canvas>
+        </div>
     </div>
     
 

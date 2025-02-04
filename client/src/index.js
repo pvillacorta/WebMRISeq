@@ -32,7 +32,7 @@ function setup() {
                   0.145,
                   0.161] 
   })
-  genericRenderer3d.setContainer(document.querySelector("#screenVtk"))
+  genericRenderer3d.setContainer(document.querySelector("#VTKjs"))
   genericRenderer3d.resize()
   renderer3d = genericRenderer3d.getRenderer()
   renderWindow3d = genericRenderer3d.getRenderWindow()
@@ -152,7 +152,8 @@ async function main() {
 
   document.getElementById("btn-screenEditor").onclick = function() {openScreen('screenEditor')}
   document.getElementById("btn-screenSeq").onclick = function() {openScreen('screenSeq')}
-  document.getElementById("btn-screenVtk").onclick = function() {openScreen('screenVtk')}
+  document.getElementById("btn-screen3DViewer").onclick = function() {openScreen('screen3DViewer')}
+  document.getElementById("btn-screenSimulator").onclick = function() {openScreen('screenSimulator')}
 }
 
 main()

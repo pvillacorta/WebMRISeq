@@ -21,10 +21,11 @@ using StructTypes
    using KomaMRI
    using LinearAlgebra
    using JSON3
+   using CUDA
 end
 
-static_files_path = string(@__DIR__, "/../client/dist")
-staticfiles(static_files_path, "static") 
+dynamic_files_path = string(@__DIR__, "/../client/dist")
+dynamicfiles(dynamic_files_path, "dynamic") 
 staticfiles("../public", "public") 
 
 # ------------------------------- STRUCTS ------------------------------------
@@ -38,18 +39,27 @@ mutable struct Image
 end
 
 # ------------------------------ FUNCTIONS ------------------------------------
-@everywhere include("ServerFunctions.jl")
+@everywhere begin
+   include("ServerFunctions.jl")
 
-
-# ---------------------------- API METHODS ---------------------------------
-# @get "/simulator" function(req::HTTP.Request)
-#    return render_html("content/index.html")
-# end
-
-@get "/editor" function(req::HTTP.Request)
-   return render_html(static_files_path * "/index.html")
+   """Updates simulation progress and writes it in a file."""
+   function KomaMRICore.update_blink_window_progress!(w::String, block, Nblocks)
+      io = open(w,"w") # "w" mode overwrites last status value, even if it was not read yet
+      progress = trunc(Int, block / Nblocks * 100)
+      write(io,progress)
+      close(io)
+      return nothing
+   end
 end
 
+# ---------------------------- API METHODS ---------------------------------
+@get "/" function(req::HTTP.Request)
+   return HTTP.Response(301, ["Location" => "/editor"])
+end
+
+@get "/editor" function(req::HTTP.Request)
+   return render_html(dynamic_files_path * "/index.html")
+end
 
 @get "/greet" function(req::HTTP.Request)
    return "Hello world!"
@@ -125,7 +135,6 @@ end
 @get "/simulate/{simulationId}/status" function(req::HTTP.Request, simulationId)
    return HTTP.Response(200,body=JSON3.write(simProgress))
 end
-
 
 # PLOT SEQUENCE
 @post "/plot" function(req::HTTP.Request)

@@ -19,7 +19,7 @@ html, body {
 
 @media only screen and (min-width: 1275px) {
 /* For desktop and tablet: */
-    /* .col-1 {width: 8.33%;}
+    .col-1 {width: 8.33%;}
     .col-2 {width: 16.66%;}
     .col-3 {width: 25%;}
     .col-4 {width: 33.33%;}
@@ -30,11 +30,10 @@ html, body {
     .col-9 {width: 75%;}
     .col-10 {width: 83.33%;}
     .col-11 {width: 91.66%;}
-    .col-12 {width: 100%;} */
+    .col-12 {width: 100%;}
 
     [class*="col-"] {
         height:  500px;
-        width: 80%;
         box-shadow: rgb(133, 133, 133) 0px 0px 20px;
         margin: 15px;
     }
@@ -59,6 +58,12 @@ html, body {
     font-weight: bold; /* O cualquier otro estilo que desees */
 }
 
+.title {
+    padding-top: 10px;
+    font-size: large;
+    text-align: center;
+}
+
 
 /* File loader */
 #my_file {
@@ -75,9 +80,25 @@ html, body {
     height: 100%;
 }
 
-#screenSeq{
+[id^="screen"] {
     background-color: #212529;
-    text-align: center;
     color: white;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
+[id^="screen"] p, label, select, canvas, iframe {
+    padding-left: 10px;
+}
+
+/* Simulator window */
+#myProgress {
+    width: 100%;
+    background-color: #ddd;
+    visibility: collapse;
+  }
+
+#myBar {
+    width: 0%;
+    height: 30px;
+    background-color: #1d9bf0;
+}
