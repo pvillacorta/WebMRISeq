@@ -1,4 +1,5 @@
 # Web MRI Sequence Editor
+<img width="100%" src="./assets/gui.gif"/>
 
 ## Requirements
 - Qt v6.6
