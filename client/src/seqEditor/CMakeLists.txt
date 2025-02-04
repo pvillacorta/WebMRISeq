@@ -4,25 +4,15 @@ project(appWebMRISeq VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Find Qt
 find_package(Qt6 6.4 REQUIRED COMPONENTS Quick QuickControls2 Widgets)
 
-include(ExternalProject)
+# vcpkg and packages
+include_directories(${PROJECT_SOURCE_DIR}/include)
+include($ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 qt_standard_project_setup()
-
-
-# The JSON for modern C++ package
-set(JSON_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/contrib)
-set(JSON_LIB ${JSON_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/libjson.so)
-
-ExternalProject_Add(nlohmann_json GIT_REPOSITORY
-                https://github.com/nlohmann/json
-                CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${JSON_INSTALL_PREFIX}
-                BUILD_BYPRODUCTS ${JSON_LIB})
-
-# Incluye el directorio de encabezados de la biblioteca JSON para que puedas incluir sus archivos de encabezado en tu código
-include_directories(${JSON_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR})
-
 
 qt_add_executable(appWebMRISeq
     main.cpp
@@ -87,6 +77,7 @@ target_link_libraries(appWebMRISeq
     PRIVATE Qt6::Quick
     PRIVATE Qt6::QuickControls2
     PRIVATE Qt6::Widgets
+    PRIVATE nlohmann_json::nlohmann_json
 )
 
 include(GNUInstallDirs)

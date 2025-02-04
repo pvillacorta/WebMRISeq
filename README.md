@@ -2,8 +2,9 @@
 <img width="100%" src="./assets/gui.gif"/>
 
 ## Requirements
-- Qt v6.6
+- vcpkg
 - CMake
+- Qt v6.6
 - Emscripten (emsdk) v3.1.37
 - Julia v1.10
 - Node v20.11 and NPM
