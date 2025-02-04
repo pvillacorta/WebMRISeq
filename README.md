@@ -23,5 +23,4 @@
    ./compile.sh
    ./serve.sh
 ```
-3. Open browser and go to 127.0.0.1:8085/editor:
-<img width="100%" src="./assets/screenshot.png"/>
+3. Open browser and go to 127.0.0.1:8085
