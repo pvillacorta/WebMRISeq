@@ -43,10 +43,12 @@ signals:
 public slots:
     void getUploadSequence();
     void getDownloadSequence(QString qmlModel, QString extension);
-    void plotSequence(QString qmlScan, QString qmlSeq);
 
     void getUploadScanner();
     void getDownloadScanner(QString qmlModel);
+
+    void plotSequence(QString qmlScan, QString qmlSeq);
+    void plot3D(float gx, float gy, float gz, float deltaf, float gamma);
 };
 
 #endif // BACKEND_H

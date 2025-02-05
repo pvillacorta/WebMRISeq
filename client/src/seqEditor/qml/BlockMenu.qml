@@ -234,7 +234,7 @@ Item {
                     rowSpacing: 3
 
                     MenuLabel { text: "ADC Delay:";  bold: true;  Layout.columnSpan: 2}
-                    TextInputItem{ id: adcDelayInput;            Layout.alignment: Qt.AlignRight}
+                    TextInputItem{ id: adcDelayInput;             Layout.alignment: Qt.AlignRight}
                     MenuLabel { text: "s" }
                 }
             }
@@ -423,7 +423,7 @@ Item {
             text: "View 3D Model"
             font.pointSize: window.fontSize
             onClicked:{
-                // PENDING
+                backend.plot3D(Number(gxAmplitude), Number(gyAmplitude), Number(gzAmplitude), Number(deltaf), Number(variableList.get(0).value))
             }
         }
     } // Rectangle

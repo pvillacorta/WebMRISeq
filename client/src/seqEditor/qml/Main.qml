@@ -7,10 +7,10 @@ ApplicationWindow {
     id: window
 
     // WINDOW SIZE
-    property int desktopWidth: 1120
+    property int desktopWidth: 1300
     property int mobileWidth: 840
 
-    property int desktopHeight: 500
+    property int desktopHeight: 450
     property int tabletHeight: 870
     property int mobileHeight: 2000
 
@@ -22,7 +22,7 @@ ApplicationWindow {
     property string dark_1: "#212529"
     property string dark_2: "#303336"
     property string dark_3: "#525252"
-    property string light: "#d8e0e8"
+    property string light:  "#d8e0e8"
 
     // CONFIGURATION PANEL (THIS IS THE PANEL WITH OPTIONS FOR EACH BLOCK)
     property int fieldWidth: 60
@@ -398,11 +398,11 @@ ApplicationWindow {
     function createScanner(){
         var array = [];
 
-        array[0] = Number(globalMenu.b0);
-        array[1] = Number(globalMenu.b1);
-        array[2] = Number(globalMenu.deltat);
-        array[3] = Number(globalMenu.gmax);
-        array[4] = Number(globalMenu.smax);
+        array[0] = Number(scannerMenu.b0);
+        array[1] = Number(scannerMenu.b1);
+        array[2] = Number(scannerMenu.deltat);
+        array[3] = Number(scannerMenu.gmax);
+        array[4] = Number(scannerMenu.smax);
 
         // print("Scanner: ", array);
 
@@ -424,11 +424,11 @@ ApplicationWindow {
 
     // Function scannerToJSON()
     function scannerToJSON(){
-        var datamodel = { "b0":     Number(globalMenu.b0),
-                          "b1":     Number(globalMenu.b1),
-                          "deltat": Number(globalMenu.deltat),
-                          "gmax":   Number(globalMenu.gmax),
-                          "smax":   Number(globalMenu.smax) };
+        var datamodel = { "b0":     Number(scannerMenu.b0),
+                          "b1":     Number(scannerMenu.b1),
+                          "deltat": Number(scannerMenu.deltat),
+                          "gmax":   Number(scannerMenu.gmax),
+                          "smax":   Number(scannerMenu.smax) };
         var datastore = JSON.stringify(datamodel);
         return datastore;
     }
@@ -621,11 +621,11 @@ ApplicationWindow {
 
         function onUploadScannerSelected(path) {
             modelLoader.source = path
-            globalMenu.b0      = modelLoader.item.b0
-            globalMenu.b1      = modelLoader.item.b1
-            globalMenu.deltat = modelLoader.item.deltat
-            globalMenu.gmax    = modelLoader.item.gmax
-            globalMenu.smax    = modelLoader.item.smax
+            scannerMenu.b0      = modelLoader.item.b0
+            scannerMenu.b1      = modelLoader.item.b1
+            scannerMenu.deltat  = modelLoader.item.deltat
+            scannerMenu.gmax    = modelLoader.item.gmax
+            scannerMenu.smax    = modelLoader.item.smax
         }
     }
 
@@ -667,7 +667,7 @@ ApplicationWindow {
         MouseArea{
             id: blockSeq
             x:  window.mobile ? 4 : 25
-            y: window.mobile ? 15 : 25
+            y: window.mobile ? 15 : 20
 
             height: 132
             width: window.mobile ? window.width - 8 : window.width - 50
@@ -774,7 +774,7 @@ ApplicationWindow {
             visible: popup.visible
             color: dark_1
             opacity: 0.7
-            anchors.top:blockMenu.top
+            anchors.top:blocksMenu.top
             z: 18
             height: window.height - (blockSeq.height + blockSeq.y)
             width: window.width
@@ -815,9 +815,15 @@ ApplicationWindow {
             id: groupButtonList
         }
 
+        // This list stores information about the global variables that can be defined and used to create the sequence
+        ListModel {
+            id: variableList
+            ListElement { name: "gamma";  value: 42.85e6; readonly: true }
+        }
+
         // ADD BLOCKS
         ButtonsMenu {
-            id: blockMenu
+            id: blocksMenu
             anchors.top: blockSeq.bottom; anchors.topMargin:15
             anchors.left: blockSeq.left
             width: window.mobile ? blockSeq.width/2 - 2 : 130
@@ -829,12 +835,12 @@ ApplicationWindow {
 
         // ADD GROUPS
         ButtonsMenu {
-            id: groupMenu
-            anchors.top: blockMenu.top
-            anchors.left: blockMenu.right
+            id: groupsMenu
+            anchors.top: blocksMenu.top
+            anchors.left: blocksMenu.right
             anchors.leftMargin: window.mobile ? 4 : 15
-            width: blockMenu.width
-            height: blockMenu.height
+            width: blocksMenu.width
+            height: blocksMenu.height
 
             title: "Groups"
             group: true
@@ -847,14 +853,14 @@ ApplicationWindow {
             y: blockSeq.y + blockSeq.height + seqGlow.glowRadius
         }
 
-        // CONFIGURATION PANEL
+        // BLOCK CONFIGURATION PANEL
         Rectangle{
             id: defaultMenu
 
-            anchors.left: window.mobile ? blockSeq.left : groupMenu.right
+            anchors.left: window.mobile ? blockSeq.left : groupsMenu.right
             anchors.leftMargin: window.mobile ? 0 : 15;
 
-            anchors.top: window.mobile ? blockMenu.bottom : blockSeq.bottom;
+            anchors.top: window.mobile ? blocksMenu.bottom : blockSeq.bottom;
             anchors.topMargin: 15
 
             width: window.mobile ? blockSeq.width : 500
@@ -871,51 +877,78 @@ ApplicationWindow {
                 color: light
             }
 
-            ConfigMenu{
+            BlockMenu{
                 id: configMenu
                 anchors.fill: parent
             }
+        }
+
+        // SCANNER PARAMETERS PANEL
+        ScannerMenu{
+            id: scannerMenu
+            visible: true
+
+            anchors.left: window.desktop ? defaultMenu.right : blockSeq.left
+            anchors.top: window.desktop ? blockSeq.bottom : (window.mobile ? defaultMenu.bottom : blocksMenu.bottom)
+            anchors.leftMargin: window.desktop ? 15 : 0
+            anchors.topMargin: 15
+
+            width: window.mobile ? blockSeq.width : (window.tablet ? 2*blocksMenu.width + 15 : 265)
+            height: 155
+            z: 15
+
+            radius: window.radius
+
+            // Default parameters
+            b0: "1.5"
+            b1: "10e-6"
+            deltat: "2e-6"
+            gmax: "60e-3"
+            smax: "500"
+        }
+
+        // GLOBAL VARIABLES PANEL
+        VariablesMenu{
+            id: variablesMenu
+            visible: true
+
+            anchors.left: scannerMenu.left
+            anchors.right: scannerMenu.right
+            anchors.top: scannerMenu.bottom
+            anchors.topMargin: 15
+            height: defaultMenu.height - scannerMenu.height - 15
+
+            radius: window.radius
         }
 
         // SEQUENCE DESCRIPTION
         Rectangle{
             id:descriptionRect
 
-            anchors.top: window.desktop ? blockSeq.bottom : defaultMenu.bottom
-            anchors.left: globalMenu.left
-            anchors.right: globalMenu.right
+            anchors.top:        window.mobile ? variablesMenu.bottom : scannerMenu.top 
+            anchors.topMargin:  window.mobile ? 15                   : 0
+            anchors.left:       window.mobile ? scannerMenu.left     : scannerMenu.right
+            anchors.leftMargin: window.mobile ? 0                    : 15
+            anchors.right:      window.tablet ? defaultMenu.right    : blockSeq.right
 
-            height: window.mobile ? 200 : defaultMenu.height - globalMenu.height - anchors.topMargin
-
-            anchors.topMargin:15
+            height: defaultMenu.height
 
             radius: window.radius
             color: dark_2
 
-            Item{
+            Text{
                 id: descriptionTitle
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.right: parent.right
-
-                height: 25
-
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    text: "Sequence description"
-
-                    font.pointSize: 10
-
-                    color: light
-               }
+                text: "Sequence Description"
+                font.pointSize: 10
+                anchors.top: parent.top;   anchors.topMargin: 12
+                anchors.left: parent.left; anchors.leftMargin:12
+                color: "white"
             }
 
             ScrollView {
                 id: descriptionView
 
-                anchors.top:descriptionTitle.bottom
+                anchors.top:descriptionTitle.bottom; anchors.topMargin: 5
                 anchors.bottom:parent.bottom
                 anchors.right: parent.right
                 anchors.left: parent.left
@@ -930,509 +963,6 @@ ApplicationWindow {
                 }
             }
         }
-
-
-        // GLOBAL PARAMETERS PANEL
-        GlobalMenu{
-            id: globalMenu
-            visible: true
-
-            anchors.left: window.desktop ? defaultMenu.right : blockSeq.left
-            anchors.top: descriptionRect.bottom
-            anchors.leftMargin: window.desktop ? 15 : 0
-            anchors.topMargin: 15
-
-            width: window.mobile ? blockSeq.width : (window.tablet ? 2*blockMenu.width + 15 : 265)
-            height: 155
-            z: 15
-
-            radius: window.radius
-
-            // Default parameters
-            b0: "1.5"
-            b1: "10e-6"
-            deltat: "2e-6"
-            gmax: "60e-3"
-            smax: "500"
-        }
-
-
-        // PHANTOM
-        /*
-        Rectangle{
-            id: phantomMenu
-            visible: true
-
-            // anchors.left: globalMenu.right
-            anchors.right: createGroupButton.left
-            anchors.left: globalMenu.right
-            anchors.leftMargin: 10; anchors.rightMargin: 10;
-
-            y: 170
-            z: -10
-
-            height: globalMenu.height
-
-            color: "#bdffd3"
-
-            Text{
-                text: "Phantom"
-                anchors.horizontalCenter: parent.horizontalCenter
-                y:5
-                font.pointSize: 12
-            }
-
-            Rectangle{
-                id: phantomInputRect
-
-                border.color: "gray"
-                color: "white"
-
-                anchors.horizontalCenter: parent.horizontalCenter
-                y: 30
-                height: 20
-                width: parent.width - 20
-
-                TextInput{
-                    id: phantomInput
-                    anchors.fill: parent
-                    color: "black"
-                    clip: true
-                }
-            }
-
-            Button{
-                id: phantomButton
-                y: 75
-
-                height: 20
-                width: 75
-                anchors.top: phantomInputRect.bottom
-                anchors.left: phantomInputRect.left
-                anchors.topMargin: 2
-
-                background: Rectangle{
-                    anchors.fill:parent
-                    color: phantomButton.pressed? dark :"#595959"
-                }
-
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: "Select Folder"
-                    color: light
-                    font.pointSize: 8
-                }
-
-                onClicked: {
-                    phantomDialog.open()
-                }
-            }
-
-            Text{
-                id: phantomName
-                text: ""
-                anchors.top: phantomButton.bottom
-                anchors.left: phantomInputRect.left
-                anchors.topMargin: 15
-                y:5
-                color: "green"
-                font.pointSize: 10
-            }
-
-            ListView{
-                id: viewPhantomList
-                visible: false
-
-                anchors.left: phantomInputRect.left
-                anchors.top: phantomName.bottom
-                height: phantomButton.height
-                width: 100
-
-                orientation: ListView.Horizontal
-                spacing: 2
-
-                model: ListModel {
-                    ListElement{
-                        name: "T1"
-                    }
-                    ListElement{
-                        name: "T2"
-                    }
-                    ListElement{
-                        name: "PD"
-                    }
-                }
-
-                delegate:    Button{
-                                id:viewPhantomButton
-                                height:25
-                                width:25
-
-                                background: Rectangle{
-                                    id: viewPhantomRect
-                                    anchors.fill:parent
-                                    color: viewPhantomButton.pressed? dark :"#595959"
-                                }
-
-                                Text {
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    text: name
-                                    color: light
-                                    font.pointSize: 8
-                                }
-
-                                onClicked: {
-                                     backend.plotPhantom(name);
-                                }
-                            }
-            }
-
-            FolderDialog{
-                id: phantomDialog
-                title: "Select Phantom Folder"
-
-                currentFolder: "file:///home/pablov/Desktop/SeqSimulator/nifti_maps/"
-
-                onAccepted:{
-                    phantomInput.text = this.selectedFolder;
-                    var phant = phantomInput.text.substring(7,phantomInput.text.length);
-                    phantomName.text = backend.loadPhantom(phant);
-                    viewPhantomList.visible = true;
-                }
-            }
-        }
-        */
-
-        /*
-        Rectangle{
-            id: createGroupButton
-            property bool active: false
-
-            width: window.mobile ? blockSeq.width : buttons.width
-            anchors.left: blockSeq.left
-            anchors.bottom: window.mobile ? blockSeq.bottom : defaultMenu.bottom
-
-            anchors.topMargin: 15
-
-            height: 31
-
-            color: active? "gray": "#595959";
-
-            Text{
-                // id: buttonText
-                anchors.centerIn: parent
-                text: parent.active? "Done": "Create New Group"
-                color: light
-                font.pointSize: buttonTextSize
-            }
-
-            MouseArea{
-                id: groupArea
-                anchors.fill: parent
-                hoverEnabled: true
-                onClicked: {
-                    createGroupButton.active = !createGroupButton.active;
-
-                    if(createGroupButton.active){
-                        groupDialog.open();
-                    }
-
-                    else{
-                    }
-                }
-                states:
-                [
-                    State{
-                        when: groupArea.containsMouse
-                        PropertyChanges{
-                            target: createGroupButton
-                            scale: 0.9
-                        }
-                    }
-                ]
-            } // MouseArea
-        } // Rectangle ---------------------------------------------------------------------------------
-
-
-        Dialog{
-            id: groupDialog
-            property string input
-            title: "Choose a name for the group"
-            anchors.centerIn: window.center
-            height: 200
-            width: 400
-            standardButtons: Dialog.Ok | Dialog.Cancel
-            TextField{
-                id: nameInput
-                width: parent.width *0.75
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
-            onAccepted: {
-                if (nameInput.text!=""){
-                    input = nameInput.text;
-                    nameInput.text = "";
-                } else{
-                    createGroupButton.active = false;
-                    console.log("You must choose a name")
-                }
-            }
-            onRejected: {
-                createGroupButton.active = false;
-            }
-        }
-        */
-
-
-        // SIMULATE
-        /*
-        Timer {
-            id: simTimer
-            interval: 100 // Ajusta el tiempo de espera según tus necesidades
-            onTriggered: {
-                // sim();
-                // plotSeq();
-            }
-        }
-
-        function sim(){
-            var sys = createScanner();
-            var seq = createSeq();
-            // var phant = phantomInput.text.substring(7,phantomInput.text.length);
-
-            // backend.simulate(sys,seq);
-        }
-
-        Rectangle{
-            id: simButton
-            color: "#595959"
-            height: createGroupButton.height
-            anchors.top: createGroupButton.bottom
-            anchors.left: createGroupButton.left
-            anchors.right: createGroupButton.right
-            anchors.topMargin: 10
-            Text{
-                anchors.centerIn: parent
-                text: "Simulate"
-                font.pointSize: buttonTextSize
-                color: light
-            }
-
-            MouseArea{
-                id: simArea
-                anchors.fill: parent
-                hoverEnabled: true
-
-                onClicked: {
-                    //To simulate we need 3 inputs: a Scanner (with global parameters), a Sequence and a Phantom
-                    if(blockList.count>0){
-                        if (phantomName.text !== ""){
-                            loadingRect.visible = true;
-                            simTimer.start();
-                        } else {
-                            console.log("ERROR: Please, select a valid phantom to simulate")
-                        }
-                    }else{
-                        console.log("ERROR: The sequence is empty");
-                    }
-                }
-                states:
-                [
-                    State{
-                        when: simArea.containsMouse
-                        PropertyChanges{
-                            target: simButton
-                            scale: 0.9
-                        }
-                    }
-                ]
-            }
-        }
-        */
-
-
-        // SAVE SEQUENCE
-        /*
-        Rectangle{
-            id: saveSeqButton
-            color: simButton.color
-            height: createGroupButton.height
-            anchors.top: simButton.bottom
-            anchors.left: createGroupButton.left
-            anchors.right: createGroupButton.right
-            anchors.topMargin: 10
-            Text{
-                anchors.centerIn: parent
-                text: "Save Sequence"
-                font.pointSize: buttonTextSize
-                color: light
-            }
-            MouseArea{
-                id: saveSeqArea
-                anchors.fill: parent
-                hoverEnabled: true
-                onClicked: {
-                    saveDialog.visible = true;
-                }
-                states:
-                [State{
-                    when: saveSeqArea.containsMouse
-                    PropertyChanges{
-                        target: saveSeqButton
-                        scale: 0.9
-                    }
-                }]
-            }
-
-            FileDialog {
-                id:saveDialog
-                nameFilters: ["QML File (*.qml)","All Files (*)"]
-
-                fileMode: FileDialog.SaveFile
-                currentFolder: "file:///home/pablov/Desktop/Editor/Sequences"
-
-                onAccepted: {
-                    var array = saveSeq();
-                    backend.saveSeq(array,seqDescription.text,saveDialog.selectedFile);
-                    console.log(saveDialog.selectedFile);
-                }
-                onRejected: {
-                    console.log("Canceled")
-                }
-            }
-        }
-        */
-
-
-        // LOAD SEQUENCE
-        /*
-        Rectangle{
-            id: loadSeqButton
-            color: simButton.color
-            height: createGroupButton.height
-            anchors.top: saveSeqButton.bottom
-            anchors.left: createGroupButton.left
-            anchors.right: createGroupButton.right
-            anchors.topMargin: 10
-            Text{
-                anchors.centerIn: parent
-                text: "Load Sequence"
-                font.pointSize: buttonTextSize
-                color: light
-            }
-            MouseArea{
-                id: loadSeqArea
-                anchors.fill: parent
-                hoverEnabled: true
-                onClicked: {
-                    loadDialog.visible = true;
-                }
-                states:
-                [State{
-                    when: loadSeqArea.containsMouse
-                    PropertyChanges{
-                        target: loadSeqButton
-                        scale: 0.9
-                    }
-                }]
-            }
-
-            FileDialog {
-                id:loadDialog
-                nameFilters: ["QML File (*.qml)"]
-                // currentFolder: "file:///home/pablov/Desktop/SeqSimulator/Sequences"
-
-                onAccepted: {
-                    modelLoader.source = loadDialog.selectedFile;
-                    blockList.clear();
-                    configMenu.menuVisible = false;
-                    for(var i=0; i<modelLoader.item.count; i++){
-                        blockList.append(modelLoader.item.get(i));
-                    }
-                    if(typeof modelLoader.item.seqDescription !== 'undefined'){
-                        seqDescription.text = modelLoader.item.seqDescription;
-                    }
-                }
-                onRejected: {
-                    console.log("Canceled")
-                }
-            }
-        }
-        */
-
-
-
-        // DISPLAY OUTPUT IMAGES
-        /*
-        Rectangle{
-            id: resultRect
-            anchors.top: loadSeqButton.bottom
-            anchors.left: defaultMenu.right
-            anchors.right: loadSeqButton.right
-            anchors.bottom: parent.bottom
-
-            anchors.bottomMargin: 15
-            anchors.topMargin: 15
-            anchors.leftMargin: 15
-
-            color: "transparent"
-
-            //DISPLAY RECON IMAGE
-            Rectangle{
-                id: reconRect
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                anchors.left: parent.left
-                color: "gray"
-
-                width: (parent.width/2) - 5
-
-                Text {
-                    y:5
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Reconstruction"
-                    font.pointSize: 12
-                }
-
-                Image{
-                    id: recon
-                    anchors.fill: parent
-                    anchors.margins: 5
-                    anchors.topMargin: 30
-                    smooth: false
-                    cache: false
-                }
-            }
-
-            //DISPLAY K-SPACE
-            Rectangle{
-                id: kspaceRect
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                anchors.right: parent.right
-                color: "gray"
-
-                width: (parent.width/2) - 5
-
-                Text {
-                    y:5
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "K-Space"
-                    font.pointSize: 12
-                }
-
-                Image{
-                    id: kspace
-                    anchors.fill: parent
-                    anchors.margins: 5
-                    anchors.topMargin: 30
-                    smooth: false
-                    cache: false
-                }
-            }
-        }
-        */
     } // Flickable
 } // ApplicationWindow
 

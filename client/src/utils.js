@@ -50,7 +50,6 @@ function komaMRISim(){
     )
 }
 
-
 function requestResult(loc){
     fetch(loc)
         .then(res => {
@@ -130,7 +129,9 @@ function plot_seq(scanner_json, seq_json){
     // Combina los dos objetos en uno solo
     const combinedObj = {
         scanner: scannerObj,
-        sequence: seqObj
+        sequence: seqObj,
+        height: document.getElementById("seq-diagram").offsetHeight,
+        width: document.getElementById("seq-diagram").offsetWidth,
     };
 
     fetch("/plot", {
@@ -157,7 +158,6 @@ function plot_seq(scanner_json, seq_json){
         console.error("Error en la solicitud:", error);
     });
 }
-
 
 function openFile(callback){
     // Get the file input element

@@ -3,6 +3,7 @@ import QtQuick.Controls
 
 Item{
     property alias text: textInput.text
+    property alias readOnly: textInput.readOnly
     width: window.fieldWidth
     height:window.fieldHeight
     Rectangle{

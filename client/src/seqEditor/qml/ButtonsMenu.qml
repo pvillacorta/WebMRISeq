@@ -5,8 +5,8 @@ Item{
     property alias menuTitle: menuTitle
     property string title
 
-    property int buttonX: groupMenu.x + groupButton.x + 6
-    property int buttonY: groupMenu.y + groupButton.y + groupButton.height
+    property int buttonX: groupsMenu.x + newGroupButton.x + 6
+    property int buttonY: groupsMenu.y + newGroupButton.y + newGroupButton.height
 
     property bool group
 
@@ -35,7 +35,7 @@ Item{
             }
 
             Button {
-                id: groupButton
+                id: newGroupButton
 
                 visible: group
                 anchors.verticalCenter: parent.verticalCenter
@@ -46,7 +46,7 @@ Item{
 
                 background: Rectangle{
                     anchors.fill:parent
-                    color: groupButton.pressed? Qt.darker(dark_3,1.3) : dark_3
+                    color: newGroupButton.pressed? Qt.darker(dark_3,1.3) : dark_3
                     radius: 2
                 }
 

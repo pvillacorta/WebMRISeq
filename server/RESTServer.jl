@@ -140,9 +140,11 @@ end
 @post "/plot" function(req::HTTP.Request)
    scanner_data = json(req)["scanner"]
    seq_data = json(req)["sequence"]
+   width  = json(req)["width"]  - 15
+   height = json(req)["height"] - 20
    sys = json_to_scanner(scanner_data)
    seq = json_to_seq(seq_data, sys)
-   p = plot_seq(seq; darkmode=true)
+   p = plot_seq(seq; darkmode=true, width=width, height=height, slider=height>275)
    html_buffer = IOBuffer()
    KomaMRIPlots.PlotlyBase.to_html(html_buffer, p.plot)
    return HTTP.Response(200,body=take!(html_buffer))

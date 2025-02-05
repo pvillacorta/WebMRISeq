@@ -1,44 +1,90 @@
-html, body { 
-    padding: 0; 
-    margin: 0; 
-    overflow: hidden; 
-    height: 100%;
-}
- 
 * {
     margin: 0;
     padding: 0;
 }
 
+html, body {
+    height: 100%;
+    overflow: hidden; 
+    background-color: #22262a;
+}
+
+[id^="screen"] {
+    color: #d8e0e8;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
 /* RESPONSIVITY */
 /* For mobile phones: */
+.container {
+    height: 100%;
+    width: 100%;
+    overflow: hidden; 
+}
+
+#screenEditor {
+    height: 100%;
+    width: 100%;
+}
+
 [class*="col-"] {
     height: 100%;
-    margin: 0;
+    width: 100%;
+    position: relative;
+    overflow: hidden; 
 }
 
-@media only screen and (min-width: 1275px) {
-/* For desktop and tablet: */
-    .col-1 {width: 8.33%;}
-    .col-2 {width: 16.66%;}
-    .col-3 {width: 25%;}
-    .col-4 {width: 33.33%;}
-    .col-5 {width: 41.66%;}
-    .col-6 {width: 50%;}
-    .col-7 {width: 58.33%;}
-    .col-8 {width: 66.66%;}
-    .col-9 {width: 75%;}
-    .col-10 {width: 83.33%;}
-    .col-11 {width: 91.66%;}
-    .col-12 {width: 100%;}
+.content {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -42%);
+  }
 
-    [class*="col-"] {
-        height:  500px;
-        box-shadow: rgb(133, 133, 133) 0px 0px 20px;
-        margin: 15px;
+.title {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    font-size: 12pt;
+    z-index: 10;
+}
+
+@media only screen and (min-width: 1300px) and (min-height: 680px) {
+/* For desktop and tablet: */
+    .container{
+        display: flex;
+        padding-left:   25px;
+        padding-right:  25px;
+        padding-bottom: 20px;
+        padding-top:    5px;
+        gap: 14px;
+        width:  calc(100% - 50px);
+        height: calc(100% - 498px);
+    }
+
+    .col-1  { width: calc(8.33%  - 7px); }
+    .col-2  { width: calc(16.66% - 7px); }
+    .col-3  { width: calc(25%    - 7px); }
+    .col-4  { width: calc(33.33% - 7px); }
+    .col-5  { width: calc(41.66% - 7px); }
+    .col-6  { width: calc(50%    - 7px); }
+    .col-7  { width: calc(58.33% - 7px); }
+    .col-8  { width: calc(66.66% - 7px); }
+    .col-9  { width: calc(75%    - 7px); }
+    .col-10 { width: calc(83.33% - 7px); }
+    .col-11 { width: calc(91.66% - 7px); }
+    .col-12 { width: 100%; border-radius: 0 !important;}
+
+    [id^="screen"] {
+        background-color: #303336;
+        border-radius: 8px;
+    }
+
+    #screenEditor {
+        height: 478px
     }
 }
-
 
 /* Tab links */
 .tablinks {
@@ -58,39 +104,22 @@ html, body {
     font-weight: bold; /* O cualquier otro estilo que desees */
 }
 
-.title {
-    padding-top: 10px;
-    font-size: large;
-    text-align: center;
-}
-
-
 /* File loader */
 #my_file {
     display: none;
-}
-
-
-.container {
-    height: 100%;
-    overflow: auto; 
 }
 
 #wasmView{
     height: 100%;
 }
 
-[id^="screen"] {
-    background-color: #212529;
-    color: white;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-[id^="screen"] p, label, select, canvas, iframe {
-    padding-left: 10px;
-}
-
 /* Simulator window */
+#sim-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
 #myProgress {
     width: 100%;
     background-color: #ddd;

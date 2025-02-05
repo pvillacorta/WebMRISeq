@@ -26,11 +26,46 @@ let renderWindow3d
 let planeNormal = [0, 0, -1]
 let planeCenter = [0, 0, 0]
 
+function setNormalPlane(gx, gy, gz, deltaf, gamma){
+  planeNormal = [gx, gy, gz]
+
+  let norm = Math.sqrt(gx * gx + gy * gy + gz * gz);
+  if (norm === 0) {
+      console.error("El vector planeNormal es nulo.");
+      return null;
+  }
+
+  let r = deltaf / (gamma * norm);
+
+  let rv =  [   
+      r * (gx / norm) * 1000, // mm
+      r * (gy / norm) * 1000, // mm
+      r * (gz / norm) * 1000  // mm
+  ]
+
+  planeCenter = imageData.getCenter().map(
+      (c, i) => c + rv[i]
+  )
+
+  // console.log("r: ", r)
+  // console.log("rv: ", rv)
+  // console.log("planeCenter: ", imageData.getCenter())
+  // console.log("planeCenter': ", planeCenter)
+  // console.log("imageBounds: ", imageData.getBounds())
+
+  let spacing = imageData.getSpacing(); // Devuelve [sx, sy, sz] en mm por voxel
+  console.log("Espaciado de voxel:", spacing);
+
+  addSlicePlane()
+  renderWindow3d.render()
+}
+window.setNormalPlane = setNormalPlane
+
 function setup() {
   const genericRenderer3d = vtkGenericRenderWindow.newInstance({
-    background: [ 0.129,
-                  0.145,
-                  0.161] 
+    background: [ 0.188,
+                  0.200,
+                  0.212] 
   })
   genericRenderer3d.setContainer(document.querySelector("#VTKjs"))
   genericRenderer3d.resize()
@@ -76,7 +111,6 @@ const resliceActor3d = vtkImageSlice.newInstance()
 // Outline (vtkImplicitPlaneRepresentation)
 const representation = vtkImplicitPlaneRepresentation.newInstance();
 const state = vtkImplicitPlaneRepresentation.generateState();
-slicePlane.setNormal(planeNormal);
 
 function addReslicerToRenderer() {
   planeCenter = imageData.getCenter()
@@ -109,9 +143,14 @@ function addReslicerToRenderer() {
   renderer3d.addActor(iActor3d)
   renderer3d.addActor(jActor3d)
   renderer3d.addActor(kActor3d)
-  
 
+  renderer3d.resetCamera()
+  renderer3d.resetCameraClippingRange()
+}
+
+function addSlicePlane(){
   // Selected plane
+  slicePlane.setNormal(planeNormal);
   slicePlane.setOrigin(planeCenter)
 
   resliceMapper.setSlabType(SlabTypes.MEAN)
@@ -125,8 +164,11 @@ function addReslicerToRenderer() {
   renderer3d.addActor(resliceActor3d)
 
   const bounds = imageData.getBounds()
-  state.setOrigin(planeCenter)
   state.placeWidget(bounds);
+
+  state.setOrigin(planeCenter)
+  state.setNormal(planeNormal)
+
   representation.setInputData(state);
   representation.getActors().forEach(renderer3d.addActor);
   

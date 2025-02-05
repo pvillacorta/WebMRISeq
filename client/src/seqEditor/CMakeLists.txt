@@ -25,8 +25,9 @@ add_dependencies(appWebMRISeq nlohmann_json)
 set(qml_resource_files
     "qml/Main.qml"
     "qml/BlockItem.qml"
-    "qml/ConfigMenu.qml"
-    "qml/GlobalMenu.qml"
+    "qml/BlockMenu.qml"
+    "qml/ScannerMenu.qml"
+    "qml/VariablesMenu.qml"
     "qml/TextInputItem.qml"
     "qml/MenuLabel.qml"
     "qml/ButtonsMenu.qml"
