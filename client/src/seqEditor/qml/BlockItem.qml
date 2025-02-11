@@ -309,9 +309,7 @@ Item{
                 anchors.margins:2
 
                 height: 15 - 2*ngroups
-                width: 15 - 2*ngroups
-
-                color: Qt.darker(blockColor,1.3)
+                width:  15 - 2*ngroups
             }
 
         } //Rectangle

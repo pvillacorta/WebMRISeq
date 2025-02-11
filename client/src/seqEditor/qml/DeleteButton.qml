@@ -8,19 +8,22 @@ Item {
         parent.clicked();
     }
 
+    Image{
+        id: deleteIcon
+        source: "qrc:/icons/delete_white.png"
+        anchors.fill: deleteRect
+        anchors.margins:3
+        z: 10
+    }
+
     Rectangle{
         id: deleteRect
-
+        color: "black"
+        opacity: 0.3
         anchors.fill: parent
+        z: 5
 
         radius: 3
-
-        Image{
-            id: deleteIcon
-            source: "qrc:/icons/delete_white.png"
-            anchors.fill: parent
-            anchors.margins:3
-        }
 
         MouseArea{
             id: deleteMouseArea
@@ -40,6 +43,11 @@ Item {
                     PropertyChanges{
                         target: deleteRect
                         color:"red"
+                        scale: 0.9
+                        opacity: 1.0
+                    }
+                    PropertyChanges{
+                        target: deleteIcon
                         scale: 0.9
                     }
                 }
