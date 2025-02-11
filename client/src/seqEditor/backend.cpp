@@ -323,7 +323,6 @@ QByteArray Backend::parseQStringtoQByteArray(QString model){
     return data;
 }
 
-
 // WebAssembly
 #ifdef Q_OS_WASM
 EM_JS(void, plot_sequence, (const char* scanModel, const char* seqModel), {
@@ -392,34 +391,6 @@ void Backend::getUploadSequence(){
     });
 }
 
-void Backend::getDownloadSequence(QString qmlModel, QString extension){
-    QByteArray data;
-    std::string str = qmlModel.toStdString();
-    json j = json::parse(str);
-    std::string s = j.dump(4);
-    data.append(s);
-    if(extension == "json"){
-        QFileDialog::saveFileContent(processJSONSequence(data), "Sequence.json");
-    } else if(extension == "qml"){
-        QFileDialog::saveFileContent(parseJSONSequenceToQML(processJSONSequence(data)), "Sequence.qml");
-    }
-}
-
-void Backend::plotSequence(QString qmlScan, QString qmlSeq){
-    #ifdef Q_OS_WASM
-        QByteArray scanData = parseQStringtoQByteArray(qmlScan);
-        QByteArray seqData  = processJSONSequence(parseQStringtoQByteArray(qmlSeq));
-
-        plot_sequence(QString(scanData).toStdString().c_str(), QString(seqData).toStdString().c_str());
-    #endif
-}
-
-void Backend::plot3D(float gx, float gy, float gz, float deltaf, float gamma){
-    #ifdef Q_OS_WASM
-        plot_3d(gx, gy, gz, deltaf, gamma);
-    #endif
-}
-
 void Backend::getUploadScanner(){
     QFileDialog::getOpenFileContent("(*.json)", [this](const QString &fileName, const QByteArray &data){
         if (fileName.isEmpty()) {
@@ -462,6 +433,19 @@ void Backend::getUploadScanner(){
     });
 }
 
+void Backend::getDownloadSequence(QString qmlModel, QString extension){
+    QByteArray data;
+    std::string str = qmlModel.toStdString();
+    json j = json::parse(str);
+    std::string s = j.dump(4);
+    data.append(s);
+    if(extension == "json"){
+        QFileDialog::saveFileContent(processJSONSequence(data), "Sequence.json");
+    } else if(extension == "qml"){
+        QFileDialog::saveFileContent(parseJSONSequenceToQML(processJSONSequence(data)), "Sequence.qml");
+    }
+}
+
 void Backend::getDownloadScanner(QString qmlModel){
     QByteArray data;
     std::string str = qmlModel.toStdString();
@@ -470,3 +454,19 @@ void Backend::getDownloadScanner(QString qmlModel){
     data.append(s);
     QFileDialog::saveFileContent(data, "Scanner.json");
 }
+
+void Backend::plotSequence(QString qmlScan, QString qmlSeq){
+    #ifdef Q_OS_WASM
+        QByteArray scanData = parseQStringtoQByteArray(qmlScan);
+        QByteArray seqData  = processJSONSequence(parseQStringtoQByteArray(qmlSeq));
+
+        plot_sequence(QString(scanData).toStdString().c_str(), QString(seqData).toStdString().c_str());
+    #endif
+}
+
+void Backend::plot3D(float gx, float gy, float gz, float deltaf, float gamma){
+    #ifdef Q_OS_WASM
+        plot_3d(gx, gy, gz, deltaf, gamma);
+    #endif
+}
+
