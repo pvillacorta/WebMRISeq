@@ -21,7 +21,7 @@ QByteArray Backend::processJSONSequence(QByteArray data){
         int cont = 0;
 
         // Verificar si el valor 'code' está presente en cada vector
-        bool durationActive = this->active(code,{1, 2, 3, 4});
+        bool durationActive = this->active(code,{1, 2, 4});
         bool linesActive = this->active(code,{5, 6});
         bool samplesActive = this->active(code,{4, 5, 6});
         bool adcDelayActive = this->active(code,{4});
@@ -114,7 +114,7 @@ QByteArray Backend::parseJSONSequenceToQML(QByteArray data){
         int cont = 0;
 
         // Verificar si el valor 'code' está presente en cada vector
-        bool durationActive = this->active(code,{1, 2, 3, 4});
+        bool durationActive = this->active(code,{1, 2, 4});
         bool linesActive = this->active(code,{5, 6});
         bool samplesActive = this->active(code,{4, 5, 6});
         bool adcDelayActive = this->active(code,{4});

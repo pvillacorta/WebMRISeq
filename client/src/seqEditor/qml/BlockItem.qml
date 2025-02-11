@@ -32,7 +32,7 @@ Item{
 
     function displayFields(index){
         cod = blockList.get(index).cod
-        configMenu.durationVisible =    [1,2,3,4].includes(cod);
+        configMenu.durationVisible =    [1,2,4].includes(cod);
         configMenu.linesVisible =       [5,6].includes(cod);
         configMenu.samplesVisible =     [4,5,6].includes(cod);
         configMenu.adcDelayVisible =    [4].includes(cod);
