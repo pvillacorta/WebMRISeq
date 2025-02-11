@@ -39,7 +39,7 @@ html, body {
     left: 50%;
     top: 50%;
     -webkit-transform: translate(-50%, -50%);
-    transform: translate(-50%, -42%);
+    transform: translate(-50%, -45%);
   }
 
 .title {
@@ -50,17 +50,17 @@ html, body {
     z-index: 10;
 }
 
-@media only screen and (min-width: 1300px) and (min-height: 680px) {
+@media only screen and (min-width: 1500px) and (min-height: 680px) {
 /* For desktop and tablet: */
     .container{
         display: flex;
         padding-left:   25px;
         padding-right:  25px;
         padding-bottom: 20px;
-        padding-top:    5px;
+        padding-top:    7px;
         gap: 14px;
         width:  calc(100% - 50px);
-        height: calc(100% - 498px);
+        height: calc(100% - 490px);
     }
 
     .col-1  { width: calc(8.33%  - 7px); }
@@ -82,7 +82,7 @@ html, body {
     }
 
     #screenEditor {
-        height: 478px
+        height: 470px
     }
 }
 

@@ -7,7 +7,7 @@ ApplicationWindow {
     id: window
 
     // WINDOW SIZE
-    property int desktopWidth: 1300
+    property int desktopWidth: 1500
     property int mobileWidth: 840
 
     property int desktopHeight: 450
@@ -667,7 +667,7 @@ ApplicationWindow {
         MouseArea{
             id: blockSeq
             x:  window.mobile ? 4 : 25
-            y: window.mobile ? 15 : 20
+            y:  15
 
             height: 132
             width: window.mobile ? window.width - 8 : window.width - 50
@@ -912,11 +912,11 @@ ApplicationWindow {
             id: variablesMenu
             visible: true
 
-            anchors.left: scannerMenu.left
-            anchors.right: scannerMenu.right
-            anchors.top: scannerMenu.bottom
-            anchors.topMargin: 15
-            height: defaultMenu.height - scannerMenu.height - 15
+            anchors.left:  window.mobile ? scannerMenu.left   : scannerMenu.right; anchors.leftMargin: window.mobile ? 0 : 15
+            anchors.right: window.tablet ? defaultMenu.right  : blockSeq.right
+            anchors.top:   window.mobile ? scannerMenu.bottom : (window.tablet ? defaultMenu.bottom : blockSeq.bottom); anchors.topMargin: 15
+            
+            height: scannerMenu.height
 
             radius: window.radius
         }
@@ -925,13 +925,11 @@ ApplicationWindow {
         Rectangle{
             id:descriptionRect
 
-            anchors.top:        window.mobile ? variablesMenu.bottom : scannerMenu.top 
-            anchors.topMargin:  window.mobile ? 15                   : 0
-            anchors.left:       window.mobile ? scannerMenu.left     : scannerMenu.right
-            anchors.leftMargin: window.mobile ? 0                    : 15
-            anchors.right:      window.tablet ? defaultMenu.right    : blockSeq.right
+            anchors.top:    window.tablet ? blockSeq.bottom : variablesMenu.bottom;  anchors.topMargin: 15
+            anchors.left:   window.tablet ? defaultMenu.right : scannerMenu.left;    anchors.leftMargin: window.tablet ? 15 : 0
+            anchors.right:  blockSeq.right;
 
-            height: defaultMenu.height
+            height: window.desktop ? defaultMenu.height - 15 - scannerMenu.height : (window.mobile ? defaultMenu.height : defaultMenu.height + 15 + scannerMenu.height)
 
             radius: window.radius
             color: dark_2

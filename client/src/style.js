@@ -21,7 +21,7 @@ function openScreen(screenId) {
 
 // Función para manejar el cambio de tamaño de pantalla
 function handleResize() {
-    if (window.innerWidth > 1300 && window.innerHeight > 680) {
+    if (window.innerWidth > 1500 && window.innerHeight > 680) {
         // Si es escritorio, mostrar los divs
         var tabs = document.getElementsByClassName("box");
         for (var i = 0; i < tabs.length; i++) {
@@ -36,7 +36,7 @@ function handleResize() {
 }
 
 function initTabs(){
-    if (window.innerWidth > 1300 && window.innerHeight > 680) {
+    if (window.innerWidth > 1500 && window.innerHeight > 680) {
         // Si es escritorio, mostrar los divs
         var tabs = document.getElementsByClassName("box");
         for (var i = 0; i < tabs.length; i++) {
