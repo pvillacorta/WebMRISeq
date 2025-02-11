@@ -129,30 +129,30 @@ Item{
                             blockSeq.displayedMenu = -1;
 
                             // Default values ------
-                            var duration = 1e-3;
-                            var lines = 64;
-                            var samples = 64;
-                            var adcDelay = 0;
-                            var fov = 0.2;
+                            var duration = "1e-3";
+                            var lines = "64";
+                            var samples = "64";
+                            var adcDelay = "0";
+                            var fov = "0.2";
                             var select = 0;
                             var shape = 0;
-                            var b1Module = 1e-6;
-                            var flipAngle = 10;
-                            var deltaf = 0;
-                            var gDelay = 0;
-                            var gRise = 1e-4;
-                            var gFlatTop = 1e-3;
-                            var gAmplitude = 1e-5;
-                            var gStep = 0;
-                            var te = 20e-3;
-                            var tr = 100e-3;
-                            var repetitions = 1;
+                            var b1Module = "1e-6";
+                            var flipAngle = "10";
+                            var deltaf = "0";
+                            var gDelay = "0";
+                            var gRise = "5e-4";
+                            var gFlatTop = "1e-3";
+                            var gAmplitude = "1e-3";
+                            var gStep = "0";
+                            var te = "20e-3";
+                            var tr = "100e-3";
+                            var repetitions = "1";
                             // ------------------
 
                             // Single block
                             if(code<=blockButtonList.count){
 
-                                var durationActive =    [1,2,3,4].includes(code);
+                                var durationActive =    [1,2,4].includes(code);
                                 var linesActive =       [5,6].includes(code);
                                 var samplesActive =     [4,5,6].includes(code);
                                 var adcDelayActive =    [4].includes(code);
@@ -190,17 +190,17 @@ Item{
                                                                                                         "amplitude": gAmplitude,
                                                                                                         "step": gStep});
                                                      blockList.get(blockList.count-1).gradients.append({"axis":"y",
-                                                                                                        "delay": 0,
-                                                                                                        "rise": 0,
-                                                                                                        "flatTop": 0,
-                                                                                                        "amplitude": 0,
-                                                                                                        "step": 0});
+                                                                                                        "delay": "0",
+                                                                                                        "rise": "0",
+                                                                                                        "flatTop": "0",
+                                                                                                        "amplitude": "0",
+                                                                                                        "step": "0"});
                                                      blockList.get(blockList.count-1).gradients.append({"axis":"z",
-                                                                                                        "delay": 0,
-                                                                                                        "rise": 0,
-                                                                                                        "flatTop": 0,
-                                                                                                        "amplitude": 0,
-                                                                                                        "step": 0});}
+                                                                                                        "delay": "0",
+                                                                                                        "rise": "0",
+                                                                                                        "flatTop": "0",
+                                                                                                        "amplitude": "0",
+                                                                                                        "step": "0"});}
                                 if(tActive)         {blockList.get(blockList.count-1).t.append(        {"te": te,
                                                                                                         "tr": tr});}
                                 if(groupActive)     {blockList.setProperty(blockList.count-1,           "repetitions", repetitions);}
@@ -243,7 +243,7 @@ Item{
                                     if(durationActive)  {blockList.setProperty(blockList.count-1,           "duration",     groupList.get(index).duration);}
                                     if(linesActive)     {blockList.setProperty(blockList.count-1,           "lines",        groupList.get(index).lines);}
                                     if(samplesActive)   {blockList.setProperty(blockList.count-1,           "samples",      groupList.get(index).samples);}
-                                    if(adcDelayActive)  {blockList.setProperty(blockList.count-1,           "adcDelay",      groupList.get(index).adcDelay);}
+                                    if(adcDelayActive)  {blockList.setProperty(blockList.count-1,           "adcDelay",     groupList.get(index).adcDelay);}
                                     if(fovActive)       {blockList.setProperty(blockList.count-1,           "fov",          groupList.get(index).fov);}
                                     if(rfActive)        {blockList.get(blockList.count-1).rf.append(       {"select":       groupList.get(index).rf.get(0).select,
                                                                                                             "shape":        groupList.get(index).rf.get(0).shape,
@@ -276,7 +276,7 @@ Item{
                             }
 
                             for (var j=1; j<100; j++){
-                               scrollBar.increase();
+                               seqScrollBar.increase();
                             }
                         }
 
@@ -296,8 +296,8 @@ Item{
                                 }
                             }
                         ]
-                    }
-                }
+                    } // MouseArea
+                } // Button
             } // ListView
         } // MouseArea
     }

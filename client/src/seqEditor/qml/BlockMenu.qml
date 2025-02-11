@@ -68,61 +68,61 @@ Item {
     property bool groupVisible
     property alias repetitions: repsInput.text
 
-    function applyChanges(blockID){
-        if(durationVisible) {blockList.setProperty(blockID,          "duration",     Number(duration));}
-        if(linesVisible)    {blockList.setProperty(blockID,          "lines",        Number(lines));}
-        if(samplesVisible)  {blockList.setProperty(blockID,          "samples",      Number(samples));}
-        if(adcDelayVisible) {blockList.setProperty(blockID,          "adcDelay",     Number(adcDelay));}
-        if(fovVisible)      {blockList.setProperty(blockID,          "fov",          Number(fov));}
-        if(rfVisible)       {blockList.get(blockID).rf.set(0,       {"select":       Number(select),
-                                                                     "shape":        Number(shape),
-                                                                     "b1Module":     Number(b1Module),
-                                                                     "flipAngle":    Number(flipAngle),
-                                                                     "deltaf":       Number(deltaf)});}
+    function applyBlockChanges(blockID){
+        if(durationVisible) {blockList.setProperty(blockID,          "duration",    duration);}
+        if(linesVisible)    {blockList.setProperty(blockID,          "lines",       lines);}
+        if(samplesVisible)  {blockList.setProperty(blockID,          "samples",     samples);}
+        if(adcDelayVisible) {blockList.setProperty(blockID,          "adcDelay",    adcDelay);}
+        if(fovVisible)      {blockList.setProperty(blockID,          "fov",         fov);}
+        if(rfVisible)       {blockList.get(blockID).rf.set(0,       {"select":      select,
+                                                                     "shape":       shape,
+                                                                     "b1Module":    b1Module,
+                                                                     "flipAngle":   flipAngle,
+                                                                     "deltaf":      deltaf});}
         if(gradientsVisible){
             var gradients = blockList.get(blockID).gradients;
-            for(var i=0; i<gradients.count; i++){
+            for(var i=0; i<gradients.count; i++){     
                 var grad = gradients.get(i);
                 blockList.get(blockID).gradients.set(i,             {"axis":         grad.axis,
-                                                                     "delay":        eval('Number(g' + grad.axis + 'Delay)'),
-                                                                     "rise":         eval('Number(g' + grad.axis + 'Rise)'),
-                                                                     "flatTop":      eval('Number(g' + grad.axis + 'FlatTop)'),
-                                                                     "amplitude":    eval('Number(g' + grad.axis + 'Amplitude)'),
-                                                                     "step":         eval('Number(g' + grad.axis + 'Step)')});}
+                                                                     "delay":        eval('g' + grad.axis + 'Delay'),
+                                                                     "rise":         eval('g' + grad.axis + 'Rise'),
+                                                                     "flatTop":      eval('g' + grad.axis + 'FlatTop'),
+                                                                     "amplitude":    eval('g' + grad.axis + 'Amplitude'),
+                                                                     "step":         eval('g' + grad.axis + 'Step')});}
         }
-        if(tVisible)        {blockList.get(blockID).t.set(0,        {"te":           Number(te),
-                                                                     "tr":           Number(tr)});}
-        if(groupVisible)    {blockList.setProperty(blockID,          "repetitions",  Number(repetitions));}
+        if(tVisible)        {blockList.get(blockID).t.set(0,        {"te":           te,
+                                                                     "tr":           tr});}
+        if(groupVisible)    {blockList.setProperty(blockID,          "repetitions",  repetitions);}
 
         var blockInfo = blockList.get(blockID);
 
-        duration =      durationVisible ?   blockInfo.duration : 0;
-        lines =         linesVisible ?      blockInfo.lines : 0;
-        samples =       samplesVisible ?    blockInfo.samples : 0;
-        adcDelay =      adcDelayVisible ?   blockInfo.adcDelay : 0;
-        fov =           fovVisible ?        blockInfo.fov : 0;
-        shape =         rfVisible ?         blockInfo.rf.get(0).shape : 0;
-        b1Module =      rfVisible ?         blockInfo.rf.get(0).b1Module : 0;
-        flipAngle =     rfVisible ?         blockInfo.rf.get(0).flipAngle : 0;
-        deltaf =        rfVisible ?         blockInfo.rf.get(0).deltaf : 0;
-        gxDelay =       gradientsVisible ?  blockInfo.gradients.get(0).delay : 0;
-        gyDelay =       gradientsVisible ?  blockInfo.gradients.get(1).delay : 0;
-        gzDelay =       gradientsVisible ?  blockInfo.gradients.get(2).delay : 0;
-        gxRise =        gradientsVisible ?  blockInfo.gradients.get(0).rise : 0;
-        gyRise =        gradientsVisible ?  blockInfo.gradients.get(1).rise : 0;
-        gzRise =        gradientsVisible ?  blockInfo.gradients.get(2).rise : 0;
-        gxFlatTop =     gradientsVisible ?  blockInfo.gradients.get(0).flatTop : 0;
-        gyFlatTop =     gradientsVisible ?  blockInfo.gradients.get(1).flatTop : 0;
-        gzFlatTop =     gradientsVisible ?  blockInfo.gradients.get(2).flatTop : 0;
-        gxAmplitude =   gradientsVisible ?  blockInfo.gradients.get(0).amplitude : 0;
-        gyAmplitude =   gradientsVisible ?  blockInfo.gradients.get(1).amplitude : 0;
-        gzAmplitude =   gradientsVisible ?  blockInfo.gradients.get(2).amplitude : 0;
-        gxStep =        gradientsVisible ?  blockInfo.gradients.get(0).step : 0;
-        gyStep =        gradientsVisible ?  blockInfo.gradients.get(1).step : 0;
-        gzStep =        gradientsVisible ?  blockInfo.gradients.get(2).step : 0;
-        te =            tVisible ?          blockInfo.t.get(0).te : 0;
-        tr =            tVisible ?          blockInfo.t.get(0).tr : 0;
-        repetitions =   groupVisible ?      blockInfo.repetitions : 0;
+        duration =      durationVisible ?   blockInfo.duration : "0";
+        lines =         linesVisible ?      blockInfo.lines : "0";
+        samples =       samplesVisible ?    blockInfo.samples : "0";
+        adcDelay =      adcDelayVisible ?   blockInfo.adcDelay : "0";
+        fov =           fovVisible ?        blockInfo.fov : "0";
+        shape =         rfVisible ?         blockInfo.rf.get(0).shape : "0";
+        b1Module =      rfVisible ?         blockInfo.rf.get(0).b1Module : "0";
+        flipAngle =     rfVisible ?         blockInfo.rf.get(0).flipAngle : "0";
+        deltaf =        rfVisible ?         blockInfo.rf.get(0).deltaf : "0";
+        gxDelay =       gradientsVisible ?  blockInfo.gradients.get(0).delay : "0";
+        gyDelay =       gradientsVisible ?  blockInfo.gradients.get(1).delay : "0";
+        gzDelay =       gradientsVisible ?  blockInfo.gradients.get(2).delay : "0";
+        gxRise =        gradientsVisible ?  blockInfo.gradients.get(0).rise : "0";
+        gyRise =        gradientsVisible ?  blockInfo.gradients.get(1).rise : "0";
+        gzRise =        gradientsVisible ?  blockInfo.gradients.get(2).rise : "0";
+        gxFlatTop =     gradientsVisible ?  blockInfo.gradients.get(0).flatTop : "0";
+        gyFlatTop =     gradientsVisible ?  blockInfo.gradients.get(1).flatTop : "0";
+        gzFlatTop =     gradientsVisible ?  blockInfo.gradients.get(2).flatTop : "0";
+        gxAmplitude =   gradientsVisible ?  blockInfo.gradients.get(0).amplitude : "0";
+        gyAmplitude =   gradientsVisible ?  blockInfo.gradients.get(1).amplitude : "0";
+        gzAmplitude =   gradientsVisible ?  blockInfo.gradients.get(2).amplitude : "0";
+        gxStep =        gradientsVisible ?  blockInfo.gradients.get(0).step : "0";
+        gyStep =        gradientsVisible ?  blockInfo.gradients.get(1).step : "0";
+        gzStep =        gradientsVisible ?  blockInfo.gradients.get(2).step : "0";
+        te =            tVisible ?          blockInfo.t.get(0).te : "0";
+        tr =            tVisible ?          blockInfo.t.get(0).tr : "0";
+        repetitions =   groupVisible ?      blockInfo.repetitions : "0";
     }
 
     Rectangle{
@@ -174,6 +174,7 @@ Item {
 
             ComboBoxItem{
                 id: rfSelect;
+                idNumber: blockID;
                 model: ["Flip angle and duration", "Flip angle and amplitude", "Duration and amplitude"];
             }
         }
@@ -200,7 +201,7 @@ Item {
                     rowSpacing: 3
 
                     MenuLabel { text: "Lines:";   bold: true;   Layout.columnSpan: 2}
-                    TextInputItem{ id: linesInput;              Layout.alignment: Qt.AlignRight }
+                    TextInputItem{ idNumber: blockID;  id: linesInput; Layout.alignment: Qt.AlignRight }
                     MenuLabel { text: "lines" }
                 }
             }
@@ -217,7 +218,7 @@ Item {
                     rowSpacing: 3
 
                     MenuLabel { text: "Samples:";  bold: true;  Layout.columnSpan: 2}
-                    TextInputItem{ id: samplesInput;            Layout.alignment: Qt.AlignRight}
+                    TextInputItem{ idNumber: blockID;  id: samplesInput; Layout.alignment: Qt.AlignRight}
                     MenuLabel { text: "samples" }
                 }
             }
@@ -234,7 +235,7 @@ Item {
                     rowSpacing: 3
 
                     MenuLabel { text: "ADC Delay:";  bold: true;  Layout.columnSpan: 2}
-                    TextInputItem{ id: adcDelayInput;             Layout.alignment: Qt.AlignRight}
+                    TextInputItem{ idNumber: blockID;  id: adcDelayInput; Layout.alignment: Qt.AlignRight}
                     MenuLabel { text: "s" }
                 }
             }
@@ -253,7 +254,7 @@ Item {
                     rowSpacing: 3
 
                     MenuLabel { text: "Duration:";  bold: true; Layout.columnSpan: 2}
-                    TextInputItem{ id:durationInput;            Layout.alignment: Qt.AlignRight}
+                    TextInputItem{ idNumber: blockID;  id:durationInput; Layout.alignment: Qt.AlignRight}
                     MenuLabel { text: "s"}
                 }
             }
@@ -269,8 +270,8 @@ Item {
                     columns: 4
                     rowSpacing: 3
 
-                    MenuLabel { text: "FOV:";  bold: true;      Layout.columnSpan: 2}
-                    TextInputItem{ id:fovInput;                 Layout.alignment: Qt.AlignRight}
+                    MenuLabel { text: "FOV:";  bold: true; Layout.columnSpan: 2}
+                    TextInputItem{ idNumber: blockID;  id:fovInput; Layout.alignment: Qt.AlignRight}
                     MenuLabel { text: "m" }
                 }
             }
@@ -290,25 +291,26 @@ Item {
                         columns: 5
                         rowSpacing: 3
 
-                        MenuLabel { text: "RF:";                    bold: true}
-                        MenuLabel { text: "RF Shape:";              Layout.alignment: Qt.AlignRight}
+                        MenuLabel { text: "RF:"; bold: true}
+                        MenuLabel { text: "RF Shape:"; Layout.alignment: Qt.AlignRight}
                         ComboBoxItem{
                             id: shapeInput;
+                            idNumber: blockID;
                             model: linesVisible ? ["Sinc"] : ["Rectangle (hard)", "Sinc"];
                         }
 
-                        MenuLabel { text: "Peak |B1|[T]:";          Layout.alignment: Qt.AlignRight;                                enabled:b1ModuleInput.enabled; opacity: enabled}
-                        TextInputItem{  id:b1ModuleInput
+                        MenuLabel { text: "Peak |B1|[T]:";  Layout.alignment: Qt.AlignRight; enabled:b1ModuleInput.enabled; opacity: enabled}
+                        TextInputItem{ idNumber: blockID;  id:b1ModuleInput
                                         enabled: rfVisible & rfSelect.currentIndex === 0 ? false : true
                                         opacity: enabled }
 
-                        MenuLabel { text: "Flip Angle [º]:";        Layout.alignment: Qt.AlignRight;        Layout.columnSpan: 2;   enabled:flipAngleInput.enabled; opacity: enabled}
-                        TextInputItem{  id:flipAngleInput;           Layout.columnSpan: 3
+                        MenuLabel { text: "Flip Angle [º]:"; Layout.alignment: Qt.AlignRight; Layout.columnSpan: 2; enabled:flipAngleInput.enabled; opacity: enabled}
+                        TextInputItem{ idNumber: blockID;   id:flipAngleInput;           Layout.columnSpan: 3
                                         enabled: rfVisible & rfSelect.currentIndex === 2 ? false : true
                                         opacity: enabled }
 
-                        MenuLabel { text: "Δf [Hz]:";               Layout.alignment: Qt.AlignRight;        Layout.columnSpan: 2}
-                        TextInputItem{ id:deltafInput}
+                        MenuLabel { text: "Δf [Hz]:";  Layout.alignment: Qt.AlignRight; Layout.columnSpan: 2}
+                        TextInputItem{ idNumber: blockID;  id:deltafInput}
                     }
                 }
             }
@@ -329,33 +331,33 @@ Item {
                         anchors.rightMargin: 10
                         rowSpacing: 1
 
-                        MenuLabel { text: "Gradients:";             bold: true}
-                        MenuLabel { text: "InitialDelay [s]";       Layout.alignment: Qt.AlignCenter}
-                        MenuLabel { text: "Rise/Fall [s]";          Layout.alignment: Qt.AlignCenter}
-                        MenuLabel { text: "FlatTopTime [s]";        Layout.alignment: Qt.AlignCenter}
-                        MenuLabel { text: "Amplitude [T/m]";        Layout.alignment: Qt.AlignCenter}
-                        MenuLabel { text: "Step [T/m]";             Layout.alignment: Qt.AlignCenter}
+                        MenuLabel { text: "Gradients:";                                 bold: true}
+                        MenuLabel { text: "InitialDelay [s]";                           Layout.alignment: Qt.AlignCenter}
+                        MenuLabel { text: "Rise/Fall [s]";                              Layout.alignment: Qt.AlignCenter}
+                        MenuLabel { text: "FlatTopTime [s]";                            Layout.alignment: Qt.AlignCenter}
+                        MenuLabel { text: "Amplitude [T/m]";                            Layout.alignment: Qt.AlignCenter}
+                        MenuLabel { text: "Step [T/m]";                                 Layout.alignment: Qt.AlignCenter}
 
-                        MenuLabel { text: "Gx:";                    Layout.alignment: Qt.AlignCenter}
-                        TextInputItem{ id:gxDelayInput;             Layout.alignment: Qt.AlignCenter}
-                        TextInputItem{ id:gxRiseInput;              Layout.alignment: Qt.AlignCenter}
-                        TextInputItem{ id:gxFlatTopInput;           Layout.alignment: Qt.AlignCenter}
-                        TextInputItem{ id:gxAmplitudeInput;         Layout.alignment: Qt.AlignCenter}
-                        TextInputItem{ id:gxStepInput;              Layout.alignment: Qt.AlignCenter}
+                        MenuLabel { text: "Gx:";                                        Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ idNumber: blockID;  id:gxDelayInput;             Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ idNumber: blockID;  id:gxRiseInput;              Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ idNumber: blockID;  id:gxFlatTopInput;           Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ idNumber: blockID;  id:gxAmplitudeInput;         Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ idNumber: blockID;  id:gxStepInput;              Layout.alignment: Qt.AlignCenter}
 
-                        MenuLabel { text: "Gy:";                    Layout.alignment: Qt.AlignCenter}
-                        TextInputItem{ id:gyDelayInput;             Layout.alignment: Qt.AlignCenter}
-                        TextInputItem{ id:gyRiseInput;              Layout.alignment: Qt.AlignCenter}
-                        TextInputItem{ id:gyFlatTopInput;           Layout.alignment: Qt.AlignCenter}
-                        TextInputItem{ id:gyAmplitudeInput;         Layout.alignment: Qt.AlignCenter}
-                        TextInputItem{ id:gyStepInput;              Layout.alignment: Qt.AlignCenter}
+                        MenuLabel { text: "Gy:";                                        Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ idNumber: blockID;  id:gyDelayInput;             Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ idNumber: blockID;  id:gyRiseInput;              Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ idNumber: blockID;  id:gyFlatTopInput;           Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ idNumber: blockID;  id:gyAmplitudeInput;         Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ idNumber: blockID;  id:gyStepInput;              Layout.alignment: Qt.AlignCenter}
 
-                        MenuLabel { text: "Gz:";                    Layout.alignment: Qt.AlignCenter}
-                        TextInputItem{ id:gzDelayInput;             Layout.alignment: Qt.AlignCenter}
-                        TextInputItem{ id:gzRiseInput;              Layout.alignment: Qt.AlignCenter}
-                        TextInputItem{ id:gzFlatTopInput;           Layout.alignment: Qt.AlignCenter}
-                        TextInputItem{ id:gzAmplitudeInput;         Layout.alignment: Qt.AlignCenter}
-                        TextInputItem{ id:gzStepInput;              Layout.alignment: Qt.AlignCenter}
+                        MenuLabel { text: "Gz:";                                        Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ idNumber: blockID;  id:gzDelayInput;             Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ idNumber: blockID;  id:gzRiseInput;              Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ idNumber: blockID;  id:gzFlatTopInput;           Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ idNumber: blockID;  id:gzAmplitudeInput;         Layout.alignment: Qt.AlignCenter}
+                        TextInputItem{ idNumber: blockID;  id:gzStepInput;              Layout.alignment: Qt.AlignCenter}
 
                     }
                 }
@@ -371,11 +373,11 @@ Item {
                     anchors.margins:3
                     columns: 4
                     rowSpacing: 1
-                    MenuLabel { text: "TE:";  bold: true;       Layout.columnSpan: 2}
-                    TextInputItem{ id:teInput;                  Layout.alignment: Qt.AlignRight}
+                    MenuLabel { text: "TE:";  bold: true; Layout.columnSpan: 2}
+                    TextInputItem{ idNumber: blockID;  id:teInput; Layout.alignment: Qt.AlignRight}
                     MenuLabel { text: "s" }
-                    MenuLabel { text: "TR:";  bold: true;       Layout.columnSpan: 2}
-                    TextInputItem{ id:trInput;                  Layout.alignment: Qt.AlignRight}
+                    MenuLabel { text: "TR:";  bold: true; Layout.columnSpan: 2}
+                    TextInputItem{ idNumber: blockID;  id:trInput; Layout.alignment: Qt.AlignRight}
                     MenuLabel { text: "s"}
                 }
             }
@@ -390,40 +392,27 @@ Item {
                     columns: 4
                     rowSpacing: 3
 
-                    MenuLabel { text: "Repetitions:";              bold: true}
-                    TextInputItem{ id:repsInput;                   Layout.alignment: Qt.AlignRight}
+                    MenuLabel { text: "Repetitions:";  bold: true}
+                    TextInputItem{ idNumber: blockID;  id:repsInput; Layout.alignment: Qt.AlignRight}
                     MenuLabel { text: "times"}
                 }
             }
-        }
-
-        //  APPLY CHANGES
-        Button{
-            id: applyButton
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            anchors.rightMargin: 10
-            anchors.bottomMargin: 10
-            height: 25
-            width: 100
-            text:"Apply changes"
-            font.pointSize: window.fontSize
-            onClicked:{ applyChanges(blockID) }
         }
 
         // VIEW 3D MODEL OF SELECTED SLICE
         Button{
             id: plotButton
             visible: rfVisible
-            anchors.right: applyButton.left
+            anchors.right: parent.right
             anchors.bottom: parent.bottom
-            anchors.margins: 10
-            height: applyButton.height
-            width: applyButton.width
+            anchors.rightMargin: 10
+            anchors.bottomMargin: 10
+            height: 25
+            width: 100
             text: "View 3D Model"
             font.pointSize: window.fontSize
             onClicked:{
-                backend.plot3D(Number(gxAmplitude), Number(gyAmplitude), Number(gzAmplitude), Number(deltaf), Number(variableList.get(0).value))
+                backend.plot3D(evalExpression(gxAmplitude), evalExpression(gyAmplitude), evalExpression(gzAmplitude), evalExpression(deltaf), variablesList.get(0).value)
             }
         }
     } // Rectangle

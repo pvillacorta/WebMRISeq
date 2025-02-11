@@ -97,15 +97,25 @@ QByteArray Backend::processJSONSequence(QByteArray data){
 QByteArray Backend::parseJSONSequenceToQML(QByteArray data){
     std::string str = QString(data).toStdString();
     json j = json::parse(str);
-    json blocksArray = j["blocks"];
-    qDebug() << "Description: " << j["description"].template get<std::string>();
-    qDebug() << "Number of blocks: " << blocksArray.size() << "\n";
+    json blocksArray    = j["blocks"];
+    json variablesArray = j["variables"];
 
     QByteArray qmlData;
 
     qmlData.append("import QtQuick \n");
     qmlData.append("ListModel{ \n");
+    qmlData.append("    id: sequence \n");
     qmlData.append("    property string description: " + j["description"].dump() + " \n");
+    qmlData.append("    property var variables: [ \n");
+    for (const auto& variable : variablesArray) {
+        qmlData.append("            { \n");  
+        qmlData.append("                name: "       + variable["name"].dump()           + ", \n");  
+        qmlData.append("                expression: " + variable["expression"].dump()     + ", \n");  
+        qmlData.append("                value: "      + variable["value"].dump()          + ", \n");  
+        qmlData.append("                readonly: "   + variable["readonly"].dump()       + "  \n"); 
+        qmlData.append("            }, \n"); 
+    }
+    qmlData.append("    ] \n");
 
     // Iterar sobre los elementos de la matriz "blocks"
 
@@ -263,7 +273,6 @@ QByteArray Backend::parseJSONSequenceToQML(QByteArray data){
 
         qmlData.append("    } \n");
     }
-
     qmlData.append("} \n");
 
     return qmlData;
@@ -272,17 +281,34 @@ QByteArray Backend::parseJSONSequenceToQML(QByteArray data){
 QByteArray Backend::parseJSONScannerToQML(QByteArray data){
     std::string str = QString(data).toStdString();
     json j = json::parse(str);
-
+    json variablesArray = j["variables"];
+    json parameters     = j["parameters"];
     QByteArray qmlData;
 
     qmlData.append("import QtQuick \n");
     qmlData.append("Item{ \n");
-    qmlData.append("    property var b0: "       + j["b0"].dump() + " \n");
-    qmlData.append("    property var b1: "       + j["b1"].dump() + " \n");
-    qmlData.append("    property var deltat: "   + j["deltat"].dump() + " \n");
-    qmlData.append("    property var gmax: "     + j["gmax"].dump() + " \n");
-    qmlData.append("    property var smax: "     + j["smax"].dump() + " \n");
-
+    qmlData.append("    id: scanner \n");
+    qmlData.append("    property var parameters: ({ \n");
+    int paramCount = 0;
+    for (const auto& [key, value]  : parameters.items()) {
+        qmlData.append("        " + key + ": " + value.dump());
+        if (++paramCount < parameters.size()) {
+            qmlData.append(", \n");
+        } else {
+            qmlData.append(" \n");
+        }
+    }
+    qmlData.append("    }) \n");
+    qmlData.append("    property var variables: [ \n");
+    for (const auto& variable : variablesArray) {
+        qmlData.append("            { \n");  
+        qmlData.append("                name: "       + variable["name"].dump()           + ", \n");  
+        qmlData.append("                expression: " + variable["expression"].dump()     + ", \n");  
+        qmlData.append("                value: "      + variable["value"].dump()          + ", \n");  
+        qmlData.append("                readonly: "   + variable["readonly"].dump()       + "  \n"); 
+        qmlData.append("            }, \n"); 
+    }
+    qmlData.append("    ] \n");
     qmlData.append("} \n");
 
     return qmlData;

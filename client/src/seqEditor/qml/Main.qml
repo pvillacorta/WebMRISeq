@@ -349,6 +349,7 @@ ApplicationWindow {
 
 
     // Function createSeq() creates an array from the block Sequence. This array will be the input argument to the simulator
+    // DEPRECATED
     function createSeq(){
         var array = [];
         for(var i=0; i<10; i++){
@@ -393,29 +394,81 @@ ApplicationWindow {
         return array;
     }
 
-
     // Function createScanner creates an array composed by global parameters for the simulator (Gmax, sampling period...)
+    // DEPRECATED
     function createScanner(){
         var array = [];
 
-        array[0] = Number(scannerMenu.b0);
-        array[1] = Number(scannerMenu.b1);
-        array[2] = Number(scannerMenu.deltat);
-        array[3] = Number(scannerMenu.gmax);
-        array[4] = Number(scannerMenu.smax);
+        array[0] = Number(evalExpression(scannerMenu.b0));
+        array[1] = Number(evalExpression(scannerMenu.b1));
+        array[2] = Number(evalExpression(scannerMenu.deltat));
+        array[3] = Number(evalExpression(scannerMenu.gmax));
+        array[4] = Number(evalExpression(scannerMenu.smax));
 
         // print("Scanner: ", array);
-
         return array;
     }
 
-    // Function seqToJSON()
-    function seqToJSON(){
-        var description = seqDescription.text;
-        var datamodel = { "description": description, "blocks": [] };
+    // Function updateRawSequence() converts all the strings in the blockList to numbers
+    function updateRawSequence() {
+        rawList.clear()
+        for (var i = 0; i < blockList.count; i++) {
+            var item = blockList.get(i); // Obtener el elemento actual
+            var updatedItem = convertStringsToNumbers(item); // Convertir sus valores
+            console.log(JSON.stringify(updatedItem))
+            rawList.append(updatedItem);
+        }
+    }
 
-        for (var i = 0; i < blockList.count; ++i) {
-            datamodel.blocks.push(blockList.get(i));
+    // Function convertStringsToNumbers() converts all the strings in an object to numbers
+    function convertStringsToNumbers(obj) {
+        if (obj instanceof ListModel) {
+            // Convertimos el ListModel en un array de JavaScript
+            var array = [];
+            for (var i = 0; i < obj.count; i++) {
+                array.push(convertStringsToNumbers(obj.get(i))); // Recursión en cada elemento
+            }
+            return array; // Devuelve un array JavaScript con valores convertidos
+        } else if (Array.isArray(obj)) {
+            return obj.map(convertStringsToNumbers); // Si es un array normal, lo recorremos
+        } else if (typeof obj === "object" && obj !== null) {
+            var newObj = {};
+            for (var key in obj) {
+                if (typeof obj[key] === "string" && !isNaN(evalExpression(obj[key]))) {
+                    newObj[key] = evalExpression(obj[key]); // Convertimos valores numéricos en string
+                } else if (obj[key] instanceof ListModel || Array.isArray(obj[key])) {
+                    newObj[key] = convertStringsToNumbers(obj[key]); // Convertimos recursivamente listas
+                } else {
+                    newObj[key] = obj[key]; // Mantenemos los otros valores
+                }
+            }
+            return newObj;
+        }
+        return obj;
+    }
+
+    // Function seqToJSON()
+    function seqToJSON(sim_flag){ 
+        var description = seqDescription.text;
+        var datamodel = { 
+            "description": description, 
+            "blocks": [],
+            "variables": []
+        };
+
+        if (sim_flag) {
+            updateRawSequence();
+            var seq = rawList;
+        } else {
+            var seq = blockList;
+        }
+
+        for (var i = 0; i < seq.count; ++i) {
+            datamodel.blocks.push(seq.get(i));
+        }
+
+        for (var i = 0; i < variablesList.count; ++i) {
+           datamodel.variables.push(variablesList.get(i));
         }
 
         var datastore = JSON.stringify(datamodel);
@@ -423,32 +476,77 @@ ApplicationWindow {
     }
 
     // Function scannerToJSON()
-    function scannerToJSON(){
-        var datamodel = { "b0":     Number(scannerMenu.b0),
-                          "b1":     Number(scannerMenu.b1),
-                          "deltat": Number(scannerMenu.deltat),
-                          "gmax":   Number(scannerMenu.gmax),
-                          "smax":   Number(scannerMenu.smax) };
-        var datastore = JSON.stringify(datamodel);
-        return datastore;
+    function scannerToJSON(sim_flag){
+        var datamodel = { 
+            "parameters": {}, 
+            "variables": [] 
+        };
+        
+        datamodel.parameters["b0"]     = sim_flag ? evalExpression(scannerMenu.b0)     : scannerMenu.b0;
+        datamodel.parameters["b1"]     = sim_flag ? evalExpression(scannerMenu.b1)     : scannerMenu.b1;
+        datamodel.parameters["deltat"] = sim_flag ? evalExpression(scannerMenu.deltat) : scannerMenu.deltat;
+        datamodel.parameters["gmax"]   = sim_flag ? evalExpression(scannerMenu.gmax)   : scannerMenu.gmax;
+        datamodel.parameters["smax"]   = sim_flag ? evalExpression(scannerMenu.smax)   : scannerMenu.smax;
+
+        for (var i = 0; i < variablesList.count; ++i) {
+            datamodel.variables.push(variablesList.get(i));
+        }
+
+        try {
+            return JSON.stringify(datamodel);
+        } catch (e) {
+            console.error("Error stringifying datamodel:", e);
+            return null;
+        }
     }
 
     // Function saveSeq()
     function saveSeq(extension){
-        var datastore = seqToJSON();
-        backend.getDownloadSequence(datastore,extension);
+        var datastore = seqToJSON(false);
+        backend.getDownloadSequence(datastore, extension);
     }
 
     // Function saveScanner()
     function saveScanner(){
-        var datastore = scannerToJSON();
+        var datastore = scannerToJSON(false);
         backend.getDownloadScanner(datastore);
     }
 
-    // Function plotSeq()
+    // Function importVariables(). This function adds the variables from importedVars to the variablesList.
+    // If a variable already exists in variablesList, its value is updated.
+    function importVariables(importedVars) {
+        for (let i = 0; i < importedVars.length; i++) {
+            let importedVar = importedVars[i];
+            let found = false;
+
+            // Buscar si la variable ya existe en variablesList
+            for (let j = 0; j < variablesList.count; j++) {
+                let existingVar = variablesList.get(j);
+                if (existingVar.name === importedVar.name) {
+                    // Si la variable ya existe, actualizar sus valores
+                    variablesList.setProperty(j, "expression", importedVar.expression);
+                    variablesList.setProperty(j, "value", importedVar.value);
+                    found = true;
+                    break;
+                }
+            }
+
+            // Si no se encontró, agregar la nueva variable
+            if (!found) {
+                variablesList.append({
+                    name: importedVar.name,
+                    expression: importedVar.expression,
+                    value: importedVar.value,
+                    readonly: importedVar.readonly
+                });
+            }
+        }
+    }
+
+    // Function plotSeq() sends the sequence and scanner data to the backend to plot the sequence diagram
     function plotSeq(){
-        var scanstore = scannerToJSON();
-        var seqstore = seqToJSON();
+        var scanstore = scannerToJSON(true);
+        var seqstore  = seqToJSON(true);
         backend.plotSequence(scanstore, seqstore);
     }
 
@@ -458,6 +556,48 @@ ApplicationWindow {
     }
     function getMinOfArray(numArray) {
         return Math.min.apply(null, numArray);
+    }
+
+    // function ApplyChanges() is called when the user edits a field in a configuration panel
+    // idNumber:
+    // -2:         variables panel
+    // -1:         scanner panel
+    // 0,1,2,3...: sequence block panel
+    function applyChanges(idNumber){
+        if (idNumber === variablesMenu.menuID){       // Apply changes to the variables panel
+            variablesMenu.applyVariablesChanges();
+        } if (idNumber >= 0){                         // Apply changes to the sequence block panel
+            configMenu.applyBlockChanges(idNumber); 
+        } 
+    }
+
+    // function evalExpression() evaluates a mathematical expression which can contain variable names
+    function evalExpression(expression) {
+        try {
+            if (expression === "") {
+                return 0;
+            }
+            // Convertir variablesList en un objeto de variables
+            let variables = {};
+            for (let i = 0; i < variablesList.count; i++) {
+                let item = variablesList.get(i);
+                variables[item.name] = item.value;
+            }
+
+            // Reemplazar nombres de variables en la expresión con sus valores
+            let replacedExpression = expression.replace(/\b[a-zA-Z_][a-zA-Z0-9_]*\b/g, match => {
+                if (variables.hasOwnProperty(match)) {
+                    return variables[match]; // Sustituir por el valor de la variable
+                } else {
+                    return NaN
+                }
+            });
+
+            // Evaluar la expresión matemática
+            return new Function(`return (${replacedExpression});`)();
+        } catch (error) {
+            return `Error: ${error.message}`;
+        }
     }
 
 
@@ -477,10 +617,31 @@ ApplicationWindow {
     }
 
 
-    // ------------------------- BLOCK LIST ---------------------------------------------------
+    // ------------------------- LISTS ----------------------------------
+    // Sequence
     ListModel{ id:blockList }
-
+    ListModel{ id:rawList  }
     ListModel{ id:groupList }
+
+    // This list stores information about the available "basic" blocks
+    ListModel {
+        id: blockButtonList
+        ListElement { buttonText: "Excitation";     code: 1;    iconSource:"qrc:/icons/light/rf.png" }
+        ListElement { buttonText: "Delay";          code: 2;    iconSource:"qrc:/icons/light/clock.png"  }
+        ListElement { buttonText: "Dephase";        code: 3;    iconSource:"qrc:/icons/light/angle.png"  }
+        ListElement { buttonText: "Readout";        code: 4;    iconSource:"qrc:/icons/light/readout.png"  }
+        ListElement { buttonText: "EPI_ACQ";        code: 5;    iconSource:"qrc:/icons/light/epi.png"  }
+        ListElement { buttonText: "GRE";            code: 6;    iconSource:"qrc:/icons/light/misc.png"  }
+    }
+
+    // This list stores information about the groups stored as duplicatable blocks
+    ListModel { id: groupButtonList }
+
+    // This list stores information about the global variables that can be defined and used to create the sequence (and scanner)
+    ListModel {
+        id: variablesList
+        ListElement { name: "gamma";  expression: "42.5774688e6"; value: 42.5774688e6; readonly: true }
+    }
 
     // In this loader we will store the loaded sequence from a previously saved file
     Loader{ id: modelLoader }
@@ -518,7 +679,12 @@ ApplicationWindow {
                         title: "Sequence"
                         font.pointSize: 10
                         Action {
-                            text: "New Sequence"
+                            text: "New Sequence" // TODO: Ask to save the current sequence
+                            onTriggered: {
+                                blockList.clear();
+                                configMenu.menuVisible = false;
+                                seqDescription.text = "";
+                            }
                         }
                         Action {
                             text: "Load Sequence"
@@ -601,14 +767,17 @@ ApplicationWindow {
         }
     }
 
-
     Connections {
         target: backend
         function onUploadSequenceSelected(path) {
             modelLoader.source = path
             blockList.clear();
-            seqDescription.text = modelLoader.item.description;
             configMenu.menuVisible = false;
+            // Description
+            seqDescription.text = modelLoader.item.description;
+            // Variables
+            importVariables(modelLoader.item.variables);
+            // Sequence blocks
             for(var i=0; i<modelLoader.item.count; i++){
                 blockList.append(modelLoader.item.get(i));
                 if(isChild(i)){
@@ -621,11 +790,14 @@ ApplicationWindow {
 
         function onUploadScannerSelected(path) {
             modelLoader.source = path
-            scannerMenu.b0      = modelLoader.item.b0
-            scannerMenu.b1      = modelLoader.item.b1
-            scannerMenu.deltat  = modelLoader.item.deltat
-            scannerMenu.gmax    = modelLoader.item.gmax
-            scannerMenu.smax    = modelLoader.item.smax
+            // Variables
+            importVariables(modelLoader.item.variables);
+            // Parameters
+            scannerMenu.b0      = modelLoader.item.parameters["b0"]
+            scannerMenu.b1      = modelLoader.item.parameters["b1"]
+            scannerMenu.deltat  = modelLoader.item.parameters["deltat"]
+            scannerMenu.gmax    = modelLoader.item.parameters["gmax"]
+            scannerMenu.smax    = modelLoader.item.parameters["smax"]
         }
     }
 
@@ -696,7 +868,7 @@ ApplicationWindow {
             // -------------------------------------------------------------------------------------
 
             WheelHandler{
-                onWheel: (event)=> event.angleDelta.y<0 ? scrollBar.increase(): scrollBar.decrease();
+                onWheel: (event)=> event.angleDelta.y<0 ? seqScrollBar.increase(): seqScrollBar.decrease();
             }
 
             Rectangle {
@@ -748,7 +920,7 @@ ApplicationWindow {
                     delegate: BlockItem{}
 
                     ScrollBar.horizontal: ScrollBar {
-                        id: scrollBar
+                        id: seqScrollBar
                         active: true
                         orientation: Qt.Horizontal
                     }
@@ -796,29 +968,6 @@ ApplicationWindow {
                 height: window.lineThickness
                 color:dark_3
             }
-        }
-
-
-        // This list stores information about the available "basic" blocks
-        ListModel {
-            id: blockButtonList
-            ListElement { buttonText: "Excitation";     code: 1;    iconSource:"qrc:/icons/light/rf.png" }
-            ListElement { buttonText: "Delay";          code: 2;    iconSource:"qrc:/icons/light/clock.png"  }
-            ListElement { buttonText: "Dephase";        code: 3;    iconSource:"qrc:/icons/light/angle.png"  }
-            ListElement { buttonText: "Readout";        code: 4;    iconSource:"qrc:/icons/light/readout.png"  }
-            ListElement { buttonText: "EPI_ACQ";        code: 5;    iconSource:"qrc:/icons/light/epi.png"  }
-            ListElement { buttonText: "GRE";            code: 6;    iconSource:"qrc:/icons/light/misc.png"  }
-        }
-
-        // This list stores information about the groups stored as duplicatable blocks
-        ListModel {
-            id: groupButtonList
-        }
-
-        // This list stores information about the global variables that can be defined and used to create the sequence
-        ListModel {
-            id: variableList
-            ListElement { name: "gamma";  value: 42.85e6; readonly: true }
         }
 
         // ADD BLOCKS
@@ -955,7 +1104,7 @@ ApplicationWindow {
                     id: seqDescription
                     color: light
                     font.family: "Consolas"
-                    text: "Write Here\n...\n...\n...\n"
+                    text: "Write Here\n...\n..."
                     font.pointSize: 10
                     wrapMode: TextEdit.Wrap
                 }

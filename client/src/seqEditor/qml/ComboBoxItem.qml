@@ -3,6 +3,7 @@ import QtQuick.Controls
 
 ComboBox {
     id:comboInput
+    property int idNumber
     font.pointSize: window.fontSize;
     model: model
     delegate: ItemDelegate {
@@ -77,5 +78,8 @@ ComboBox {
             border.color: "#292929"
             radius: 2
         }
+    }
+    onActivated : { 
+        applyChanges(idNumber)
     }
 }

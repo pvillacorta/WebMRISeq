@@ -4,8 +4,33 @@ import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
 
 Rectangle{
-    id: vmenu
+    id: variablesMenu
     color: "#016b6b"
+    property int menuID: -2
+
+    function applyVariablesChanges(){
+        var idx = getViewIndexes() 
+        for (var i = 0; i < idx.length; i++){
+            var delegateItem = variablesView.contentItem.children[idx[i]];
+            if (delegateItem) {
+                variablesList.setProperty(i, "name",       delegateItem.children[0].text)
+                variablesList.setProperty(i, "expression", delegateItem.children[1].text)
+                variablesList.setProperty(i, "value",      evalExpression(delegateItem.children[1].text))
+            }
+            else{
+                console.log("No se encontró el item " + i);
+            }
+        }
+    }
+
+    function getViewIndexes(){ // This is not the best practice, but it works
+        var indexes = []
+        for (var i = 0; i < variablesList.count; i++){
+            var j = i == 0 ? i : i + 1 
+            indexes.push(j)
+        }
+        return indexes
+    }
 
     RectangularGlow {
         anchors.fill: parent
@@ -26,6 +51,7 @@ Rectangle{
         z: 10
 
         Text{
+            id: variablesTitleText
             text: "Global Variables"
             color:"white"
             font.pointSize: 10
@@ -35,12 +61,10 @@ Rectangle{
 
         Button {
             id: newVariableButton
-
             anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
-            anchors.rightMargin: 10
-            height: 20
-            width: 20
+            anchors.left: variablesTitleText.right; anchors.leftMargin: 10
+            height: 18
+            width:  18
 
             background: Rectangle{
                 anchors.fill:parent
@@ -56,30 +80,94 @@ Rectangle{
 
             scale: hovered? 0.9: 1
 
-            onClicked: { }
+            onClicked: { 
+                variablesList.append({"name":"", "expression":"", "value":0, "readonly":false})
+            }
+        }
+
+        Text{
+            id: variablesFieldNames
+            text: " Name                Expression          Value"
+            anchors.top: variablesTitleText.bottom; anchors.topMargin: 5
+            color:"white"
+            font.pointSize: 10
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left; anchors.leftMargin:12
         }
     }
 
     MouseArea{
-        anchors.top: variablesTitle.bottom
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
+        id: variablesArea
+        anchors.fill: parent
+        anchors.bottomMargin:10
+        anchors.topMargin: 45
+        anchors.leftMargin: 15
+        anchors.rightMargin: 15
 
         ListView{
-            id: variableView
+            id: variablesView
             anchors.fill: parent
-            anchors.leftMargin: 10
             orientation: ListView.Vertical
-            clip:true
-            model: variableList
-            delegate: Item{
-                GridLayout{
-                    columns:2
-                    TextInputItem{text: name;  width: 100; readOnly: readonly}
-                    TextInputItem{text: value; width: 100}
-                }
+            clip: true
+            interactive: true
+            model: variablesList
+            
+            ScrollBar.vertical: ScrollBar{
+                id: varScrollBar
+                active: true
+                orientation: Qt.Vertical
             }
+
+            delegate: GridLayout{ 
+                height: 25
+                columns:4
+                columnSpacing: 5
+                TextInputItem{
+                    id: nameInput;  
+                    idNumber: menuID; 
+                    text: name; 
+                    width: 100; 
+                    readOnly: readonly
+                    function nextInput(){
+                        return expressionInput.textInput
+                    }
+                }
+                TextInputItem{
+                    id: expressionInput;  
+                    idNumber: menuID; 
+                    text: expression; 
+                    width: 100; 
+                    function nextInput(){
+                        var idx = getViewIndexes()
+                        if (index < idx.length - 1) {
+                            return variablesView.contentItem.children[idx[index + 1]].children[0].textInput
+                        }
+                        return null; 
+                    }
+                }
+                TextInputItem{
+                    id: valueInput; 
+                    idNumber: menuID; 
+                    text: value; 
+                    width: 100; 
+                    readOnly: true
+                    function nextInput(){
+                        var idx = getViewIndexes()
+                        if (index < idx.length - 1) {
+                            return variablesView.contentItem.children[idx[index + 1]].children[0].textInput
+                        }
+                        return null; 
+                    }
+                }
+                DeleteButton{
+                    visible: !readonly
+                    function clicked(){
+                        variablesList.remove(index)
+                    }
+                    height: 15
+                    width: height
+                }
+            } 
         }
     }
 }
