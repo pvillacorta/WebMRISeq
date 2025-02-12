@@ -41,23 +41,14 @@
             <p class="title">3D Slice Viewer</p>
         </div>
         <div class="box col-3" id="screenSimulator">
-            <p class="title">Simulation Launcher</p>
-            <div class="content" width="90%">
-                <label for="phantom">Phantom:</label>
-                <select id="phantom" name="phantom">
-                <option value="brain">Brain</option>
-                <option value="pelvis">Pelvis</option>
-                </select>
-    
-                <button id="simButton" onclick="komaMRISim()">Simulate</button>
+            <p class="title">Simulation Result</p>
+            <div id="simProgress" width="90%">
                 <p id="response"></p>
-    
                 <div id="myProgress">
-                <div id="myBar"></div>
+                    <div id="myBar"></div>
                 </div>
-    
-                <canvas id="canvas" height="0" width="0"></canvas>
             </div>
+            <iframe class="content" id="sim-result" frameBorder="0"></iframe>
         </div>
     </div>
     

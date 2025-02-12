@@ -53,6 +53,7 @@ end
 end
 
 # ---------------------------- API METHODS ---------------------------------
+## RENDER HTML
 @get "/" function(req::HTTP.Request)
    return HTTP.Response(301, ["Location" => "/editor"])
 end
@@ -67,23 +68,15 @@ end
 
 ## SIMULATION
 @post "/simulate" function(req::HTTP.Request)
-   global aux = JSON3.read(req.body)
-   N_blocks = length(aux.mat[1])     # Number of columns (blocks)
-
-   mat::Matrix{Float64} = zeros(10,N_blocks)
-   for i in range(1,10,step=1)
-      mat[i,:] = aux.mat[i]
-   end
-
-   vec::Vector{Float64} = aux.vec
-   phantom::String = aux.phantom
-
    global statusFile = tempname()
    touch(statusFile)
-   print(statusFile, '\n')
+
+   scanner_json   = json(req)["scanner"]
+   sequence_json  = json(req)["sequence"]
+   phantom_string = json(req)["phantom"]
 
    # Simulation  (asynchronous. It should not block the HTTP 202 Response)
-   global result = @spawnat 2 sim(mat,vec,phantom,statusFile)          # Process 2 executes simulation
+   global result = @spawnat 2 sim(sequence_json, scanner_json, phantom_string, statusFile) # Process 2 executes simulation
 
    # while 1==1
    #    io = open(statusFile,"r")
@@ -96,7 +89,7 @@ end
    #    sleep(0.2)
    # end
 
-   # Actualizar tabla de correspondencias simulación-proceso
+   # TODO: Update simulation-process correspondence table
 
    headers = ["Location" => string("/simulate/",simulationId)]
    global simulationId += 1
@@ -114,20 +107,26 @@ end
 
 """If the simulation has finished, it returns its result. If not, it returns 303 with location = /simulate/{simulationId}/status"""
 
-@get "/simulate/{simulationId}" function(req::HTTP.Request, simulationId)
+@get "/simulate/{simulationId}" function(req::HTTP.Request, simulationId, width::Int, height::Int)
    io = open(statusFile,"r")
    if (!eof(io))
       global simProgress = read(io,Int32)
    end
    close(io)
-
    if simProgress < 101      # Simulation not started or in progress
       headers = ["Location" => string("/simulate/",simulationId,"/status")]
       return HTTP.Response(303,headers)
    elseif simProgress == 101  # Simulation finished
-      global simProgress = -1
-      im = Image(fetch(result))
-      return HTTP.Response(200,body=JSON3.write(im))
+      global simProgress = -1 # TODO: this won't be necessary once the simulation-process correspondence table is implemented 
+      width  = width  - 15
+      height = height - 20
+      println("Height: ", typeof(height))
+      println("Width: ", typeof(width))
+      im = fetch(result)      # TODO: once the simulation-process correspondence table is implemented, this will be replaced by the corresponding image 
+      p = plot_image(abs.(im[:,:,1]); darkmode=true, width=width, height=height)
+      html_buffer = IOBuffer()
+      KomaMRIPlots.PlotlyBase.to_html(html_buffer, p.plot)
+      return HTTP.Response(200,body=take!(html_buffer))
    end
 end
 
@@ -139,11 +138,11 @@ end
 # PLOT SEQUENCE
 @post "/plot" function(req::HTTP.Request)
    scanner_data = json(req)["scanner"]
-   seq_data = json(req)["sequence"]
+   seq_data     = json(req)["sequence"]
    width  = json(req)["width"]  - 15
    height = json(req)["height"] - 20
    sys = json_to_scanner(scanner_data)
-   seq = json_to_seq(seq_data, sys)
+   seq = json_to_sequence(seq_data, sys)
    p = plot_seq(seq; darkmode=true, width=width, height=height, slider=height>275)
    html_buffer = IOBuffer()
    KomaMRIPlots.PlotlyBase.to_html(html_buffer, p.plot)

@@ -331,6 +331,9 @@ EM_JS(void, plot_sequence, (const char* scanModel, const char* seqModel), {
 EM_JS(void, plot_3d, (float gx, float gy, float gz, float deltaf, float gamma), {
     setNormalPlane(gx, gy, gz, deltaf, gamma);
 })
+EM_JS(void, sim_js, (const char* phantom, const char* seqModel, const char* scanModel), {
+    komaMRIsim(UTF8ToString(phantom), UTF8ToString(seqModel), UTF8ToString(scanModel));
+})
 #endif
 
 // Slots
@@ -470,3 +473,10 @@ void Backend::plot3D(float gx, float gy, float gz, float deltaf, float gamma){
     #endif
 }
 
+void Backend::simulate(QString phantom, QString qmlSeq, QString qmlScan){
+    #ifdef Q_OS_WASM
+        QByteArray seqData      = processJSONSequence(parseQStringtoQByteArray(qmlSeq));
+        QByteArray scanData     = parseQStringtoQByteArray(qmlScan);
+        sim_js(phantom.toStdString().c_str(), QString(seqData).toStdString().c_str(), QString(scanData).toStdString().c_str());
+    #endif
+}

@@ -28,6 +28,7 @@ set(qml_resource_files
     "qml/BlockMenu.qml"
     "qml/ScannerMenu.qml"
     "qml/VariablesMenu.qml"
+    "qml/SimulatorMenu.qml"
     "qml/TextInputItem.qml"
     "qml/MenuLabel.qml"
     "qml/ButtonsMenu.qml"

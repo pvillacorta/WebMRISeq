@@ -49,6 +49,8 @@ public slots:
 
     void plotSequence(QString qmlScan, QString qmlSeq);
     void plot3D(float gx, float gy, float gz, float deltaf, float gamma);
+
+    void simulate(QString phantom, QString qmlSeq, QString qmlScan);
 };
 
 #endif // BACKEND_H

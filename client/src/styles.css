@@ -114,10 +114,11 @@ html, body {
 }
 
 /* Simulator window */
-#sim-content {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
+#simProgress{
+    margin-left: 5%;
+    margin-top: 100px;
+    width: 90%;
+    visibility: collapse;
 }
 
 #myProgress {
@@ -130,4 +131,11 @@ html, body {
     width: 0%;
     height: 30px;
     background-color: #1d9bf0;
+}
+
+#sim-result {
+    visibility: hidden; 
+    height: 98%; 
+    width:98%;
+    margin-top: -4%;
 }

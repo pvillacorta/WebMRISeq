@@ -415,7 +415,6 @@ ApplicationWindow {
         for (var i = 0; i < blockList.count; i++) {
             var item = blockList.get(i); // Obtener el elemento actual
             var updatedItem = convertStringsToNumbers(item); // Convertir sus valores
-            console.log(JSON.stringify(updatedItem))
             rawList.append(updatedItem);
         }
     }
@@ -550,6 +549,12 @@ ApplicationWindow {
         backend.plotSequence(scanstore, seqstore);
     }
 
+    function simulate(phantom_string){
+        var scanstore = scannerToJSON(true);
+        var seqstore  = seqToJSON(true);
+        backend.simulate(phantom_string, seqstore, scanstore);
+    }
+
     // functions getMaxOfArray and getMinOfArray
     function getMaxOfArray(numArray) {
         return Math.max.apply(null, numArray);
@@ -560,6 +565,7 @@ ApplicationWindow {
 
     // function ApplyChanges() is called when the user edits a field in a configuration panel
     // idNumber:
+    // -3:         simulator panel
     // -2:         variables panel
     // -1:         scanner panel
     // 0,1,2,3...: sequence block panel
@@ -1074,11 +1080,11 @@ ApplicationWindow {
         Rectangle{
             id:descriptionRect
 
-            anchors.top:    window.tablet ? blockSeq.bottom : variablesMenu.bottom;  anchors.topMargin: 15
-            anchors.left:   window.tablet ? defaultMenu.right : scannerMenu.left;    anchors.leftMargin: window.tablet ? 15 : 0
-            anchors.right:  blockSeq.right;
+            anchors.top:    window.tablet  ? blockSeq.bottom     : variablesMenu.bottom;  anchors.topMargin: 15
+            anchors.left:   window.tablet  ? defaultMenu.right   : variablesMenu.left;    anchors.leftMargin: window.tablet ? 15 : 0
+            anchors.right:  window.desktop ? variablesMenu.right : blockSeq.right;
 
-            height: window.desktop ? defaultMenu.height - 15 - scannerMenu.height : (window.mobile ? defaultMenu.height : defaultMenu.height + 15 + scannerMenu.height)
+            height: window.desktop ? defaultMenu.height - 15 - scannerMenu.height : (window.tablet ? defaultMenu.height : scannerMenu.height)
 
             radius: window.radius
             color: dark_2
@@ -1110,6 +1116,21 @@ ApplicationWindow {
                 }
             }
         }
+
+        // SIMULATION LAUNCHER
+        SimulatorMenu {
+            id: simulatorMenu
+            visible: true
+
+            anchors.left:  window.tablet  ? descriptionRect.left   : scannerMenu.left
+            anchors.right: window.tablet  ? descriptionRect.right  : scannerMenu.right
+            anchors.top:   window.desktop ? scannerMenu.bottom     : descriptionRect.bottom; anchors.topMargin: 15
+            
+            height: window.desktop ? descriptionRect.height : scannerMenu.height
+
+            radius: window.radius
+        }
+
     } // Flickable
 } // ApplicationWindow
 

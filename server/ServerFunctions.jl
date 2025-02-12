@@ -94,7 +94,7 @@ mat_to_seq(mat,sys::Scanner) = begin
 end
 
 "Convert a json string containing sequence information into a KomaMRIBase.Sequence object"
-json_to_seq(json_seq::JSON3.Object, sys::Scanner) = begin
+json_to_sequence(json_seq::JSON3.Object, sys::Scanner) = begin
    global seq = Sequence()
    # global R = rotation_matrix()
    
@@ -205,6 +205,7 @@ json_to_seq(json_seq::JSON3.Object, sys::Scanner) = begin
 
          EX.GR = get_gradients(block, rep)
          EX.RF[1].delay = maximum(EX.GR.rise)
+         EX.DUR[1] = EX.RF[1].delay + max(maximum(EX.GR.T .+ EX.GR.fall), duration)
          seq += EX
 
       elseif block["cod"] == 2       # <-------------------------- Delay
@@ -222,8 +223,6 @@ json_to_seq(json_seq::JSON3.Object, sys::Scanner) = begin
          end
 
          DEPHASE = Sequence(get_gradients(block, rep))
-
-         display(DEPHASE)
 
          if block["cod"] == 4
             DEPHASE.ADC[1].N = block["samples"]
@@ -281,12 +280,14 @@ end
 
 "Convert a json string containing scanner information into a KomaMRIBase.Scanner object"
 json_to_scanner(json_scanner::JSON3.Object) = begin
+   parameters = json_scanner["parameters"]
+
    sys = Scanner(
-      B0 = json_scanner["b0"],
-      B1 = json_scanner["b1"],
-      Gmax = json_scanner["gmax"],
-      Smax = json_scanner["smax"],
-      ADC_Δt = json_scanner["deltat"],
+      B0 = parameters["b0"],
+      B1 = parameters["b1"],
+      Gmax = parameters["gmax"],
+      Smax = parameters["smax"],
+      ADC_Δt = parameters["deltat"],
    )
    return sys
 end
@@ -306,27 +307,26 @@ recon(raw_signal) = begin
    image  = reshape(aux.value.data,Nx,Ny,:)
    kspace = KomaMRI.fftc(reshape(aux.value.data,Nx,Ny,:))
 
-   # Conversion to uint8
-   image_aux = abs.(image[:,:,1])
-   uint8_image = round.(Int,255*(image_aux./maximum(image_aux)))
-
-   uint8_image
+   return image, kspace
 end
 
 "Obtain raw RM signal. Input arguments are a 2D matrix (sequence) and a 1D vector (system parameters)"
-sim(mat,vec,phantom,path) = begin
+sim(sequence_json, scanner_json, phantom, path) = begin
    # Phantom
-   if phantom == "brain"
+   if phantom     == "Brain 2D"
       phant = KomaMRI.brain_phantom2D()
-   elseif phantom == "pelvis"
+   elseif phantom == "Brain 3D"
+      phant = KomaMRI.brain_phantom3D()
+   elseif phantom == "Pelvis 2D"
       phant = KomaMRI.pelvis_phantom2D()
    end
+   phant.Δw .= 0
 
    # Scanner
-   sys = vec_to_scanner(vec)
+   sys = json_to_scanner(scanner_json)
 
    # Sequence
-   seq = mat_to_seq(mat,sys)
+   seq = json_to_sequence(sequence_json, sys)
 
    # Simulation parameters
    simParams = Dict{String,Any}()
@@ -335,7 +335,7 @@ sim(mat,vec,phantom,path) = begin
    raw_signal = simulate(phant, seq, sys; sim_params=simParams, w=path)
 
    # Reconstruction
-   image = recon(raw_signal)
+   image, kspace = recon(raw_signal)
 
    if path !== nothing
          io = open(path,"w") # "w" mode overwrites last status value, even if it has not been read yet
@@ -346,8 +346,7 @@ sim(mat,vec,phantom,path) = begin
    image
 end
 
-    
-
+"Render an HTML file in order to send it to the client"
 function render_html(html_file::String; status=200, headers=["Content-type" => "text/html"]) :: HTTP.Response
    io = open(html_file,"r") do file
       read(file, String)
