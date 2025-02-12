@@ -25,3 +25,6 @@
    ./serve.sh
 ```
 3. Open browser and go to 127.0.0.1:8085
+
+## OpenAPI:
+The OpenAPI specification document for this API is available [here](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/pvillacorta/WebMRISeq/refs/heads/master/docs/api.yaml).
