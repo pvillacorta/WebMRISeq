@@ -4,6 +4,7 @@
 ## Requirements
 - vcpkg
 - CMake
+- C++ Compiler (GCC, MinGW)
 - Qt v6.6
 - Emscripten (emsdk) v3.1.37
 - Julia v1.10
