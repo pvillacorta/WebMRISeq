@@ -1,0 +1,327 @@
+openapi: 3.0.0
+paths:
+  /app:
+    get:
+      summary: Get the app and the web content
+      responses:
+        '200':
+          content:
+            text/html:
+              schema:
+                format: html
+          description: App and web content
+        '404':
+          description: Not found
+        '500':
+          description: Internal server error
+      tags:
+        - web
+      description: Get the app and the web content
+  /simulate:
+    post:
+      summary: Add a new simulation request
+      requestBody:
+        content:
+          application/json:
+            example:
+              phantom: Brain 2D
+              sequence:
+                blocks:
+                  - duration: 0.001
+                    name: ''
+                    rf:
+                      - shape: 0
+                        deltaf: 0
+                        flipAngle: 10
+                    ngroups: 0
+                    cod: 1
+                    gradients:
+                      - step: 0
+                        axis: x
+                        flatTop: 0.001
+                        delay: 0
+                        rise: 0.0005
+                        amplitude: 0.001
+                      - step: 0
+                        axis: 'y'
+                        flatTop: 0
+                        delay: 0
+                        rise: 0
+                        amplitude: 0
+                      - step: 0
+                        axis: z
+                        flatTop: 0
+                        delay: 0
+                        rise: 0
+                        amplitude: 0
+                    children: []
+                  - duration: 0.001
+                    name: ''
+                    adcDelay: 0
+                    ngroups: 0
+                    samples: 64
+                    cod: 4
+                    gradients:
+                      - step: 0
+                        axis: x
+                        flatTop: 0.001
+                        delay: 0
+                        rise: 0.0005
+                        amplitude: 0.001
+                      - step: 0
+                        axis: 'y'
+                        flatTop: 0
+                        delay: 0
+                        rise: 0
+                        amplitude: 0
+                      - step: 0
+                        axis: z
+                        flatTop: 0
+                        delay: 0
+                        rise: 0
+                        amplitude: 0
+                    children: []
+                description: Simple RF pulse and ADC sequence
+              scanner:
+                parameters:
+                  deltat: 0.000002
+                  gmax: 0.06
+                  smax: 500
+                  b0: 1.5
+                  b1: 0.00001
+            schema:
+              properties:
+                phantom:
+                  type: string
+                sequence:
+                  type: object
+                scanner:
+                  type: object
+              type: object
+        required: true
+      responses:
+        '202':
+          headers:
+            Location:
+              description: >-
+                URL with the simulation ID, to check the status of the
+                simulation
+              schema:
+                format: uri
+                type: string
+          description: Accepted operation
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+      tags:
+        - simulation
+      description: Add a new simulation request
+  /simulate/{simulationId}:
+    get:
+      summary: Get the result of a simulation
+      parameters:
+        - name: simulationId
+          required: true
+          in: path
+          description: The ID of the simulation
+          schema:
+            example: 1
+            type: integer
+        - name: width
+          in: query
+          description: Width of the image
+          schema:
+            example: 800
+            type: integer
+        - name: height
+          in: query
+          description: Height of the image
+          schema:
+            example: 600
+            type: integer
+      responses:
+        '200':
+          content:
+            text/html:
+              schema:
+                format: html
+          description: Simulation result
+        '303':
+          headers:
+            Location:
+              description: URL with the simulation status
+              schema:
+                format: uri
+                type: string
+          description: Simulation not finished yet
+        '404':
+          description: Simulation not found
+        '500':
+          description: Internal server error
+      tags:
+        - simulation
+      description: >-
+        Get the result of a simulation. If the simulation has finished, it
+        returns its result. If not, it returns 303 with location =
+        /simulate/{simulationId}/status
+  /:
+    get:
+      summary: Redirect to the app
+      responses:
+        '301':
+          headers:
+            Location:
+              description: URL with the app
+              schema:
+                format: uri
+                type: string
+          description: Redirect to /app
+        '404':
+          description: Not found
+        '500':
+          description: Internal server error
+      tags:
+        - web
+      description: Redirect to the app
+  /plot:
+    post:
+      summary: Plot a sequence
+      requestBody:
+        content:
+          application/json:
+            example:
+              height: 600
+              sequence:
+                blocks:
+                  - duration: 0.001
+                    name: ''
+                    rf:
+                      - shape: 0
+                        deltaf: 0
+                        flipAngle: 10
+                    ngroups: 0
+                    cod: 1
+                    gradients:
+                      - step: 0
+                        axis: x
+                        flatTop: 0.001
+                        delay: 0
+                        rise: 0.0005
+                        amplitude: 0.001
+                      - step: 0
+                        axis: 'y'
+                        flatTop: 0
+                        delay: 0
+                        rise: 0
+                        amplitude: 0
+                      - step: 0
+                        axis: z
+                        flatTop: 0
+                        delay: 0
+                        rise: 0
+                        amplitude: 0
+                    children: []
+                  - duration: 0.001
+                    name: ''
+                    adcDelay: 0
+                    ngroups: 0
+                    samples: 64
+                    cod: 4
+                    gradients:
+                      - step: 0
+                        axis: x
+                        flatTop: 0.001
+                        delay: 0
+                        rise: 0.0005
+                        amplitude: 0.001
+                      - step: 0
+                        axis: 'y'
+                        flatTop: 0
+                        delay: 0
+                        rise: 0
+                        amplitude: 0
+                      - step: 0
+                        axis: z
+                        flatTop: 0
+                        delay: 0
+                        rise: 0
+                        amplitude: 0
+                    children: []
+                description: Simple RF pulse and ADC sequence
+              scanner:
+                parameters:
+                  deltat: 0.000002
+                  gmax: 0.06
+                  smax: 500
+                  b0: 1.5
+                  b1: 0.00001
+              width: 800
+            schema:
+              properties:
+                height:
+                  type: integer
+                sequence:
+                  type: object
+                scanner:
+                  type: object
+                width:
+                  type: integer
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            text/html:
+              schema:
+                format: html
+          description: Plot of the sequence
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+      tags:
+        - plot
+      description: Plot a sequence
+  /simulate/{simulationId}/status:
+    get:
+      summary: Get the status of a simulation
+      parameters:
+        - name: simulationId
+          required: true
+          in: path
+          description: The ID of the simulation
+          schema:
+            example: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  progress:
+                    type: integer
+                    description: Simulation progress
+                type: object
+          description: Simulation status
+        '404':
+          description: Simulation not found
+        '500':
+          description: Internal server error
+      tags:
+        - simulation
+      description: >
+        Get the status of a simulation:
+
+        - If the simulation has not started yet, it returns -1
+
+        - If the simulation is running, it returns a value between 0 and 100
+
+        - If the simulation has finished but the reconstruction is in progress,
+        it returns 100
+
+        - If the reconstruction has finished, it returns 101
+info:
+  title: WebMRISeq API
+  version: 1.0.0
