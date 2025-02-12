@@ -1,5 +1,5 @@
 # Web MRI Sequence Editor
-<img width="100%" src=".docs/assets/gui.gif"/>
+<img width="100%" src="./docs/assets/gui.gif"/>
 
 ## Requirements
 - vcpkg
