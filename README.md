@@ -5,7 +5,6 @@ Web-based MRI Sequence Editor and Simulator based on [KomaMRI](https://github.co
 ## Requirements
 - vcpkg
 - CMake
-- C++ Compiler (GCC, MinGW)
 - Qt v6.6
 - Emscripten (emsdk) v3.1.37
 - Julia v1.10
