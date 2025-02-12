@@ -55,6 +55,8 @@ Rectangle{
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 15
         height: 25
+        width: 100
+        font.pointSize: window.fontSize
 
         onClicked: {
             simulate(phantomInput.currentText)
