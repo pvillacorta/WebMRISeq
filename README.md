@@ -1,4 +1,5 @@
 # Web MRI Sequence Editor
+Web-based MRI Sequence Editor and Simulator based on KomaMRI
 <img width="100%" src="./docs/assets/gui.gif"/>
 
 ## Requirements
