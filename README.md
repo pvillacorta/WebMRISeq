@@ -1,11 +1,10 @@
 # Web MRI Sequence Editor
-Web-based MRI Sequence Editor and Simulator based on [KomaMRI](https://github.com/JuliaHealth/KomaMRI.jl).
+Web MRI Sequence Editor and Simulator based on [KomaMRI](https://github.com/JuliaHealth/KomaMRI.jl).
 <img width="100%" src="./docs/assets/gui.gif"/>
 
 ## Requirements
 - vcpkg
 - CMake
-- C++ Compiler (GCC, MinGW)
 - Qt v6.6
 - Emscripten (emsdk) v3.1.37
 - Julia v1.10
