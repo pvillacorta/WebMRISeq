@@ -187,6 +187,45 @@ paths:
         Get the result of a simulation. If the simulation has finished, it
         returns its result. If not, it returns 303 with location =
         /simulate/{simulationId}/status
+  /simulate/{simulationId}/status:
+    get:
+      summary: Get the status of a simulation
+      parameters:
+        - name: simulationId
+          required: true
+          in: path
+          description: The ID of the simulation
+          schema:
+            example: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  progress:
+                    type: integer
+                    description: Simulation progress
+                type: object
+          description: Simulation status
+        '404':
+          description: Simulation not found
+        '500':
+          description: Internal server error
+      tags:
+        - simulation
+      description: >-
+        Get the status of a simulation:
+
+        - If the simulation has not started yet, it returns -1
+
+        - If the simulation is running, it returns a value between 0 and 100
+
+        - If the simulation has finished but the reconstruction is in progress,
+        it returns 100
+
+        - If the reconstruction has finished, it returns 101
   /plot:
     post:
       summary: Plot a sequence
@@ -286,45 +325,6 @@ paths:
       tags:
         - plot
       description: Plot a sequence
-  /simulate/{simulationId}/status:
-    get:
-      summary: Get the status of a simulation
-      parameters:
-        - name: simulationId
-          required: true
-          in: path
-          description: The ID of the simulation
-          schema:
-            example: 1
-            type: integer
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                properties:
-                  progress:
-                    type: integer
-                    description: Simulation progress
-                type: object
-          description: Simulation status
-        '404':
-          description: Simulation not found
-        '500':
-          description: Internal server error
-      tags:
-        - simulation
-      description: >
-        Get the status of a simulation:
-
-        - If the simulation has not started yet, it returns -1
-
-        - If the simulation is running, it returns a value between 0 and 100
-
-        - If the simulation has finished but the reconstruction is in progress,
-        it returns 100
-
-        - If the reconstruction has finished, it returns 101
 info:
   title: WebMRISeq API
   version: 1.0.0
