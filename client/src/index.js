@@ -47,12 +47,6 @@ function setNormalPlane(gx, gy, gz, deltaf, gamma){
       (c, i) => c + rv[i]
   )
 
-  // console.log("r: ", r)
-  // console.log("rv: ", rv)
-  // console.log("planeCenter: ", imageData.getCenter())
-  // console.log("planeCenter': ", planeCenter)
-  // console.log("imageBounds: ", imageData.getBounds())
-
   let spacing = imageData.getSpacing(); // Devuelve [sx, sy, sz] en mm por voxel
   console.log("Espaciado de voxel:", spacing);
 
@@ -65,7 +59,7 @@ function setup() {
   const genericRenderer3d = vtkGenericRenderWindow.newInstance({
     background: [ 0.188,
                   0.200,
-                  0.212] 
+                  0.212 ] 
   })
   genericRenderer3d.setContainer(document.querySelector("#VTKjs"))
   genericRenderer3d.resize()

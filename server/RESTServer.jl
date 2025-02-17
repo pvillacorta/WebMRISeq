@@ -70,10 +70,13 @@ end
                 schema:
                   type: string
                   format: uri
-         '404':
-            description: Not found
-         '500':
-            description: Internal server error
+         default:
+            description: Always returns a 301 redirect to /app
+            headers:
+              Location:
+                schema:
+                  type: string
+                  example: "/app"
 """
 @get "/" function(req::HTTP.Request)
    return HTTP.Response(301, ["Location" => "/app"])
