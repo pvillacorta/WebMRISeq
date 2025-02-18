@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd client
+cd frontend
 
 # Configurar el proyecto
 SRC_DIR="./src/seqEditor"

@@ -25,7 +25,7 @@ using StructTypes
    # using CUDA #TODO: Find a way to choose between CPU and GPU
 end
 
-dynamic_files_path = string(@__DIR__, "/../client/dist")
+dynamic_files_path = string(@__DIR__, "/../frontend/dist")
 dynamicfiles(dynamic_files_path, "dynamic") 
 staticfiles("../public", "public") 
 

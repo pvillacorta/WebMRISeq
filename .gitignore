@@ -1,7 +1,7 @@
 Qt
-client/src/seqEditor/CMakeLists.txt.user
-client/package-lock.json
-client/dist
-client/node_modules
+frontend/src/seqEditor/CMakeLists.txt.user
+frontend/package-lock.json
+frontend/dist
+frontend/node_modules
 .vscode
-server/Manifest.toml
+backend/Manifest.toml

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd client
+cd frontend
 
 # NPM
 npm install
