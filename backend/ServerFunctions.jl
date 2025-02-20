@@ -151,7 +151,7 @@ json_to_sequence(json_seq::JSON3.Object, sys::Scanner) = begin
          end
 
       elseif block["cod"] == 1       # <-------------------------- Excitation
-         print("Excitation\n")
+         # print("Excitation\n")
 
          rf     = block["rf"][1]
          shape  = rf["shape"]
@@ -209,7 +209,7 @@ json_to_sequence(json_seq::JSON3.Object, sys::Scanner) = begin
          seq += EX
 
       elseif block["cod"] == 2       # <-------------------------- Delay
-         print("Delay\n")
+         # print("Delay\n")
 
          duration = block["duration"]
          DELAY = Delay(duration)
@@ -217,9 +217,9 @@ json_to_sequence(json_seq::JSON3.Object, sys::Scanner) = begin
 
       elseif block["cod"] in [3,4]   # <-------------------------- Dephase or Readout
          if block["cod"] == 3
-            print("Dephase\n")
+            # print("Dephase\n")
          elseif block["cod"] == 4
-            print("Readout\n")
+            # print("Readout\n")
          end
 
          DEPHASE = Sequence(get_gradients(block, rep))
@@ -235,7 +235,7 @@ json_to_sequence(json_seq::JSON3.Object, sys::Scanner) = begin
          seq += DEPHASE
 
       elseif block["cod"] == 5       # <-------------------------- EPI
-         print("EPI\n")
+         # print("EPI\n")
 
          fov = block["fov"]
          lines = block["lines"]
@@ -248,7 +248,7 @@ json_to_sequence(json_seq::JSON3.Object, sys::Scanner) = begin
          seq += EPI
 
       elseif block["cod"] == 6       # <-------------------------- GRE  
-         print("GRE\n")
+         # print("GRE\n")
 
          fov = block["fov"]
          lines = block["lines"]
@@ -293,15 +293,17 @@ json_to_scanner(json_scanner::JSON3.Object) = begin
 end
 
 "Obtain the reconstructed image from raw_signal (obtained from simulation)"
-recon(raw_signal) = begin
+recon(raw_signal, seq) = begin
    recParams = Dict{Symbol,Any}(:reco=>"direct")
+   Nx = seq.DEF["Nx"]
+   Ny = seq.DEF["Ny"]
+
+   recParams[:reconSize] = (Nx, Ny)
+   recParams[:densityWeighting] = false
 
    acqData = AcquisitionData(raw_signal)
    acqData.traj[1].circular = false #Removing circular window
    acqData.traj[1].nodes = acqData.traj[1].nodes[1:2,:] ./ maximum(2*abs.(acqData.traj[1].nodes[:])) #Normalize k-space to -.5 to .5 for NUFFT
-   Nx, Ny = raw_signal.params["reconSize"][1:2]
-   recParams[:reconSize] = (Nx, Ny)
-   recParams[:densityWeighting] = true
 
    aux = @timed reconstruction(acqData, recParams)
    image  = reshape(aux.value.data,Nx,Ny,:)
@@ -335,7 +337,7 @@ sim(sequence_json, scanner_json, phantom, path) = begin
    raw_signal = simulate(phant, seq, sys; sim_params=simParams, w=path)
 
    # Reconstruction
-   image, kspace = recon(raw_signal)
+   image, kspace = recon(raw_signal, seq)
 
    if path !== nothing
          io = open(path,"w") # "w" mode overwrites last status value, even if it has not been read yet
