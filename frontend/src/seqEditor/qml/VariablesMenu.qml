@@ -96,7 +96,7 @@ Rectangle{
         }
     }
 
-    MouseArea{
+    Item{
         id: variablesArea
         anchors.fill: parent
         anchors.bottomMargin:10
@@ -109,13 +109,14 @@ Rectangle{
             anchors.fill: parent
             orientation: ListView.Vertical
             clip: true
-            interactive: true
             model: variablesList
+            boundsBehavior: Flickable.StopAtBounds 
             
             ScrollBar.vertical: ScrollBar{
                 id: varScrollBar
                 active: true
                 orientation: Qt.Vertical
+                policy: ScrollBar.AlwaysOn
             }
 
             delegate: GridLayout{ 
