@@ -189,7 +189,7 @@ Item {
                                     "grouped": false,
                                     "rf": [],
                                     "gradients": [],
-                                    "repetitions": 1});
+                                    "repetitions": "1"});
 
                 for(j=blockList.count-1;j>=0;j--){
                     // Check if there are groups more to the right (we must displace their children one step to the right)
