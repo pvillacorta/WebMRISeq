@@ -1,0 +1,294 @@
+{
+    "blocks": [
+        {
+            "children": [
+                {
+                    "number": 1
+                },
+                {
+                    "number": 2
+                },
+                {
+                    "number": 3
+                },
+                {
+                    "number": 4
+                },
+                {
+                    "number": 5
+                },
+                {
+                    "number": 6
+                },
+                {
+                    "number": 7
+                }
+            ],
+            "cod": 0,
+            "name": "TR",
+            "ngroups": 0,
+            "repetitions": "N"
+        },
+        {
+            "children": [],
+            "cod": 1,
+            "duration": "RF_dur",
+            "gradients": [
+                {
+                    "amplitude": "0",
+                    "axis": "x",
+                    "delay": "0",
+                    "flatTop": "0",
+                    "rise": "0",
+                    "step": "0"
+                },
+                {
+                    "amplitude": "0",
+                    "axis": "y",
+                    "delay": "0",
+                    "flatTop": "0",
+                    "rise": "0",
+                    "step": "0"
+                },
+                {
+                    "amplitude": "G_ss",
+                    "axis": "z",
+                    "delay": "0",
+                    "flatTop": "RF_dur",
+                    "rise": "rise_phase",
+                    "step": "0"
+                }
+            ],
+            "name": "",
+            "ngroups": 1,
+            "rf": [
+                {
+                    "deltaf": "0",
+                    "flipAngle": "90",
+                    "shape": 1
+                }
+            ]
+        },
+        {
+            "children": [],
+            "cod": 3,
+            "gradients": [
+                {
+                    "amplitude": "G_phase/2",
+                    "axis": "x",
+                    "delay": "0",
+                    "flatTop": "flat_top_phase",
+                    "rise": "rise_phase",
+                    "step": "0"
+                },
+                {
+                    "amplitude": "G_phase/2",
+                    "axis": "y",
+                    "delay": "0",
+                    "flatTop": "flat_top_phase",
+                    "rise": "rise_phase",
+                    "step": "-G_phase/(N-1)"
+                },
+                {
+                    "amplitude": "-G_ss",
+                    "axis": "z",
+                    "delay": "0",
+                    "flatTop": "flat_top_phase",
+                    "rise": "rise_phase",
+                    "step": "0"
+                }
+            ],
+            "name": "",
+            "ngroups": 1
+        },
+        {
+            "children": [],
+            "cod": 2,
+            "duration": "TE/2 - (RF_dur + flat_top_phase + 4*rise_phase)",
+            "name": "",
+            "ngroups": 1
+        },
+        {
+            "children": [],
+            "cod": 1,
+            "duration": "RF_dur",
+            "gradients": [
+                {
+                    "amplitude": "0",
+                    "axis": "x",
+                    "delay": "0",
+                    "flatTop": "0",
+                    "rise": "0",
+                    "step": "0"
+                },
+                {
+                    "amplitude": "0",
+                    "axis": "y",
+                    "delay": "0",
+                    "flatTop": "0",
+                    "rise": "0",
+                    "step": "0"
+                },
+                {
+                    "amplitude": "G_ss",
+                    "axis": "z",
+                    "delay": "0",
+                    "flatTop": "RF_dur",
+                    "rise": "rise_phase",
+                    "step": "0"
+                }
+            ],
+            "name": "",
+            "ngroups": 1,
+            "rf": [
+                {
+                    "deltaf": "0",
+                    "flipAngle": "180",
+                    "shape": 1
+                }
+            ]
+        },
+        {
+            "children": [],
+            "cod": 2,
+            "duration": "TE/2 - (RF_dur/2 + rise_phase + ACQ_dur/2 + rise_ro)",
+            "name": "",
+            "ngroups": 1
+        },
+        {
+            "adcDelay": "rise_ro",
+            "children": [],
+            "cod": 4,
+            "duration": "ACQ_dur",
+            "gradients": [
+                {
+                    "amplitude": "G_ro",
+                    "axis": "x",
+                    "delay": "0",
+                    "flatTop": "ACQ_dur",
+                    "rise": "rise_ro",
+                    "step": "0"
+                },
+                {
+                    "amplitude": "0",
+                    "axis": "y",
+                    "delay": "0",
+                    "flatTop": "0",
+                    "rise": "0",
+                    "step": "0"
+                },
+                {
+                    "amplitude": "0",
+                    "axis": "z",
+                    "delay": "0",
+                    "flatTop": "0",
+                    "rise": "0",
+                    "step": "0"
+                }
+            ],
+            "name": "",
+            "ngroups": 1,
+            "samples": "N"
+        },
+        {
+            "children": [],
+            "cod": 2,
+            "duration": "TR - (TE + rise_ro + ACQ_dur/2)",
+            "name": "",
+            "ngroups": 1
+        }
+    ],
+    "description": "Spin echo\n\n                            TE (ms)         TR (ms)\nT1-Weighted         10-30           300-800      \nPD-Weighted         10-30           >=2000\nT2-Weighted         70-120         >=2000\n\n",
+    "variables": [
+        {
+            "expression": "42.5774688e6",
+            "name": "gamma",
+            "readonly": true,
+            "value": 42577468.8
+        },
+        {
+            "expression": "100",
+            "name": "N",
+            "readonly": false,
+            "value": 100
+        },
+        {
+            "expression": "0.23",
+            "name": "FOV",
+            "readonly": false,
+            "value": 0.23
+        },
+        {
+            "expression": "14e-3",
+            "name": "TE",
+            "readonly": false,
+            "value": 0.014
+        },
+        {
+            "expression": "700e-3",
+            "name": "TR",
+            "readonly": false,
+            "value": 0.7
+        },
+        {
+            "expression": "(N-1)/FOV",
+            "name": "FOVk",
+            "readonly": false,
+            "value": 430.4347826086956
+        },
+        {
+            "expression": "1e-4",
+            "name": "rise_phase",
+            "readonly": false,
+            "value": 0.0001
+        },
+        {
+            "expression": "1e-3",
+            "name": "flat_top_phase",
+            "readonly": false,
+            "value": 0.001
+        },
+        {
+            "expression": "20e-3",
+            "name": "G_ss",
+            "readonly": false,
+            "value": 0.02
+        },
+        {
+            "expression": "FOVk/(gamma*(rise_phase+flat_top_phase))",
+            "name": "G_phase",
+            "readonly": false,
+            "value": 0.00919040889124172
+        },
+        {
+            "expression": "TE/4",
+            "name": "ACQ_dur",
+            "readonly": false,
+            "value": 0.0035
+        },
+        {
+            "expression": "FOVk/(gamma*ACQ_dur)",
+            "name": "G_ro",
+            "readonly": false,
+            "value": 0.0028884142229616836
+        },
+        {
+            "expression": "1e-4",
+            "name": "rise_ro",
+            "readonly": false,
+            "value": 0.0001
+        },
+        {
+            "expression": "2*flat_top_phase",
+            "name": "RF_dur",
+            "readonly": false,
+            "value": 0.002
+        },
+        {
+            "expression": "10e-3",
+            "name": "A",
+            "readonly": false,
+            "value": 0.01
+        }
+    ]
+}

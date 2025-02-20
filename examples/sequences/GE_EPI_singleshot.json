@@ -1,0 +1,107 @@
+{
+    "blocks": [
+        {
+            "children": [],
+            "cod": 1,
+            "duration": "1e-3",
+            "gradients": [
+                {
+                    "amplitude": "0",
+                    "axis": "x",
+                    "delay": "0",
+                    "flatTop": "0",
+                    "rise": "0",
+                    "step": "0"
+                },
+                {
+                    "amplitude": "0",
+                    "axis": "y",
+                    "delay": "0",
+                    "flatTop": "0",
+                    "rise": "0",
+                    "step": "0"
+                },
+                {
+                    "amplitude": "A",
+                    "axis": "z",
+                    "delay": "0",
+                    "flatTop": "1e-3",
+                    "rise": "1e-4",
+                    "step": "0"
+                }
+            ],
+            "name": "",
+            "ngroups": 0,
+            "rf": [
+                {
+                    "deltaf": "0",
+                    "flipAngle": "20",
+                    "shape": 1
+                }
+            ]
+        },
+        {
+            "children": [],
+            "cod": 3,
+            "gradients": [
+                {
+                    "amplitude": "0",
+                    "axis": "x",
+                    "delay": "0",
+                    "flatTop": "0",
+                    "rise": "0",
+                    "step": "0"
+                },
+                {
+                    "amplitude": "0",
+                    "axis": "y",
+                    "delay": "0",
+                    "flatTop": "0",
+                    "rise": "0",
+                    "step": "0"
+                },
+                {
+                    "amplitude": "-A",
+                    "axis": "z",
+                    "delay": "0",
+                    "flatTop": "0.5e-3",
+                    "rise": "1e-4",
+                    "step": "0"
+                }
+            ],
+            "name": "",
+            "ngroups": 0
+        },
+        {
+            "children": [],
+            "cod": 2,
+            "duration": "1e-3",
+            "name": "",
+            "ngroups": 0
+        },
+        {
+            "children": [],
+            "cod": 5,
+            "fov": "0.23",
+            "lines": "100",
+            "name": "",
+            "ngroups": 0,
+            "samples": "100"
+        }
+    ],
+    "description": "EPI single-shot \n100 x 100          FOV 23 cm      \nFlip angle 20º    TE 30 ms\n",
+    "variables": [
+        {
+            "expression": "42.5774688e6",
+            "name": "gamma",
+            "readonly": true,
+            "value": 42577468.8
+        },
+        {
+            "expression": "10e-3",
+            "name": "A",
+            "readonly": false,
+            "value": 0.01
+        }
+    ]
+}
