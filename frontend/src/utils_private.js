@@ -329,6 +329,60 @@ function plot_seq(scanner_json, seq_json){
     });
 }
 
+function exportPulseq(scanner_json, seq_json){
+    const scannerObj = JSON.parse(scanner_json);
+    const seqObj     = JSON.parse(seq_json);
+
+    const combinedObj = {
+        scanner: scannerObj,
+        sequence: seqObj,
+    };
+
+    fetch("/api/export/pulseq", {
+        method: "POST",
+        headers: {
+            "Content-type": "application/json",
+            "Authorization": "Bearer " + localStorage.token,
+        },
+        body: JSON.stringify(combinedObj)
+    })
+    .then(async res => {
+        if (!res.ok) {
+            const json = await res.json();
+            throw new Error(json.msg);
+        }
+        const blob = await res.blob();
+        const disp = res.headers.get("Content-Disposition");
+        const match = disp && disp.match(/filename="?([^";]+)"?/);
+        const filename = match ? match[1].trim() : "sequence.seq";
+        // Diálogo nativo "Guardar como" (nombre + carpeta) si está disponible
+        if (typeof window.showSaveFilePicker === "function") {
+            try {
+                const handle = await window.showSaveFilePicker({
+                    suggestedName: filename,
+                    types: [{ description: "Pulseq sequence", accept: { "application/octet-stream": [".seq"] } }],
+                });
+                const w = await handle.createWritable();
+                await w.write(blob);
+                await w.close();
+                return;
+            } catch (e) {
+                if (e.name === "AbortError") return; // usuario canceló
+            }
+        }
+        // Fallback: descarga con enlace (p. ej. Firefox, Safari)
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    })
+    .catch(error => {
+        console.error("Error in the request:", error);
+    });
+}
+
 function logout() {
     fetch('/logout')
         .then(res => {

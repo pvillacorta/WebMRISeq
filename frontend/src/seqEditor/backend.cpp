@@ -349,6 +349,9 @@ EM_JS(void, display_phantom, (const char* filename), {
 EM_JS(void, sim_js, (const char* seqModel, const char* scanModel), {
     komaMRIsim(UTF8ToString(seqModel), UTF8ToString(scanModel));
 })
+EM_JS(void, export_pulseq, (const char* scanModel, const char* seqModel), {
+    exportPulseq(UTF8ToString(scanModel), UTF8ToString(seqModel));
+})
 
 // Helper function that can access private members (friend function)
 #ifdef Q_OS_WASM
@@ -586,6 +589,15 @@ void Backend::plotSequence(QString qmlScan, QString qmlSeq){
         QByteArray seqData  = processJSONSequence(parseQStringtoQByteArray(qmlSeq));
 
         plot_sequence(QString(scanData).toStdString().c_str(), QString(seqData).toStdString().c_str());
+    #endif
+}
+
+void Backend::exportPulseq(QString qmlScan, QString qmlSeq){
+    #ifdef Q_OS_WASM
+        QByteArray scanData = parseQStringtoQByteArray(qmlScan);
+        QByteArray seqData  = processJSONSequence(parseQStringtoQByteArray(qmlSeq));
+
+        export_pulseq(QString(scanData).toStdString().c_str(), QString(seqData).toStdString().c_str());
     #endif
 }
 

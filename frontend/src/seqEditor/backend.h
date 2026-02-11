@@ -62,6 +62,8 @@ public slots:
     void displayPhantom(QString filename);
 
     void simulate(QString qmlSeq, QString qmlScan);
+
+    void exportPulseq(QString qmlScan, QString qmlSeq);
 };
 
 #endif // BACKEND_H

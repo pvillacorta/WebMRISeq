@@ -977,6 +977,40 @@ end
    end
 end
 
+## EXPORT SEQUENCE TO PULSEQ
+@post "/api/export/pulseq" function(req::HTTP.Request)
+   try
+      scanner_data = json(req)["scanner"]
+      seq_data     = json(req)["sequence"]
+      jwt2 = get_jwt_from_auth_header(HTTP.header(req, "Authorization"))
+      uname = claims(jwt2)["username"]
+
+      if !haskey(ACTIVE_SESSIONS, uname) # Check if the user has already an active session
+         assign_process(uname) # Assign a new Julia process to the user
+      end
+      pid = ACTIVE_SESSIONS[uname]
+
+      SCANNERS[uname]                       = json_to_scanner(scanner_data)
+      SEQUENCES[uname], ROT_MATRICES[uname] = json_to_sequence(seq_data, SCANNERS[uname])
+
+      filename = "$(uname)_Sequence.seq"
+      remotecall_fetch(write_seq, pid, SEQUENCES[uname], filename)
+
+      # Worker escribe en su cwd (= backend); leer y devolver el fichero
+      filepath = joinpath(@__DIR__, filename)
+      body = read(filepath, String)
+      rm(filepath; force = true)  # opcional: borrar tras enviar
+
+      headers = [
+         "Content-Disposition" => "attachment; filename=\"$(filename)\"",
+         "Content-Type"        => "application/octet-stream",
+      ]
+      return HTTP.Response(200, headers, body)
+   catch e
+      return HTTP.Response(500, body = JSON3.write(string(e)))
+   end
+end
+
 ## SELECT AND PLOT PHANTOM
 @swagger """
 /api/plot/phantom:

@@ -494,8 +494,14 @@ ApplicationWindow {
 
     // Function saveSeq()
     function saveSeq(extension){
-        var datastore = seqToJSON();
-        backend.getDownloadSequence(datastore, extension);
+        if(extension === "pulseq"){
+            var scanstore = scannerToJSON();
+            var seqstore  = seqToJSON();
+            backend.exportPulseq(scanstore, seqstore);
+        } else {
+            var datastore = seqToJSON();
+            backend.getDownloadSequence(datastore, extension);
+        }
     }
 
     // Function saveScanner()
@@ -767,12 +773,16 @@ ApplicationWindow {
                             title: "Save Sequence"
                             font.pointSize: 10
                             Action {
-                                text: ".json"
+                                text: "JSON (.json)"
                                 onTriggered: saveSeq("json");
                             }
                             Action {
-                                text: ".qml"
+                                text: "QML (.qml)"
                                 onTriggered: saveSeq("qml");
+                            }
+                            Action {
+                                text: "Pulseq (.seq)"
+                                onTriggered: saveSeq("pulseq");
                             }
                         }
                     }
