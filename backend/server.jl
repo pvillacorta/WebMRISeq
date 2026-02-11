@@ -38,7 +38,8 @@ phantom_files_path = string(@__DIR__, "/phantoms")
 dynamicfiles(dynamic_files_path, "/") 
 staticfiles(phantom_files_path, "/public")
 
-const PUBLIC_URLS = ["/login", "/login.js", "/login.js.map", "/register", "/favicon.ico"]
+const PUBLIC_URLS = ["/favicon.ico"]
+const LOGIN_URLS = ["/login", "/login.js", "/login.js.map", "/register"]
 const PRIVATE_URLS = ["/api/simulate", "/api/recon", "/api/plot/sequence", "/api/plot/phantom"]
 const ADMIN_URLS = ["/admin", "/api/admin/users", "/api/admin/sequences", "/api/admin/sequences/{userId}", "/api/admin/results/{resultId}", "/api/admin/stats/sequences", "/api/admin/users/{userId}/sequences"]
 
@@ -138,14 +139,17 @@ function AuthMiddleware(handler)
          else
             return HTTP.Response(303, ["Location" => "/login"])
          end
+      elseif any(base -> startswith(path, base), LOGIN_URLS)
+      # Login resource. If already logged in, redirect to /app.
+         return check_jwt(jwt1, ipaddr, 1) ? HTTP.Response(303, ["Location" => "/app"]) : handler(req)
       elseif any(base -> startswith(path, base), PUBLIC_URLS)
       # Public resource. This does not requires cookie
-         return check_jwt(jwt1, ipaddr, 1) ? HTTP.Response(303, ["Location" => "/app"]) : handler(req)
+         return handler(req)
       elseif any(base -> startswith(path, base), PRIVATE_URLS) 
       # Private resource. This requires both the cookie and the Authorization header
          return (check_jwt(jwt1, ipaddr, 1) && check_jwt(jwt2, ipaddr, 2)) ? handler(req) : HTTP.Response(303, ["Location" => "/login"])
       else 
-      # Private dashboard. This only requires the cookie.
+      # User dashboard. This only requires the cookie.
          return check_jwt(jwt1, ipaddr, 1) ? handler(req) : HTTP.Response(303, ["Location" => "/login"])
       end
    end
