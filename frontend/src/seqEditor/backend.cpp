@@ -338,7 +338,7 @@ QByteArray Backend::parseQStringtoQByteArray(QString model){
 // WebAssembly
 #ifdef Q_OS_WASM
 EM_JS(void, plot_sequence, (const char* scanModel, const char* seqModel), {
-    plot_seq(UTF8ToString(scanModel), UTF8ToString(seqModel));
+    plotSeq(UTF8ToString(scanModel), UTF8ToString(seqModel));
 })
 EM_JS(void, plot_3d, (float gx, float gy, float gz, float deltaf, float gamma), {
     setNormalPlane(gx, gy, gz, deltaf, gamma);

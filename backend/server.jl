@@ -664,12 +664,10 @@ end
       - simulation
       summary: Get the status of a simulation
       description: |
-         Get the status of a simulation:
+         Get the status of a simulation (reconstruction status is reported by /api/recon/{simID}):
          - If the simulation has not started yet, it returns -1
-         - If the simulation has has failed, it returns -2
-         - If the simulation is running, it returns a value between 0 and 100
-         - If the simulation has finished but the reconstruction is in progress, it returns 100
-         - If the reconstruction has finished, it returns 101
+         - If the simulation has failed, it returns -2
+         - If the simulation is running or has finished, it returns a value between 0 and 100
       parameters:
          - in: path
            name: simID

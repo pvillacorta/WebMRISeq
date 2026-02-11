@@ -16,7 +16,6 @@ function setReconstructionInProgress(value) {
     localStorage.setItem('reconstructionInProgress', value.toString());
 }
 
-
 function komaMRIsim(seq_json, scanner_json){
     // Check if simulation is already in progress
     if (isSimulationInProgress()) {
@@ -255,7 +254,7 @@ function clearSimulationPanel() {
     document.getElementById("kspaceResult").style.visibility = "hidden";
 }
 
-function plot_seq(scanner_json, seq_json){
+function plotSeq(scanner_json, seq_json){
     const scannerObj = JSON.parse(scanner_json);
     const seqObj     = JSON.parse(seq_json);
 
