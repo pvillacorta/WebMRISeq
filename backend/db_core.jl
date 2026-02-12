@@ -24,7 +24,9 @@ function get_db_connection()
             db_config["user"],
             db_config["password"];
             db = db_config["database"],
-            port = db_config["port"]
+            port = db_config["port"],
+            ssl_enforce = false,              # no exigir TLS
+            ssl_verify_server_cert = false    #
         )
     catch e
         error("Error connecting to database: $e")
