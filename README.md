@@ -26,9 +26,6 @@ Web MRI Sequence Editor and Simulator based on [KomaMRI](https://github.com/Juli
 ```
 
 3. Configure database credentials and start Docker:
-   
-   **Important:** You need to set the same MySQL password in both `docker-compose.yml` and `backend/db_config.toml`.
-   
    a. Edit `docker-compose.yml` and change `MYSQL_ROOT_PASSWORD: passhere` to your desired password (replace `passhere` in both places).
    
    b. Create the database configuration file:
@@ -46,7 +43,7 @@ Web MRI Sequence Editor and Simulator based on [KomaMRI](https://github.com/Juli
    d. Start Docker and create the database:
    ```bash
    docker compose up -d
-   docker compose exec db mysql -uroot -pYOUR_PASSWORD < MRSeqStudio.sql
+   docker compose exec -T db mysql -uroot -pYOUR_PASSWORD < MRSeqStudio.sql
    ```
    (Replace `YOUR_PASSWORD` with the password you set in `docker-compose.yml`)
 
