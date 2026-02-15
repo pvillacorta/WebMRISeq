@@ -177,7 +177,7 @@ json_to_sequence(json_seq::JSON3.Object, sys::Scanner) = begin
       end
    end
 
-   N_y = round(Int, length(get_adc_sampling_times(seq))/N_x)
+   N_y = N_x > 0 ? round(Int, length(get_adc_sampling_times(seq))/N_x) : 0
 
    seq.DEF = Dict("Nx"=>N_x,"Ny"=>N_y,"Nz"=>1)
 
