@@ -30,7 +30,8 @@ function authenticate(username::String, password::String, ipaddr::String)
         
     catch e
         println("❌ Error during authentication: ", e)
-        return HTTP.Response(500)
+        return HTTP.Response(500, ["Content-Type" => "application/json"],
+            JSON3.write(Dict("error" => "Internal server error")))
     finally
         DBInterface.close!(conn)
     end

@@ -1,3 +1,6 @@
+const errorBoxSeq = document.getElementById("seqErrorMsg");
+const errorBoxSim = document.getElementById("errorMsg");
+
 // Global state for simulation tracking (using localStorage for persistence)
 function isSimulationInProgress() {
     return localStorage.getItem('simulationInProgress') === 'true';
@@ -55,6 +58,11 @@ function komaMRIsim(seq_json, scanner_json){
                 requestSimResult(loc)
             }else{
                 // Error
+                clearSimulationPanel();
+                setSimulationInProgress(false);
+                return res.json().then(json => {
+                    displayError(json.error, errorBoxSim);
+                }).then(() => { return; });
             }
         }
     )
@@ -107,8 +115,7 @@ function requestSimResult(loc){
             // Reset simulation state on error
             setSimulationInProgress(false);
             return res.json().then(json => {
-                document.getElementById("errorMsg").textContent =
-                    "Simulation failed in KomaMRI: the provided sequence could not be simulated or reconstructed.\nDetails:\n" + json.msg;
+                displayError(json.error, errorBoxSim);
             }).then(() => { return; });
         } throw new Error('Request error');
     })
@@ -268,7 +275,6 @@ function plotSeq(scanner_json, seq_json){
 
     const sequenceFrame = document.getElementById("seqDiagram");
     const kspaceFrame = document.getElementById("kspaceDiagram");
-    const errorBox = document.getElementById("seqErrorMsg");
 
     // Hide both frames initially
     sequenceFrame.style.visibility = "hidden";
@@ -302,7 +308,7 @@ function plotSeq(scanner_json, seq_json){
             return res.json();
         } else {
             return res.json().then(json => {
-                throw new Error(json.msg);
+                displayError(json.error, errorBoxSeq);
             });
         }
     })
@@ -318,13 +324,10 @@ function plotSeq(scanner_json, seq_json){
         const currentMode = getSeqMode();
         showSeqFrame(currentMode);
         
-        errorBox.textContent = "";
+        errorBoxSeq.textContent = "";
     })
     .catch(error => {
-        sequenceFrame.style.visibility = "hidden";
-        kspaceFrame.style.visibility = "hidden";
-        errorBox.textContent = 
-            "Failed to plot sequence: the provided sequence could not be plotted.\nDetails:\n" + error.message;
+        displayError(error, errorBoxSeq);
     });
 }
 
@@ -607,4 +610,9 @@ function getPresetSequence(sequenceName) {
             console.error("Error getting preset sequence:", error);
             return null;
         });
+}
+
+function displayError(error, box) {
+    console.log("Error: " + error);
+    box.textContent = error;
 }

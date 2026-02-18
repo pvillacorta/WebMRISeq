@@ -66,21 +66,20 @@ json_to_sequence(json_seq::JSON3.Object, sys::Scanner) = begin
          rf     = block["rf"][1]
          shape  = rf["shape"]
          deltaf = eval_string(rf["deltaf"], vars, iterators)
+         TBP = 5.2 # TODO: make this a parameter
 
          # Flip angle and duration
          if haskey(block, "duration") & haskey(rf, "flipAngle")
             duration = eval_string(block["duration"], vars, iterators)
             flipAngle = eval_string(rf["flipAngle"], vars, iterators)
-
             aux_amplitude = 1e-6
             # 1. Rectangle (hard)
             if shape == 0
                AUX = PulseDesigner.RF_hard(aux_amplitude, duration, sys)
             # 2. Sinc
             elseif shape == 1
-               AUX = PulseDesigner.RF_sinc(aux_amplitude, duration, sys)
+               AUX = PulseDesigner.RF_sinc(aux_amplitude, duration, sys; TBP=TBP)
             end
-
             amplitude = aux_amplitude * (flipAngle/get_flip_angles(AUX)[1])
 
          # Amplitude and duration
@@ -99,7 +98,7 @@ json_to_sequence(json_seq::JSON3.Object, sys::Scanner) = begin
                AUX = PulseDesigner.RF_hard(amplitude, aux_duration, sys)
             # 2. Sinc
             elseif shape == 1
-               AUX = PulseDesigner.RF_sinc(amplitude, aux_duration, sys)
+               AUX = PulseDesigner.RF_sinc(amplitude, aux_duration, sys; TBP=TBP)
             end
 
             duration = aux_duration * (flipAngle/get_flip_angles(AUX)[1])
@@ -110,7 +109,7 @@ json_to_sequence(json_seq::JSON3.Object, sys::Scanner) = begin
             EX = PulseDesigner.RF_hard(amplitude, duration, sys; Δf=deltaf)
          # 2. Sinc
          elseif shape == 1
-            EX = PulseDesigner.RF_sinc(amplitude, duration, sys; Δf=deltaf)[1]
+            EX = PulseDesigner.RF_sinc(amplitude, duration, sys; Δf=deltaf, TBP=TBP)[1]
          end
 
          EX.GR = get_gradients(block)
@@ -302,11 +301,11 @@ function eval_string(expr::String, variables::Dict, iterators::Dict{String,Int}=
        return 0
    end
 
-   allowed_operators = Set(["+", "-", "*", "/", "(", ")", "^"])
+   allowed_operators = Set(["+", "-", "*", "/", "%", "(", ")", "^"])
    number_pattern = r"^\d+\.?\d*(?:[eE][+-]?\d+)?$"
    identifier_pattern = r"^[a-zA-Z_][a-zA-Z0-9_]*$"
 
-   tokens = eachmatch(r"[a-zA-Z_][a-zA-Z0-9_]*|\d+\.?\d*(?:[eE][+-]?\d+)?|[()+\-*/^]", expr)
+   tokens = eachmatch(r"[a-zA-Z_][a-zA-Z0-9_]*|\d+\.?\d*(?:[eE][+-]?\d+)?|[()+\-*/%^]", expr)
 
    all_vars = merge(variables, iterators, Dict("pi" => pi))
 

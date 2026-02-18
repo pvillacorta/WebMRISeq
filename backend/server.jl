@@ -147,10 +147,20 @@ function AuthMiddleware(handler)
          return handler(req)
       elseif any(base -> startswith(path, base), PRIVATE_URLS) 
       # Private resource. This requires both the cookie and the Authorization header
-         return (check_jwt(jwt1, ipaddr, 1) && check_jwt(jwt2, ipaddr, 2)) ? handler(req) : HTTP.Response(303, ["Location" => "/login"])
+         if check_jwt(jwt1, ipaddr, 1) && check_jwt(jwt2, ipaddr, 2)
+            return handler(req)
+         else
+            return HTTP.Response(401, ["Content-Type" => "application/json"],
+               JSON3.write(Dict("error" => "Authentication failed")))
+         end
       else 
       # User dashboard. This only requires the cookie.
-         return check_jwt(jwt1, ipaddr, 1) ? handler(req) : HTTP.Response(303, ["Location" => "/login"])
+         if check_jwt(jwt1, ipaddr, 1)
+            return handler(req)
+         else
+            return HTTP.Response(401, ["Content-Type" => "application/json"],
+               JSON3.write(Dict("error" => "Authentication failed")))
+         end
       end
    end
 end
@@ -512,60 +522,66 @@ end
             description: Internal server error
 """
 @post "/api/simulate" function(req::HTTP.Request)
-   # Get user information
-   jwt2 = get_jwt_from_auth_header(HTTP.header(req, "Authorization"))
-   uname = claims(jwt2)["username"]
-   
-   # Verify if the user can run more sequences today
-   if !user_can_run_more_sequences(uname)
-         println("⛔ ACCESS DENIED: The simulation request for '$uname' has been rejected because it exceeded the daily limit")
-      return HTTP.Response(403, ["Content-Type" => "application/json"],
-         JSON3.write(Dict("error" => "You have reached your daily sequence limit")))
+   try
+      # Get user information
+      jwt2 = get_jwt_from_auth_header(HTTP.header(req, "Authorization"))
+      uname = claims(jwt2)["username"]
+      
+      # Verify if the user can run more sequences today
+      # if !user_can_run_more_sequences(uname)
+      #       println("⛔ ACCESS DENIED: The simulation request for '$uname' has been rejected because it exceeded the daily limit")
+      #    return HTTP.Response(403, ["Content-Type" => "application/json"],
+      #       JSON3.write(Dict("error" => "You have reached your daily sequence limit")))
+      # end
+
+      pid = ACTIVE_SESSIONS[uname]
+      # Configurar archivo de estado temporal
+      STATUS_FILES[simID] = tempname()
+      touch(STATUS_FILES[simID])
+
+      scanner_json   = json(req)["scanner"]
+      sequence_json  = json(req)["sequence"]
+      SCANNERS[uname]                       = json_to_scanner(scanner_json)
+      SEQUENCES[uname], ROT_MATRICES[uname] = json_to_sequence(sequence_json, SCANNERS[uname])
+      
+      ########### movidas de secuencias y gestion de users
+      # Generate a unique ID for the sequence
+      sequence_unique_id = "seq_$(now())_$(rand(1:10000))"
+      
+      # Save simulation metadata
+      SIM_METADATA[simID] = Dict(
+         "uname" => uname,
+         "sequence_id" => sequence_unique_id,
+         "start_time" => now()
+      )
+
+      # Register sequence usage
+      register_sequence_usage(uname)
+      save_sequence(uname, sequence_unique_id, SEQUENCES[uname])
+      #Check the privileges for the gpu usage
+      user_privs = get_user_privileges(uname)
+      gpu_active = false
+      if user_privs === nothing
+         println("[!!!] Could not get the privileges for $uname")
+      else
+         gpu_active = user_privs["gpu_access"]
+      end
+      ################ fin de movidas
+
+      if !haskey(ACTIVE_SESSIONS, uname) # Check if the user has already an active session
+         assign_process(uname) # We assign a new julia process to the user
+      end
+      # Simulation  (asynchronous. It should not block the HTTP 202 Response)
+      RAW_RESULTS[uname]                    = @spawnat pid sim(PHANTOMS[uname], SEQUENCES[uname], SCANNERS[uname], STATUS_FILES[simID], gpu_active)
+
+      headers = ["Location" => string("/api/simulate/",simID)]
+      global simID += 1
+      # 202: Partial Content
+      return HTTP.Response(202,headers)
+   catch e 
+      return HTTP.Response(500, ["Content-Type" => "application/json"],
+         JSON3.write(Dict("error" => string(e))))
    end
-   pid = ACTIVE_SESSIONS[uname]
-   # Configurar archivo de estado temporal
-   STATUS_FILES[simID] = tempname()
-   touch(STATUS_FILES[simID])
-
-   scanner_json   = json(req)["scanner"]
-   sequence_json  = json(req)["sequence"]
-   SCANNERS[uname]                       = json_to_scanner(scanner_json)
-   SEQUENCES[uname], ROT_MATRICES[uname] = json_to_sequence(sequence_json, SCANNERS[uname])
-   
-   ########### movidas de secuencias y gestion de users
-   # Generate a unique ID for the sequence
-   sequence_unique_id = "seq_$(now())_$(rand(1:10000))"
-   
-   # Save simulation metadata
-   SIM_METADATA[simID] = Dict(
-      "uname" => uname,
-      "sequence_id" => sequence_unique_id,
-      "start_time" => now()
-   )
-
-   # Register sequence usage
-   register_sequence_usage(uname)
-   save_sequence(uname, sequence_unique_id, SEQUENCES[uname])
-   #Check the privileges for the gpu usage
-   user_privs = get_user_privileges(uname)
-   gpu_active = false
-   if user_privs === nothing
-      println("[!!!] Could not get the privileges for $uname")
-   else
-      gpu_active = user_privs["gpu_access"]
-   end
-   ################ fin de movidas
-
-   if !haskey(ACTIVE_SESSIONS, uname) # Check if the user has already an active session
-      assign_process(uname) # We assign a new julia process to the user
-   end
-   # Simulation  (asynchronous. It should not block the HTTP 202 Response)
-   RAW_RESULTS[uname]                    = @spawnat pid sim(PHANTOMS[uname], SEQUENCES[uname], SCANNERS[uname], STATUS_FILES[simID], gpu_active)
-
-   headers = ["Location" => string("/api/simulate/",simID)]
-   global simID += 1
-   # 202: Partial Content
-   return HTTP.Response(202,headers)
 end
 
 @swagger """
@@ -643,8 +659,6 @@ end
          metadata = SIM_METADATA[_simID]
          sequence_id = metadata["sequence_id"]
 
-         
-         
          # Try to save the result (check internally the space limits)
          save_result = save_simulation_result(uname, sequence_id, sig)
          
@@ -657,7 +671,8 @@ end
       ###################### MOVIDAS DE GESTION ##################
       return HTTP.Response(200,body=take!(html_buffer))
    elseif SIM_PROGRESSES[_simID] == -2 # Simulation failed
-      return HTTP.Response(500,body=JSON3.write("Simulation failed"))
+      return HTTP.Response(500, ["Content-Type" => "application/json"],
+         body=JSON3.write(Dict("error" => "Simulation failed")))
    end
 end
 
@@ -975,7 +990,8 @@ end
       return HTTP.Response(200,body=JSON3.write(result))
    catch e
       println(e)
-      return HTTP.Response(500,body=JSON3.write(string(e)))
+      return HTTP.Response(500, ["Content-Type" => "application/json"],
+         body=JSON3.write(Dict("error" => string(e))))
    end
 end
 
@@ -996,7 +1012,13 @@ end
       SEQUENCES[uname], ROT_MATRICES[uname] = json_to_sequence(seq_data, SCANNERS[uname])
 
       filename = "$(uname)_Sequence.seq"
-      remotecall_fetch(write_seq, pid, SEQUENCES[uname], filename)
+      remotecall_fetch(
+         write_seq, pid, SEQUENCES[uname], filename;
+         blockDurationRaster = 1e-6,
+         gradientRasterTime = 1e-5,
+         rfRasterTime = 1e-5,
+         adcRasterTime = 1e-6
+      )
 
       # Worker escribe en su cwd (= backend); leer y devolver el fichero
       filepath = joinpath(@__DIR__, filename)
@@ -1009,7 +1031,8 @@ end
       ]
       return HTTP.Response(200, headers, body)
    catch e
-      return HTTP.Response(500, body = JSON3.write(string(e)))
+      return HTTP.Response(500, ["Content-Type" => "application/json"],
+         body=JSON3.write(Dict("error" => string(e))))
    end
 end
 
@@ -1097,7 +1120,8 @@ end
       KomaMRIPlots.PlotlyBase.to_html(html_buffer, fetch(p).plot)
       return HTTP.Response(200,body=take!(html_buffer))
    catch e
-      return HTTP.Response(500,body=JSON3.write(e))
+      return HTTP.Response(500, ["Content-Type" => "application/json"],
+         body=JSON3.write(Dict("error" => string(e))))
    end
 end
 
@@ -1267,7 +1291,7 @@ end
    catch e
       println("❌ Error creating user: ", e)
       return HTTP.Response(500, ["Content-Type" => "application/json"],
-         JSON3.write(Dict("error" => "Error al crear usuario: $e")))
+         JSON3.write(Dict("error" => "Error creating user: $e")))
    end
 end
 
