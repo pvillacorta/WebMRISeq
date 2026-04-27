@@ -593,8 +593,13 @@ ApplicationWindow {
                 }
             }
 
+            // Reserved function names (not replaced as variables)
+            const allowedFunctions = ["sqrt"];
             // Replace variable names in the expression with their values
             let replacedExpression = expression.replace(/\b[a-zA-Z_][a-zA-Z0-9_]*\b/g, match => {
+                if (allowedFunctions.includes(match)) {
+                    return match; // Keep function names as-is
+                }
                 if (variables.hasOwnProperty(match)) {
                     let value = variables[match];
                     // Ensure the value is a valid number
@@ -608,6 +613,8 @@ ApplicationWindow {
                     return "0"; // Use 0 instead of NaN to prevent propagation
                 }
             });
+            // Map allowed functions to Math.* for evaluation (e.g. sqrt(4) -> Math.sqrt(4))
+            replacedExpression = replacedExpression.replace(/\bsqrt\s*\(/g, "Math.sqrt(");
 
             // Evaluate the mathematical expression
             let result = new Function(`return (${replacedExpression});`)();

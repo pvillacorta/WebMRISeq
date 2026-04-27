@@ -84,14 +84,14 @@ Rectangle{
             }
         }
 
-        Text{
+        Row{
             id: variablesFieldNames
-            text: " Name                Expression          Value"
             anchors.top: variablesTitleText.bottom; anchors.topMargin: 5
-            color:"white"
-            font.pointSize: 10
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left; anchors.leftMargin:12
+            anchors.left: parent.left; anchors.leftMargin: 15
+            spacing: 5
+            Text{ width: 67; text: "Name"; color: "white"; font.pointSize: 10 }
+            Text{ width: 200; text: "Expression"; color: "white"; font.pointSize: 10 }
+            Text{ width: 100; text: "Value"; color: "white"; font.pointSize: 10 }
         }
     }
 
@@ -128,7 +128,7 @@ Rectangle{
                     id: nameInput;  
                     idNumber: menuID; 
                     text: name; 
-                    width: 100; 
+                    width: 80; 
                     readOnly: readonly
                     function nextInput(){
                         return expressionInput.textInput
@@ -147,7 +147,7 @@ Rectangle{
                     id: expressionInput;  
                     idNumber: menuID; 
                     text: expression; 
-                    width: 100; 
+                    width: 200; 
                     function nextInput(){
                         if (index < variablesList.count - 1) {
                             return valueInput.textInput

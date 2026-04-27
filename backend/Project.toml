@@ -7,10 +7,6 @@ HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
 JWTs = "d850fbd6-035d-5a70-a269-1ca2e636ac6c"
 KomaMRI = "6a340f8b-2cdf-4c04-99be-4953d9b66d0a"
-KomaMRIBase = "d0bc0b20-b151-4d03-b2a4-6ca51751cb9c"
-KomaMRICore = "4baa4f4d-2ae9-40db-8331-a7d1080e3f4e"
-KomaMRIFiles = "fcf631a6-1c7e-4e88-9e64-b8888386d9dc"
-KomaMRIPlots = "76db0263-63f3-4d26-bb9a-5dba378db904"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 MAT = "23992714-dd62-5051-b70f-ba57cb901cac"
 MbedTLS = "739be429-bea8-5141-9913-cc70e7f3736d"
@@ -20,10 +16,3 @@ SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 StructTypes = "856f2bd8-1eba-4b0a-8007-ebc267875bd4"
 SwaggerMarkdown = "1b6eb727-ad4b-44eb-9669-b9596a6e760f"
-
-[sources]
-KomaMRI = {rev = "write-pulseq", url = "https://github.com/JuliaHealth/KomaMRI.jl"}
-KomaMRIBase  = {rev = "write-pulseq", subdir = "KomaMRIBase",  url = "https://github.com/JuliaHealth/KomaMRI.jl"}
-KomaMRIFiles = {rev = "write-pulseq", subdir = "KomaMRIFiles", url = "https://github.com/JuliaHealth/KomaMRI.jl"}
-KomaMRICore  = {rev = "write-pulseq", subdir = "KomaMRICore",  url = "https://github.com/JuliaHealth/KomaMRI.jl"}
-KomaMRIPlots = {rev = "write-pulseq", subdir = "KomaMRIPlots", url = "https://github.com/JuliaHealth/KomaMRI.jl"}

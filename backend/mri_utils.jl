@@ -302,6 +302,7 @@ function eval_string(expr::String, variables::Dict, iterators::Dict{String,Int}=
    end
 
    allowed_operators = Set(["+", "-", "*", "/", "%", "(", ")", "^"])
+   allowed_functions = Set(["sqrt"])
    number_pattern = r"^\d+\.?\d*(?:[eE][+-]?\d+)?$"
    identifier_pattern = r"^[a-zA-Z_][a-zA-Z0-9_]*$"
 
@@ -314,6 +315,8 @@ function eval_string(expr::String, variables::Dict, iterators::Dict{String,Int}=
       val = token.match
       if val in allowed_operators || occursin(number_pattern, val)
          push!(rebuilt, val)
+      elseif val in allowed_functions
+         push!(rebuilt, val)
       elseif occursin(identifier_pattern, val) && haskey(all_vars, val)
          push!(rebuilt, string(all_vars[val]))
       else
@@ -321,7 +324,7 @@ function eval_string(expr::String, variables::Dict, iterators::Dict{String,Int}=
       end
    end
 
-   safe_expr = join(rebuilt, " ")
+   safe_expr = join(rebuilt)
    try
       result = eval(Meta.parse(safe_expr))
       return result
