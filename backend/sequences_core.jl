@@ -10,51 +10,63 @@ function GRE(
 	G=[0,0,1e-3], 
 	Δf=0,
 	pulse_duration = 3e-3,
+	adc_duration = 2e-3,
 )
-	# Excitation (Sinc pulse) ----------------------------------
-	B_1° = 2.59947e-7 / (pulse_duration * 1e3)
-	B1 = α*  B_1°
-	EX = PulseDesigner.RF_sinc(-1im*B1,pulse_duration,sys;G=G,Δf=Δf)
+	ζ = 1e-4
 
+	# Excitation (Sinc pulse) ----------------------------------
+	rut_slice = ζ
+	B_1° = 2.59947e-7 / (pulse_duration * 1e3)
+	B1 = α * B_1°
+	EX = PulseDesigner.RF_sinc(-1im*B1,pulse_duration,sys;G=G,Δf=Δf)
+	rf = EX.RF[1]
+	G_slice = EX.GR[3].A
+	m0_slice = G_slice * (pulse_duration + 2*rut_slice)
+	
 	# Acquisition ----------------------------------------------
 	# Square acquisition (Nx = Ny = N) 
-	# PHASE
-	ζ_phase = EX[2].GR[1].rise
-	T_phase = EX[2].GR[1].T
-
+	# DEPHASE
 	Δk = (1/FOV)
-	FOVk = (N-1)*Δk
-	Gx = Gy = FOVk/(γ*(T_phase + ζ_phase))
-	step = Δk/(γ*(T_phase + ζ_phase))
+	kmax = N * Δk
+	m0_deph = kmax / γ
+	m0_deph_step = Δk / γ
+	rut_deph = ζ
+	ft_deph  = rf.T/2
 
-	# FE and Readout
-	TE_min = (1/2) * ( sys.ADC_Δt*(N-1) + 2*((EX.DUR[1]/2) + EX.DUR[2]) )
-	if TE < TE_min
-		print("Error: TE must be greater than TE_min = ", TE_min*1e3, " ms\n")
-		return
-	end
+	# Frecuency encoding and Readout
+	G_ro = m0_deph / adc_duration
+	rut_ro = G_ro / (0.9*sys.Smax)
 
-	ACQ_dur = 2 * (TE - ( (EX.DUR[1]/2) + EX.DUR[2] ))
-	G_ro = FOVk/(γ*ACQ_dur)
-	ζ_ro = G_ro / sys.Smax
-	T_ro = ACQ_dur - ζ_ro
-	GR = reshape([Grad(G_ro,T_ro,ζ_ro), Grad(0,0), Grad(0,0)],(3,1))
-	RO = Sequence(GR)
-	RO.ADC[1] = ADC(N, T_ro, ζ_ro)
-	delay_TR = TR - (EX.DUR[1] + EX.DUR[2] + RO.DUR[1])
+	TE_min = rf.T/2 + ft_deph + 3*rut_deph + rut_ro + adc_duration/2 
+	TE >= TE_min || return error("Error: TE must be greater than TE_min = ", TE_min*1e3, " ms\n")
+	delay_TE = TE - TE_min
+
+	TR_min = rf.T + ft_deph + 4*rut_deph + delay_TE + 2*rut_ro + adc_duration
+	TR >= TR_min || return error("Error: TR must be greater than TR_min = ", TR_min*1e3, " ms\n")
+	delay_TR = TR - TR_min
 
 	gre = Sequence()
 	for i in 0:(N-1)
 		# Excitation and first phase 
-		EX = PulseDesigner.RF_sinc(-1im*B1,pulse_duration,sys;G=G,Δf=Δf)
-		EX[end].GR[1].A = -Gx/2
-		EX[end].GR[2].A = -Gy/2 + i*step
-		gre += EX
+		gr_ss_z   = Grad(G_slice, rf.T, rut_slice)
+
+		@addblock gre += (rf, z=gr_ss_z)
+
+		# Dephase
+		gr_deph_x = Grad((-m0_deph/2) / (rut_deph + ft_deph), ft_deph, rut_deph)
+		gr_deph_y = Grad((-m0_deph/2 + i*m0_deph_step) / (rut_deph + ft_deph), ft_deph, rut_deph)
+		gr_deph_z = Grad((-m0_slice/2) / (ft_deph + rut_deph), ft_deph, rut_deph)
+		
+		@addblock gre += (x=gr_deph_x, y=gr_deph_y, z=gr_deph_z) + (Duration(delay_TE))
 
 		# FE and Readout
-		gre += RO + Delay(delay_TR)
+		gr_ro_x = Grad(G_ro, adc_duration, rut_ro)
+		adc_ro_x = ADC(N, adc_duration, rut_ro)
+		@addblock gre += (x=gr_ro_x, adc_ro_x) + (Duration(delay_TR))
 	end
-	gre.DEF = Dict("Nx"=>N,"Ny"=>N,"Nz"=>1,"Name"=>"gre"*string(N)*"x"*string(N),"FOV"=>[FOV, FOV, 0])
+
+	gre.DEF = Dict("Nx"=>N,"Ny"=>N,"Nz"=>1,"Name"=>"gre"*string(N)*"x"*string(N),"FOV"=>[FOV, FOV, 0], "TE"=>TE, "TR"=>TR)
+	
 	return gre
 end
 

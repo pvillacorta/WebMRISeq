@@ -4,7 +4,7 @@ include("sequences_core.jl")
 json_to_sequence(json_seq::JSON3.Object, sys::Scanner) = begin
    vars = read_variables(json_seq["variables"])
 
-   global seq = Sequence()
+   global seq = Sequence(sys)
    global R = float([1 0 0; 0 1 0; 0 0 1])
 
    N_x = 0
@@ -14,7 +14,7 @@ json_to_sequence(json_seq::JSON3.Object, sys::Scanner) = begin
 
    function get_gradients(block::JSON3.Object)
       gradients = block["gradients"]
-      GR = reshape([Grad(0,0) for i in 1:3],(3,1))
+      GR = Grad[]
       for grad in gradients
          axis        = grad["axis"]
          delay       = eval_string(grad["delay"], vars, iterators)
@@ -33,7 +33,7 @@ json_to_sequence(json_seq::JSON3.Object, sys::Scanner) = begin
             error("Slew rate=$(amplitude/rise) mT/m/ms exceeds Smax=$(sys.Smax) mT/m/ms")
          end
 
-         GR[idx] = Grad(amplitude, flatTopTime, rise, delay)
+         push!(GR, Grad(amplitude, flatTopTime, rise, delay))
       end
       return GR
    end
@@ -106,24 +106,24 @@ json_to_sequence(json_seq::JSON3.Object, sys::Scanner) = begin
 
          # 1. Rectangle (hard)
          if shape == 0
-            EX = PulseDesigner.RF_hard(amplitude, duration, sys; Δf=deltaf)
+            EX = PulseDesigner.RF_hard(amplitude, duration, sys; Δf=deltaf).RF[1]
          # 2. Sinc
          elseif shape == 1
-            EX = PulseDesigner.RF_sinc(amplitude, duration, sys; Δf=deltaf, TBP=TBP)[1]
+            EX = PulseDesigner.RF_sinc(amplitude, duration, sys; Δf=deltaf, TBP=TBP).RF[1]
          end
 
-         EX.GR = get_gradients(block)
+         GR = get_gradients(block)
 
          REF = [0, 0, 1]
-         G = vec(EX.GR.A)
+         G = vec(GR.A)
          cross_prod = LinearAlgebra.cross(REF, G)
          n = normalize(cross_prod)
          θ = asin(norm(cross_prod)/(norm(REF)*norm(G)))
          R = norm(cross_prod) > 0 ? Un(θ, n) : R
 
-         EX.RF[1].delay = maximum(EX.GR.rise)
-         EX.DUR[1] = EX.RF[1].delay + max(maximum(EX.GR.T .+ EX.GR.fall), duration)
-         seq += EX
+         EX.delay = maximum(GR.rise)
+         dur = EX.delay + max(maximum(GR.T .+ GR.fall), duration)
+         @addblock seq += (EX, Duration(dur), x=GR[1], y=GR[2], z=GR[3])
 
       elseif block["cod"] == 2       # <-------------------------- Delay
          duration = eval_string(block["duration"], vars, iterators)
@@ -131,18 +131,20 @@ json_to_sequence(json_seq::JSON3.Object, sys::Scanner) = begin
          seq += DELAY
 
       elseif block["cod"] in [3,4]   # <-------------------------- Dephase or Readout
-         DEPHASE = Sequence(get_gradients(block))
+         gr = get_gradients(block)
 
          if block["cod"] == 4
-            DEPHASE.ADC[1].N = eval_string(block["samples"], vars, iterators)
-            DEPHASE.ADC[1].T = eval_string(block["duration"], vars, iterators)
-            DEPHASE.ADC[1].delay = eval_string(block["adcDelay"], vars, iterators)
-            DEPHASE.ADC[1].ϕ = eval_string(block["adcPhase"], vars, iterators)
+            N = eval_string(block["samples"], vars, iterators)
+            T = eval_string(block["duration"], vars, iterators)
+            delay = eval_string(block["adcDelay"], vars, iterators)
+            ϕ = eval_string(block["adcPhase"], vars, iterators)
 
-            N_x = eval_string(block["samples"], vars, iterators)
+            N_x = N
+
+            @addblock seq += (x=gr[1], y=gr[2], z=gr[3], ADC(N, T, delay, 0, ϕ))
+         else
+            @addblock seq += (x=gr[1], y=gr[2], z=gr[3])
          end
-
-         seq += DEPHASE
 
       elseif block["cod"] == 5       # <-------------------------- EPI
          fov = eval_string(block["fov"], vars, iterators)
@@ -151,7 +153,10 @@ json_to_sequence(json_seq::JSON3.Object, sys::Scanner) = begin
 
          N_x = eval_string(block["samples"], vars, iterators)
 
-         seq += R * EPI(fov, lines, sys)
+         epi = EPI(fov, lines, sys)
+         def = merge(seq.DEF, epi.DEF)
+         seq += R * epi
+         seq.DEF = def
 
       elseif block["cod"] == 6       # <-------------------------- GRE  
          fov = eval_string(block["fov"], vars, iterators)
@@ -166,7 +171,11 @@ json_to_sequence(json_seq::JSON3.Object, sys::Scanner) = begin
          α     = eval_string(rf["flipAngle"], vars, iterators)
          Δf    = eval_string(rf["deltaf"], vars, iterators)
 
-         seq += R * GRE(fov, lines, te, tr, α, sys; Δf=Δf)
+         gre = GRE(fov, lines, te, tr, α, sys; Δf=Δf)
+         def = merge(seq.DEF, gre.DEF)
+   
+         seq += R * gre
+         seq.DEF = def
       end 
    end
 
@@ -178,9 +187,13 @@ json_to_sequence(json_seq::JSON3.Object, sys::Scanner) = begin
 
    N_y = N_x > 0 ? round(Int, length(get_adc_sampling_times(seq))/N_x) : 0
 
-   seq.DEF = Dict("Nx"=>N_x,"Ny"=>N_y,"Nz"=>1)
+   seq.DEF["Nx"] = N_x
+   seq.DEF["Ny"] = N_y
+   seq.DEF["Nz"] = 1
 
-   display(seq)
+
+   println("DEF: ", seq.DEF)
+
    return seq, R
 end
 
