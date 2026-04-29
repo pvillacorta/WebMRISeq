@@ -40,6 +40,7 @@ staticfiles(phantom_files_path, "/public")
 
 const PUBLIC_URLS = ["/favicon.ico"]
 const LOGIN_URLS = ["/login", "/login.js", "/login.js.map", "/register"]
+const APP_URLS = ["/app"]
 const PRIVATE_URLS = ["/api/simulate", "/api/recon", "/api/plot/sequence", "/api/plot/phantom"]
 const ADMIN_URLS = ["/admin", "/api/admin/users", "/api/admin/sequences", "/api/admin/sequences/{userId}", "/api/admin/results/{resultId}", "/api/admin/stats/sequences", "/api/admin/users/{userId}/sequences"]
 
@@ -110,13 +111,31 @@ end
 function AuthMiddleware(handler)
    return function(req::HTTP.Request)
       println("Auth middleware")
-      path = String(req.target)
+      target = String(req.target)
+      path = split(target, "?"; limit=2)[1]
       jwt1 = get_jwt_from_cookie(HTTP.header(req, "Cookie"))
       jwt2 = get_jwt_from_auth_header(HTTP.header(req, "Authorization"))
       ipaddr = string(HTTP.header(req, "X-Forwarded-For", "127.0.0.1"))
-      if any(base -> startswith(path, base), ADMIN_URLS)
+      has_web_session = check_jwt(jwt1, ipaddr, 1)
+      has_api_token = check_jwt(jwt2, ipaddr, 2)
+      is_admin_route = any(base -> startswith(path, base), ADMIN_URLS)
+      is_login_route = any(base -> startswith(path, base), LOGIN_URLS)
+      is_public_route = any(base -> startswith(path, base), PUBLIC_URLS)
+      is_private_api_route = any(base -> startswith(path, base), PRIVATE_URLS)
+      is_app_route = any(base -> startswith(path, base), APP_URLS)
+      is_root_route = path == "/"
+
+      json_auth_failed() = HTTP.Response(
+         401,
+         ["Content-Type" => "application/json"],
+         JSON3.write(Dict("error" => "Authentication failed"))
+      )
+      redirect_to_login() = HTTP.Response(303, ["Location" => "/login"])
+      redirect_to_app() = HTTP.Response(303, ["Location" => "/app"])
+
+      if is_admin_route
       # Admin resource. This requires the cookie, as well as admin permissions
-         if (check_jwt(jwt1, ipaddr, 1))
+         if has_web_session
             username = claims(jwt1)["username"]
             is_admin_user = check_admin(username)
             if is_admin_user
@@ -137,30 +156,34 @@ function AuthMiddleware(handler)
                   """)
             end
          else
-            return HTTP.Response(303, ["Location" => "/login"])
+            return redirect_to_login()
          end
-      elseif any(base -> startswith(path, base), LOGIN_URLS)
+      elseif is_login_route
       # Login resource. If already logged in, redirect to /app.
-         return check_jwt(jwt1, ipaddr, 1) ? HTTP.Response(303, ["Location" => "/app"]) : handler(req)
-      elseif any(base -> startswith(path, base), PUBLIC_URLS)
+         return has_web_session ? redirect_to_app() : handler(req)
+      elseif is_root_route
+      # Root resource. Redirect based on session status.
+         return has_web_session ? redirect_to_app() : redirect_to_login()
+      elseif is_public_route
       # Public resource. This does not requires cookie
          return handler(req)
-      elseif any(base -> startswith(path, base), PRIVATE_URLS) 
+      elseif is_private_api_route 
       # Private resource. This requires both the cookie and the Authorization header
-         if check_jwt(jwt1, ipaddr, 1) && check_jwt(jwt2, ipaddr, 2)
+         if has_web_session && has_api_token
             return handler(req)
          else
-            return HTTP.Response(401, ["Content-Type" => "application/json"],
-               JSON3.write(Dict("error" => "Authentication failed")))
+            return json_auth_failed()
          end
-      else 
+      elseif is_app_route
       # User dashboard. This only requires the cookie.
-         if check_jwt(jwt1, ipaddr, 1)
+         if has_web_session
             return handler(req)
          else
-            return HTTP.Response(401, ["Content-Type" => "application/json"],
-               JSON3.write(Dict("error" => "Authentication failed")))
+            return redirect_to_login()
          end
+      else
+      # Other routes are handled by the router/static handler (404 or file serving).
+         return handler(req)
       end
    end
 end
@@ -1012,13 +1035,7 @@ end
       SEQUENCES[uname], ROT_MATRICES[uname] = json_to_sequence(seq_data, SCANNERS[uname])
 
       filename = "$(uname)_Sequence.seq"
-      remotecall_fetch(
-         write_seq, pid, SEQUENCES[uname], filename;
-         blockDurationRaster = 1e-6,
-         gradientRasterTime = 1e-5,
-         rfRasterTime = 1e-5,
-         adcRasterTime = 1e-6
-      )
+      remotecall_fetch(write_seq, pid, SEQUENCES[uname], filename)
 
       # Worker escribe en su cwd (= backend); leer y devolver el fichero
       filepath = joinpath(@__DIR__, filename)
