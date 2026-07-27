@@ -1,5 +1,13 @@
-# Web MRI Sequence Editor
-Web MRI Sequence Editor and Simulator based on [KomaMRI](https://github.com/JuliaHealth/KomaMRI.jl).
+# MRSeqStudio
+**MRSeqStudio** is a Web MRI Sequence Editor and Simulator based on [KomaMRI](https://github.com/JuliaHealth/KomaMRI.jl).
+
+This repository accompanies the following paper:
+
+> Villacorta-Aylagas, P., Rodríguez-Cayetano, M., Castillo-Passi, C. et al.
+> MRSeqStudio: MRI Sequence Design and Simulation as a Service in a Free and Open-Source Web Platform.
+> J Med Syst 50, 65 (2026).
+> https://doi.org/10.1007/s10916-026-02394-1
+
 <img width="100%" src="./docs/assets/gui.gif"/>
 
 # Guide to deploy the app on your own server
